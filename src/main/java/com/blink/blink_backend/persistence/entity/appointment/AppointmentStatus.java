@@ -8,14 +8,13 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
-@Table(name = "week_day")
-public class WeekDay {
+@Table(name = "appointment_status")
+public class AppointmentStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "week_day_name", nullable = false, unique = true)
-    private String name;
-
+    @Column(name = "status")
+    private String status;
 
 }
