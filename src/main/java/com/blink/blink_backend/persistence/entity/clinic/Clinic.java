@@ -18,4 +18,7 @@ public class Clinic {
 
     @Column(name = "clinic_name")
     private String clinicName;
+
+    @OneToOne(mappedBy = "clinic")
+    private ClinicConfiguration clinicConfiguration;
 }

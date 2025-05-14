@@ -11,10 +11,10 @@ import lombok.Setter;
 @Table(name = "service_type")
 public class ServiceType {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Long id;
 
-    @Column(name = "service_type", nullable = false, length = 50)
+    @Column(name = "service_type")
     private String serviceType;
 
 }

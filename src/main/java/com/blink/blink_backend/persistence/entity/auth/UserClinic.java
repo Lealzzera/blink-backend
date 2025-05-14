@@ -1,6 +1,7 @@
 package com.blink.blink_backend.persistence.entity.auth;
 
 
+import com.blink.blink_backend.persistence.entity.clinic.Clinic;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,13 +13,14 @@ import lombok.Setter;
 public class UserClinic {
 
     @Id
-    @Column(name = "user_id")
-    @GeneratedValue(strategy = GenerationType.TABLE)
-    private Long userId;
+    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Users user;
 
     @Id
-    @Column(name = "clinic_id")
-    private Long clinicId;
+    @JoinColumn(name = "clinic_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Clinic clinic;
 
     @Column(name = "role")
     private String role;

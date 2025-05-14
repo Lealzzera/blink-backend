@@ -1,9 +1,11 @@
 package com.blink.blink_backend.persistence.entity.clinic;
 
 
+import com.blink.blink_backend.persistence.entity.auth.Users;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
@@ -18,25 +20,30 @@ public class ClinicConfiguration {
     @GeneratedValue(strategy = GenerationType.TABLE)
     private Long id;
 
-    @Column(name = "whatsNumber")
+    @OneToOne
+    @JoinColumn(name = "clinic_id")
+    private Clinic clinic;
+
+    @Column(name = "whats_number")
     private String whatsNumber;
 
-    @Column(name = "appointmentDuration")
+    @Column(name = "appointment_duration")
     private String appointmentDuration;
 
-    @Column(name = "defaultAppointmentDurantion")
-    private int defaultAppointmentDurantion;
+    @Column(name = "default_appointment_duration")
+    private Integer defaultAppointmentDuration;
 
-    @Column(name = "allowOverbooking")
-    private boolean allowOverbooking;
+    @Column(name = "allow_overbooking")
+    private Boolean allowOverbooking;
 
-    @Column(name = "updatedByUserId")
-    private int updatedByUserId;
+    @OneToOne
+    @JoinColumn(name = "updated_by_user_id")
+    private Users updatedByUserId;
 
-    @Column(name = "createdAt")
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updatedAt")
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
 }

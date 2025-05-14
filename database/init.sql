@@ -1,33 +1,35 @@
 -- USER
-CREATE TABLE users(
+CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    name VARCHAR (150) NOT NULL,
+    name VARCHAR(150) NOT NULL
 );
 
-CREATE TABLE user_clinic(
-    user_id INT NOT NULL PRIMARY KEY,
-    clinic_id INT NOT NULL PRIMARY KEY,
-    role VARCHAR(150),
-    FOREIGN KEY (clinic_id) REFERENCES clinic(id),
-    FOREIGN KEY (user_id) REFERENCES user(id)
-)
-
----  CLINIC
 CREATE TABLE clinic (
     id SERIAL PRIMARY KEY,
     clinic_name VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE clinic_configuration(
+CREATE TABLE user_clinic (
+    user_id INT NOT NULL,
+    clinic_id INT NOT NULL,
+    role VARCHAR(150),
+    PRIMARY KEY (user_id, clinic_id),
+    FOREIGN KEY (clinic_id) REFERENCES clinic(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE clinic_configuration (
     id SERIAL PRIMARY KEY,
-    whats_number VARCHAR(15)
+    clinic_id INT NOT NULL,
+    whats_number VARCHAR(15),
     appointment_duration VARCHAR(100),
     default_appointment_duration INT DEFAULT 30,
     allow_overbooking BOOLEAN DEFAULT FALSE,
     updated_by_user_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (updated_by_user_id) REFERENCES user(id)
+    FOREIGN KEY (updated_by_user_id) REFERENCES users(id),
+    FOREIGN KEY (clinic_id) REFERENCES clinic(id)
 );
 
 -- APPOINTMENT
@@ -51,7 +53,7 @@ CREATE TABLE clinic_availability (
     is_working_day BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (clinic_id) REFERENCES clinic(id),
     FOREIGN KEY (week_day_id) REFERENCES week_day(id),
-    FOREIGN KEY (updated_by_user_id) REFERENCES user(id)
+    FOREIGN KEY (updated_by_user_id) REFERENCES users(id)
 );
 
 CREATE TABLE patient (
@@ -60,7 +62,6 @@ CREATE TABLE patient (
     phone_number VARCHAR(20) NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
 );
-
 
 CREATE TABLE appointment_status (
     id SERIAL PRIMARY KEY,
@@ -77,7 +78,7 @@ CREATE TABLE appointment (
     patient_id INT NOT NULL,
     scheduled_time TIMESTAMP NOT NULL,
     clinic_id INT NOT NULL,
-    duration INT NOT NULL, -- duração em minutos?
+    duration INT NOT NULL, -- duração em minutos
     appointment_status_id INT NOT NULL,
     service_type_id INT NOT NULL,
     notes TEXT,
@@ -89,23 +90,24 @@ CREATE TABLE appointment (
     FOREIGN KEY (patient_id) REFERENCES patient(id),
     FOREIGN KEY (appointment_status_id) REFERENCES appointment_status(id),
     FOREIGN KEY (service_type_id) REFERENCES service_type(id),
-    FOREIGN KEY (attended_by_user_id) REFERENCES user(id)
+    FOREIGN KEY (attended_by_user_id) REFERENCES users(id)
 );
 
-CREATE TABLE sale(
+CREATE TABLE sale (
     id SERIAL PRIMARY KEY,
     patient_id INT NOT NULL,
     appointment_id INT,
     sale_value NUMERIC(10,2) NOT NULL,
     sale_registered_by_user_id INT NOT NULL,
     sale_registered_at TIMESTAMP NOT NULL,
-    service_type_ID INT NOT NULL,
+    service_type_id INT NOT NULL,
     FOREIGN KEY (service_type_id) REFERENCES service_type(id),
     FOREIGN KEY (appointment_id) REFERENCES appointment(id),
-    FOREIGN KEY (patient_id) REFERENCES patient(id)
+    FOREIGN KEY (patient_id) REFERENCES patient(id),
+    FOREIGN KEY (sale_registered_by_user_id) REFERENCES users(id)
 );
 
--- message
+-- MESSAGE
 
 CREATE TABLE chat (
     id SERIAL PRIMARY KEY,

@@ -22,7 +22,7 @@ public class Patient {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 }
 

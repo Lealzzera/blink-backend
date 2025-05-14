@@ -11,11 +11,9 @@ import lombok.Setter;
 @Table(name = "week_day")
 public class WeekDay {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Long id;
 
-    @Column(name = "week_day_name", nullable = false, unique = true)
+    @Column(name = "week_day_name")
     private String name;
-
-
 }

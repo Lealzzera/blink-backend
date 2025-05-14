@@ -12,45 +12,45 @@ import java.time.LocalDateTime;
 public class Appointment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Long id;
 
-    @ManyToOne(optional = false) //Verificar se necessário
-    @Column(name = "patient_id")
+    @ManyToOne
+    @JoinColumn(name = "patient_id")
     private Patient patient;
 
-    @Column(name = "scheduled_time", nullable = false)
+    @Column(name = "scheduled_time")
     private LocalDateTime scheduledTime;
 
-    @ManyToOne(optional = false) //Verificar se necessário
-    @Column(name = "clinic_id")
+    @ManyToOne
+    @JoinColumn(name = "clinic_id")
     private Clinic clinic;
 
-    @Column(nullable = false)
-    private Integer duration; // minutos
+    @Column(name = "duration")
+    private Integer duration;
 
-    @ManyToOne(optional = false) //Verificar se necessário
-    @Column(name = "appointment_status_id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "appointment_status_id")
     private AppointmentStatus appointmentStatus;
 
-    @ManyToOne(optional = false) //Verificar se necessário
-    @Column(name = "service_type_id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "service_type_id")
     private ServiceType serviceType;
 
     @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
 
     @ManyToOne
-    @Column(name = "attended_by_user_id")
-    private int attendedByUser;
+    @JoinColumn(name = "attended_by_user_id")
+    private Users attendedByUser;
 
     @Column(name = "attended_at")
     private LocalDateTime attendedAt;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt; // = LocalDateTime.now();
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt; // = LocalDateTime.now();
+    private LocalDateTime updatedAt;
 
 }

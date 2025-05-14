@@ -1,6 +1,7 @@
 package com.blink.blink_backend.persistence.entity.appointment;
 
 
+import com.blink.blink_backend.persistence.entity.auth.Users;
 import com.blink.blink_backend.persistence.entity.clinic.Clinic;
 import com.blink.blink_backend.persistence.entity.clinic.ClinicConfiguration;
 import jakarta.persistence.*;
@@ -18,21 +19,21 @@ import java.time.LocalTime;
 public class ClinicAvailability {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "clinic_id", nullable = false)
+    @JoinColumn(name = "clinic_id")
     private Clinic clinic;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "week_day_id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "week_day_id")
     private WeekDay weekDay;
 
-    @Column(name = "open_time", nullable = false)
+    @Column(name = "open_time")
     private LocalTime openTime;
 
-    @Column(name = "close_time", nullable = false)
+    @Column(name = "close_time")
     private LocalTime closeTime;
 
     @Column(name = "lunch_start_time")
@@ -42,17 +43,15 @@ public class ClinicAvailability {
     private LocalTime lunchEndTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "updated_by_user_id", nullable = false)
-    private ClinicConfiguration updatedByUserId; //REVISAR
+    @JoinColumn(name = "updated_by_user_id")
+    private Users updatedByUserId;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt; // = LocalDateTime.now();
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt; // = LocalDateTime.now();
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
-    /*
-    @Column(name = "is_working_day", nullable = false)
-    private boolean isWorkingDay = true;
-    */
+    @Column(name = "is_working_day")
+    private Boolean isWorkingDay = true;
 }

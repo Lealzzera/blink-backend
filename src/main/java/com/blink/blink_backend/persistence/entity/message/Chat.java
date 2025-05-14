@@ -12,18 +12,18 @@ import lombok.Setter;
 @Table(name = "chat")
 public class Chat {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Long id;
 
-
-    @Column(name = "patient_id")
+    @ManyToOne
+    @JoinColumn(name = "patient_id")
     private Patient patient;
 
-
-    @Column(name = "clinic_id")
+    @ManyToOne
+    @JoinColumn(name = "clinic_id")
     private Clinic clinic;
 
-    @Column(name = "is_ai_answer", nullable = false)
+    @Column(name = "is_ai_answer")
     private boolean isAiAnswer = true;
 
 }
