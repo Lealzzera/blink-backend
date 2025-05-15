@@ -1,6 +1,6 @@
-package com.blink.blink_backend.persistence.entity.appointment;
+package com.blink.backend.persistence.entity.appointment;
 
-import com.blink.blink_backend.persistence.entity.auth.Users;
+import com.blink.backend.persistence.entity.auth.Users;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,8 +16,8 @@ import lombok.Setter;
 public class Sale {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "patient_id")

@@ -1,7 +1,7 @@
-package com.blink.blink_backend.persistence.entity.message;
+package com.blink.backend.persistence.entity.message;
 
-import com.blink.blink_backend.persistence.entity.appointment.Patient;
-import com.blink.blink_backend.persistence.entity.clinic.Clinic;
+import com.blink.backend.persistence.entity.appointment.Patient;
+import com.blink.backend.persistence.entity.clinic.Clinic;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,8 +12,8 @@ import lombok.Setter;
 @Table(name = "chat")
 public class Chat {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "patient_id")

@@ -1,4 +1,4 @@
-package com.blink.blink_backend.persistence.entity.clinic;
+package com.blink.backend.persistence.entity.clinic;
 
 
 import jakarta.persistence.*;
@@ -13,8 +13,8 @@ public class Clinic {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.TABLE)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     @Column(name = "clinic_name")
     private String clinicName;

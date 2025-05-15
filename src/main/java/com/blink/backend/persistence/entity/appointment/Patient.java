@@ -1,4 +1,4 @@
-package com.blink.blink_backend.persistence.entity.appointment;
+package com.blink.backend.persistence.entity.appointment;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 public class Patient {
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.TABLE)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     @Column(name = "name")
     private String name;

@@ -1,4 +1,4 @@
-package com.blink.blink_backend.persistence.entity.appointment;
+package com.blink.backend.persistence.entity.appointment;
 
 
 import jakarta.persistence.*;
@@ -11,8 +11,8 @@ import lombok.Setter;
 @Table(name = "service_type")
 public class ServiceType {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     @Column(name = "service_type")
     private String serviceType;

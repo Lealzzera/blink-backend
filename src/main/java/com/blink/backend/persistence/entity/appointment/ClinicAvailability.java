@@ -1,13 +1,11 @@
-package com.blink.blink_backend.persistence.entity.appointment;
+package com.blink.backend.persistence.entity.appointment;
 
 
-import com.blink.blink_backend.persistence.entity.auth.Users;
-import com.blink.blink_backend.persistence.entity.clinic.Clinic;
-import com.blink.blink_backend.persistence.entity.clinic.ClinicConfiguration;
+import com.blink.backend.persistence.entity.auth.Users;
+import com.blink.backend.persistence.entity.clinic.Clinic;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.security.core.userdetails.User;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -19,8 +17,8 @@ import java.time.LocalTime;
 public class ClinicAvailability {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "clinic_id")

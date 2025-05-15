@@ -1,12 +1,11 @@
-package com.blink.blink_backend.persistence.entity.clinic;
+package com.blink.backend.persistence.entity.clinic;
 
 
-import com.blink.blink_backend.persistence.entity.auth.Users;
+import com.blink.backend.persistence.entity.auth.Users;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Setter
@@ -17,8 +16,8 @@ public class ClinicConfiguration {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.TABLE)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     @OneToOne
     @JoinColumn(name = "clinic_id")

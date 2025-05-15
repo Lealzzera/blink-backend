@@ -1,4 +1,4 @@
-package com.blink.blink_backend.persistence.entity.auth;
+package com.blink.backend.persistence.entity.auth;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -21,8 +21,8 @@ import java.util.List;
 public class Users {
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.TABLE)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     @Column(name = "name")
     private String name;

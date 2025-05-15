@@ -1,7 +1,7 @@
-package com.blink.blink_backend.persistence.entity.auth;
+package com.blink.backend.persistence.entity.auth;
 
 
-import com.blink.blink_backend.persistence.entity.clinic.Clinic;
+import com.blink.backend.persistence.entity.clinic.Clinic;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

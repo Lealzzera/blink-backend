@@ -1,4 +1,4 @@
-package com.blink.blink_backend.persistence.entity.appointment;
+package com.blink.backend.persistence.entity.appointment;
 
 
 import jakarta.persistence.*;
@@ -11,8 +11,8 @@ import lombok.Setter;
 @Table(name = "week_day")
 public class WeekDay {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     @Column(name = "week_day_name")
     private String name;

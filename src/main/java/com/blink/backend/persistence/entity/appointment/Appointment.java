@@ -1,8 +1,7 @@
-package com.blink.blink_backend.persistence.entity.appointment;
+package com.blink.backend.persistence.entity.appointment;
 
-import com.blink.blink_backend.persistence.entity.auth.Users;
-import com.blink.blink_backend.persistence.entity.clinic.Clinic;
-import com.blink.blink_backend.persistence.entity.clinic.ClinicConfiguration;
+import com.blink.backend.persistence.entity.auth.Users;
+import com.blink.backend.persistence.entity.clinic.Clinic;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -12,8 +11,8 @@ import java.time.LocalDateTime;
 public class Appointment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "patient_id")

@@ -1,4 +1,4 @@
-package com.blink.blink_backend;
+package com.blink.backend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
