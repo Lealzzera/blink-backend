@@ -3,9 +3,11 @@ package com.blink.backend.persistence.entity.appointment;
 import com.blink.backend.persistence.entity.auth.Users;
 import com.blink.backend.persistence.entity.clinic.Clinic;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+@Getter
 @Entity
 @Table(name = "appointment")
 public class Appointment {
