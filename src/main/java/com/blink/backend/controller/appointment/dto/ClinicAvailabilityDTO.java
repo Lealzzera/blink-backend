@@ -3,7 +3,7 @@ package com.blink.backend.controller.appointment.dto;
 import com.blink.backend.persistence.entity.appointment.Appointment;
 import com.blink.backend.persistence.entity.appointment.ClinicAvailability;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,6 +11,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
 
 @Getter
 @Builder
@@ -30,6 +32,9 @@ public class ClinicAvailabilityDTO {
             LocalDate day,
             ClinicAvailability clinicAvailability,
             List<Appointment> appointments) {
+        if(isNull(clinicAvailability)){
+            return null;
+        }
         return ClinicAvailabilityDTO.builder()
                 .date(day)
                 .open(clinicAvailability.getOpenTime())

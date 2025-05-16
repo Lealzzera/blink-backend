@@ -15,12 +15,15 @@ public class AppointmentDTO {
     private LocalTime time;
     private String phone;
     private Integer duration;
+    private String status;
 
-    public static AppointmentDTO fromEntity(Appointment appointment){
+    public static AppointmentDTO fromEntity(Appointment appointment) {
         return AppointmentDTO.builder()
                 .name(appointment.getPatient().getName())
                 .phone(appointment.getPatient().getPhoneNumber())
                 .duration(appointment.getDuration())
+                .time(appointment.getScheduledTime().toLocalTime())
+                .status(appointment.getAppointmentStatus().getStatus())
                 .build();
 
     }
