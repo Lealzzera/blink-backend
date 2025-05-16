@@ -3,11 +3,13 @@ package com.blink.backend.controller.appointment;
 import com.blink.backend.controller.appointment.dto.AppointmentDTO;
 import com.blink.backend.controller.appointment.dto.ClinicAvailabilityDTO;
 import com.blink.backend.domain.service.ClinicAvailabilityService;
+import jakarta.websocket.server.PathParam;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
@@ -20,9 +22,12 @@ import java.util.List;
 public class AppointmentController {
 
     private final ClinicAvailabilityService clinicAvailabilityService;
+
     @GetMapping("availability")
-    public ResponseEntity<List<ClinicAvailabilityDTO>> getClinicAvailability() {
-        return ResponseEntity.ok(clinicAvailabilityService.getClinicAvailability());
+    public ResponseEntity<List<ClinicAvailabilityDTO>> getClinicAvailability(
+            @RequestParam("start_date") LocalDate startDate,
+            @RequestParam("end_date") LocalDate endDate) {
+        return ResponseEntity.ok(clinicAvailabilityService.getClinicAvailability(startDate, endDate));
     }
 
 }

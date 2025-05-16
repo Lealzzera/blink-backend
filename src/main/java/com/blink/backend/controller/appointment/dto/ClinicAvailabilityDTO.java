@@ -27,10 +27,11 @@ public class ClinicAvailabilityDTO {
     private List<AppointmentDTO> appointments;
 
     public static ClinicAvailabilityDTO fromEntity(
+            LocalDate day,
             ClinicAvailability clinicAvailability,
             List<Appointment> appointments) {
         return ClinicAvailabilityDTO.builder()
-                .date(LocalDate.now())
+                .date(day)
                 .open(clinicAvailability.getOpenTime())
                 .close(clinicAvailability.getCloseTime())
                 .breakStart(clinicAvailability.getLunchStartTime())
