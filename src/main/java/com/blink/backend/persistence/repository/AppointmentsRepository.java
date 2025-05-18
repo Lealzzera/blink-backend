@@ -9,10 +9,5 @@ import java.util.List;
 
 @Repository
 public interface AppointmentsRepository extends JpaRepository<Appointment, Integer> {
-
-    /*@Query(value = "SELECT a.* " +
-            "FROM Appointment a " +
-            "WHERE DATE(a.scheduled_time) =:date",
-            nativeQuery = true)*/
     List<Appointment> findByScheduledTimeBetween(LocalDateTime startDate, LocalDateTime endDate);
 }

@@ -2,7 +2,6 @@ package com.blink.backend.controller.appointment;
 
 import com.blink.backend.controller.appointment.dto.ClinicAvailabilityDTO;
 import com.blink.backend.domain.service.ClinicAvailabilityService;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
