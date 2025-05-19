@@ -1,5 +1,6 @@
 package com.blink.backend.domain.service;
 
+import com.blink.backend.controller.appointment.dto.AppointmentDTO;
 import com.blink.backend.persistence.entity.appointment.*;
 import com.blink.backend.persistence.entity.clinic.Clinic;
 import com.blink.backend.controller.appointment.dto.ClinicAvailabilityDTO;
@@ -69,5 +70,31 @@ public class ClinicAvailabilityService {
         appointmentsRepository.save(appointment1);
 
     }
+
+    public AppointmentDTO getAppointmentById(Integer id){
+
+        Appointment appointment = appointmentsRepository.findById(id)
+                .orElse(null);
+
+        return AppointmentDTO.fromEntity(appointment);
+
+    }
+
+    public void cancelAppointment (Integer id){
+
+        Appointment appointment = appointmentsRepository.findById(id).orElse(null);
+        AppointmentStatus canceledStatus = appointmentStatusRepository.findByStatusIgnoreCase("Cancelado");
+
+        if (canceledStatus == null){
+
+            throw new RuntimeException("Status 'Cancelado' não encontrado");
+
+        }
+
+        appointment.setAppointmentStatus(canceledStatus);
+        appointmentsRepository.save(appointment);
+
+    }
+
 
 }

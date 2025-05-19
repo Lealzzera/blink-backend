@@ -1,5 +1,6 @@
 package com.blink.backend.controller.appointment;
 
+import com.blink.backend.controller.appointment.dto.AppointmentDTO;
 import com.blink.backend.controller.appointment.dto.ClinicAvailabilityDTO;
 import com.blink.backend.controller.appointment.dto.CreateAppointmentDTO;
 import com.blink.backend.domain.service.ClinicAvailabilityService;
@@ -33,6 +34,22 @@ public class AppointmentController {
 
         clinicAvailabilityService.saveAppointment(createAppointmentDTO);
          return ResponseEntity.noContent().build();
+
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<AppointmentDTO> getAppointmentById(@PathVariable Integer id){
+
+        return ResponseEntity.ok(clinicAvailabilityService.getAppointmentById(id));
+
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> cancelAppointment (@PathVariable Integer id){
+
+        clinicAvailabilityService.cancelAppointment(id);
+
+        return ResponseEntity.noContent().build();
 
     }
 
