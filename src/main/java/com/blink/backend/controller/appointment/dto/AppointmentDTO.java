@@ -2,6 +2,8 @@ package com.blink.backend.controller.appointment.dto;
 
 import com.blink.backend.persistence.entity.appointment.Appointment;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -9,6 +11,7 @@ import java.time.LocalTime;
 
 @Getter
 @Builder
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class AppointmentDTO {
     private String name;
     @JsonFormat(pattern = "HH:mm")
