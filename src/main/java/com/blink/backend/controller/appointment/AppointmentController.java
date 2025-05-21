@@ -1,14 +1,13 @@
 package com.blink.backend.controller.appointment;
 
 import com.blink.backend.controller.appointment.dto.ClinicAvailabilityDTO;
+import com.blink.backend.controller.appointment.dto.CreateAppointmentDTO;
 import com.blink.backend.domain.service.ClinicAvailabilityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -27,6 +26,15 @@ public class AppointmentController {
             @RequestParam(value = "end_date", required = false) LocalDate endDate) {
         endDate = isNull(endDate) ? startDate.plusDays(7) : endDate;
         return ResponseEntity.ok(clinicAvailabilityService.getClinicAvailability(startDate, endDate));
+    }
+
+    @PostMapping
+    public ResponseEntity createAppointment(
+            @RequestBody CreateAppointmentDTO createAppointmentDTO){
+
+        clinicAvailabilityService.saveAppointment(createAppointmentDTO);
+         return ResponseEntity.created(URI.create("/")).build();
+
     }
 
 }
