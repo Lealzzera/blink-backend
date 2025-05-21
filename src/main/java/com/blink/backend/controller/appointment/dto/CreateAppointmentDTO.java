@@ -25,8 +25,4 @@ public class CreateAppointmentDTO {
     private LocalDateTime scheduledTime;
     private String notes;
 
-
-
-
-
 }

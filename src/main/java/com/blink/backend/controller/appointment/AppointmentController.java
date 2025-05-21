@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class AppointmentController {
             @RequestBody CreateAppointmentDTO createAppointmentDTO){
 
         clinicAvailabilityService.saveAppointment(createAppointmentDTO);
-         return ResponseEntity.noContent().build();
+         return ResponseEntity.created(URI.create("/")).build();
 
     }
 
