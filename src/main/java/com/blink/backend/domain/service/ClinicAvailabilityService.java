@@ -62,7 +62,7 @@ public class ClinicAvailabilityService {
                 .clinic(clinic)
                 .serviceType(serviceType)
                 .duration(30)
-                .appointmentStatus(appointmentStatus) // Criar objeto com objeto de agendado.
+                .appointmentStatus(appointmentStatus)
                 .notes(appointment.getNotes())
                 .build();
 
