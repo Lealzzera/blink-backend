@@ -54,6 +54,7 @@ INSERT INTO patient (name, phone_number) VALUES ('Maria Oliveira', '11988887777'
 
 -- APPOINTMENT_STATUS
 INSERT INTO appointment_status (status) VALUES ('Agendado');
+INSERT INTO appointment_status (status) VALUES ('Cancelado');
 
 -- SERVICE_TYPE
 INSERT INTO service_type (service_type) VALUES ('Consulta');

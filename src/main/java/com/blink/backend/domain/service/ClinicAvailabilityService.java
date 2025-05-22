@@ -1,10 +1,20 @@
 package com.blink.backend.domain.service;
 
-import com.blink.backend.persistence.entity.appointment.*;
-import com.blink.backend.persistence.entity.clinic.Clinic;
+import com.blink.backend.controller.appointment.dto.AppointmentDTO;
 import com.blink.backend.controller.appointment.dto.ClinicAvailabilityDTO;
 import com.blink.backend.controller.appointment.dto.CreateAppointmentDTO;
-import com.blink.backend.persistence.repository.*;
+import com.blink.backend.persistence.entity.appointment.Appointment;
+import com.blink.backend.persistence.entity.appointment.AppointmentStatus;
+import com.blink.backend.persistence.entity.appointment.ClinicAvailability;
+import com.blink.backend.persistence.entity.appointment.Patient;
+import com.blink.backend.persistence.entity.appointment.ServiceType;
+import com.blink.backend.persistence.entity.clinic.Clinic;
+import com.blink.backend.persistence.repository.AppointmentStatusRepository;
+import com.blink.backend.persistence.repository.AppointmentsRepository;
+import com.blink.backend.persistence.repository.ClinicAvailabilityRepository;
+import com.blink.backend.persistence.repository.ClinicRepository;
+import com.blink.backend.persistence.repository.PatientRepository;
+import com.blink.backend.persistence.repository.ServiceTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -71,5 +81,30 @@ public class ClinicAvailabilityService {
         appointmentsRepository.save(appointment1);
 
     }
+
+    public Appointment getAppointmentDetailsById(Integer id){
+        Appointment appointment = appointmentsRepository.findById(id)
+                .orElse(null);
+
+        return appointment;
+
+    }
+
+    public void cancelAppointment (Integer id){
+
+        Appointment appointment = appointmentsRepository.findById(id).orElse(null);
+        AppointmentStatus canceledStatus = appointmentStatusRepository.findByStatusIgnoreCase("Cancelado");
+
+        if (canceledStatus == null){
+
+            throw new RuntimeException("Status 'Cancelado' não encontrado");
+
+        }
+
+        appointment.setAppointmentStatus(canceledStatus);
+        appointmentsRepository.save(appointment);
+
+    }
+
 
 }
