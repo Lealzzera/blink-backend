@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class AppointmentController {
             @RequestBody CreateAppointmentDTO createAppointmentDTO) {
         clinicAvailabilityService.saveAppointment(createAppointmentDTO);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.created(URI.create("/")).build();
     }
 
     @GetMapping("{id}/details")

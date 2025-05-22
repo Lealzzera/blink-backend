@@ -58,7 +58,9 @@ public class ClinicAvailabilityService {
 
     public void saveAppointment (CreateAppointmentDTO appointment){
 
-        Patient patient = patientRepository.findById(1).orElse(null);
+
+        Patient patient = patientRepository.findByPhoneNumber(appointment.getPatientNumber());
+
         Clinic clinic = clinicRepository
                 .findById(appointment.getClinicId()).orElse(null);
         ServiceType serviceType = serviceTypeRepository
@@ -72,7 +74,7 @@ public class ClinicAvailabilityService {
                 .clinic(clinic)
                 .serviceType(serviceType)
                 .duration(30)
-                .appointmentStatus(appointmentStatus) // Criar objeto com objeto de agendado.
+                .appointmentStatus(appointmentStatus)
                 .notes(appointment.getNotes())
                 .build();
 
