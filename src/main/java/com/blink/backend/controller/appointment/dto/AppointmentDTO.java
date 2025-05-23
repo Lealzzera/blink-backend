@@ -6,13 +6,16 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalTime;
 
+@Setter
 @Getter
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class AppointmentDTO {
+    private Integer id;
     private String name;
     @JsonFormat(pattern = "HH:mm")
     private LocalTime time;
@@ -22,6 +25,7 @@ public class AppointmentDTO {
 
     public static AppointmentDTO fromEntity(Appointment appointment) {
         return AppointmentDTO.builder()
+                .id(appointment.getId())
                 .name(appointment.getPatient().getName())
                 .phone(appointment.getPatient().getPhoneNumber())
                 .duration(appointment.getDuration())
