@@ -53,9 +53,9 @@ public class AppointmentController {
     }
 
     @PatchMapping("status")
-    public ResponseEntity<Void> updateAppointmentStatus(@RequestBody UpdateAppointmentStatusDTO dto){
+    public ResponseEntity<Void> updateAppointmentStatus(@RequestBody UpdateAppointmentStatusDTO updateStatus){
 
-        clinicAvailabilityService.updateAppointmentStatus(dto);
+        clinicAvailabilityService.updateAppointmentStatus(updateStatus);
 
         return ResponseEntity.noContent().build();
 

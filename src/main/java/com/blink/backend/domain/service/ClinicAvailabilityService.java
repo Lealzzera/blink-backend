@@ -107,10 +107,10 @@ public class ClinicAvailabilityService {
 
     }
 
-    public void updateAppointmentStatus(UpdateAppointmentStatusDTO dto) {
+    public void updateAppointmentStatus(UpdateAppointmentStatusDTO updateStatus) {
 
-        Appointment appointment = appointmentsRepository.findById(dto.getAppointmentId()).orElse(null);
-        AppointmentStatus newStatus = appointmentStatusRepository.findByStatusIgnoreCase(dto.getNewStatus());
+        Appointment appointment = appointmentsRepository.findById(updateStatus.getAppointmentId()).orElse(null);
+        AppointmentStatus newStatus = appointmentStatusRepository.findByStatusIgnoreCase(updateStatus.getNewStatus());
 
         if (newStatus == null) {
             throw new RuntimeException("Status não encontrado");
