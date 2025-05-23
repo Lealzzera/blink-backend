@@ -40,9 +40,9 @@ public class AppointmentController {
     @PostMapping
     public ResponseEntity createAppointment(
             @RequestBody CreateAppointmentDTO createAppointmentDTO) {
-        clinicAvailabilityService.saveAppointment(createAppointmentDTO);
+        Appointment appointment = clinicAvailabilityService.saveAppointment(createAppointmentDTO);
 
-        return ResponseEntity.created(URI.create("/")).build();
+        return ResponseEntity.created(URI.create(appointment.getId().toString())).build();
     }
 
     @GetMapping("{id}/details")

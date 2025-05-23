@@ -56,7 +56,7 @@ public class ClinicAvailabilityService {
     }
 
 
-    public void saveAppointment (CreateAppointmentDTO appointment){
+    public Appointment saveAppointment (CreateAppointmentDTO appointment){
 
 
         Patient patient = patientRepository.findByPhoneNumber(appointment.getPatientNumber());
@@ -78,7 +78,7 @@ public class ClinicAvailabilityService {
                 .notes(appointment.getNotes())
                 .build();
 
-        appointmentsRepository.save(appointment1);
+        return appointmentsRepository.save(appointment1);
 
     }
 
