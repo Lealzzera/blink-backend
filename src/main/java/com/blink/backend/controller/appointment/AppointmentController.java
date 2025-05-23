@@ -2,18 +2,12 @@ package com.blink.backend.controller.appointment;
 
 import com.blink.backend.controller.appointment.dto.ClinicAvailabilityDTO;
 import com.blink.backend.controller.appointment.dto.CreateAppointmentDTO;
+import com.blink.backend.controller.appointment.dto.UpdateAppointmentStatusDTO;
 import com.blink.backend.domain.service.ClinicAvailabilityService;
 import com.blink.backend.persistence.entity.appointment.Appointment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -57,5 +51,16 @@ public class AppointmentController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("status")
+    public ResponseEntity<Void> updateAppointmentStatus(@RequestBody UpdateAppointmentStatusDTO dto){
+
+        clinicAvailabilityService.updateAppointmentStatus(dto);
+
+        return ResponseEntity.noContent().build();
+
+    }
+
+
 
 }
