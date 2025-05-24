@@ -1,6 +1,5 @@
 package com.blink.backend.domain.service;
 
-import com.blink.backend.controller.appointment.dto.AppointmentDTO;
 import com.blink.backend.controller.appointment.dto.ClinicAvailabilityDTO;
 import com.blink.backend.controller.appointment.dto.CreateAppointmentDTO;
 import com.blink.backend.controller.appointment.dto.UpdateAppointmentStatusDTO;
@@ -10,7 +9,6 @@ import com.blink.backend.persistence.entity.appointment.ClinicAvailability;
 import com.blink.backend.persistence.entity.appointment.Patient;
 import com.blink.backend.persistence.entity.appointment.ServiceType;
 import com.blink.backend.persistence.entity.clinic.Clinic;
-import com.blink.backend.persistence.repository.AppointmentStatusRepository;
 import com.blink.backend.persistence.repository.AppointmentsRepository;
 import com.blink.backend.persistence.repository.ClinicAvailabilityRepository;
 import com.blink.backend.persistence.repository.ClinicRepository;
@@ -22,6 +20,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+
+import static com.blink.backend.persistence.entity.appointment.AppointmentStatus.AGENDADO;
+import static com.blink.backend.persistence.entity.appointment.AppointmentStatus.CANCELADO;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +33,6 @@ public class ClinicAvailabilityService {
     private final ClinicRepository clinicRepository;
     private final PatientRepository patientRepository;
     private final ServiceTypeRepository serviceTypeRepository;
-    private final AppointmentStatusRepository appointmentStatusRepository;
 
 
     public List<ClinicAvailabilityDTO> getClinicAvailability(
@@ -49,15 +50,16 @@ public class ClinicAvailabilityService {
         ClinicAvailability clinicAvailability = clinicAvailabilityRepository
                 .findByWeekDayNameAndIsWorkingDayTrue(date.getDayOfWeek().name());
         List<Appointment> appointments = appointmentsRepository
-                .findByScheduledTimeBetween(
+                .findByScheduledTimeBetweenAndAppointmentStatusIsNot(
                         date.atStartOfDay(),
-                        date.plusDays(1).atStartOfDay());
+                        date.plusDays(1).atStartOfDay(),
+                        CANCELADO);
 
         return ClinicAvailabilityDTO.fromEntity(date, clinicAvailability, appointments);
     }
 
 
-    public Appointment saveAppointment (CreateAppointmentDTO appointment){
+    public Appointment saveAppointment(CreateAppointmentDTO appointment) {
 
 
         Patient patient = patientRepository.findByPhoneNumber(appointment.getPatientNumber());
@@ -66,8 +68,6 @@ public class ClinicAvailabilityService {
                 .findById(appointment.getClinicId()).orElse(null);
         ServiceType serviceType = serviceTypeRepository
                 .findById(appointment.getServiceTypeId()).orElse(null);
-        AppointmentStatus appointmentStatus = appointmentStatusRepository
-                .findById(1).orElse(null);
 
         Appointment appointment1 = Appointment.builder()
                 .patient(patient)
@@ -75,7 +75,7 @@ public class ClinicAvailabilityService {
                 .clinic(clinic)
                 .serviceType(serviceType)
                 .duration(30)
-                .appointmentStatus(appointmentStatus)
+                .appointmentStatus(AGENDADO)
                 .notes(appointment.getNotes())
                 .build();
 
@@ -83,41 +83,31 @@ public class ClinicAvailabilityService {
 
     }
 
-    public Appointment getAppointmentDetailsById(Integer id){
-        Appointment appointment = appointmentsRepository.findById(id)
+    public Appointment getAppointmentDetailsById(Integer id) {
+        return appointmentsRepository.findById(id)
                 .orElse(null);
-
-        return appointment;
-
     }
 
-    public void cancelAppointment (Integer id){
-
-        Appointment appointment = appointmentsRepository.findById(id).orElse(null);
-        AppointmentStatus canceledStatus = appointmentStatusRepository.findByStatusIgnoreCase("Cancelado");
-
-        if (canceledStatus == null){
-
-            throw new RuntimeException("Status 'Cancelado' não encontrado");
-
+    public void cancelAppointment(Integer id) {
+        Optional<Appointment> appointmentOptional = appointmentsRepository.findById(id);
+        if (appointmentOptional.isEmpty()) {
+            throw new RuntimeException("Agendamento não encontrado");
         }
 
-        appointment.setAppointmentStatus(canceledStatus);
-        appointmentsRepository.save(appointment);
-
+        appointmentOptional.get().setAppointmentStatus(CANCELADO);
+        appointmentsRepository.save(appointmentOptional.get());
     }
 
     public void updateAppointmentStatus(UpdateAppointmentStatusDTO updateStatus) {
 
-        Appointment appointment = appointmentsRepository.findById(updateStatus.getAppointmentId()).orElse(null);
-        AppointmentStatus newStatus = appointmentStatusRepository.findByStatusIgnoreCase(updateStatus.getNewStatus());
+        Optional<Appointment> appointmentOptional = appointmentsRepository.findById(updateStatus.getAppointmentId());
 
-        if (newStatus == null) {
-            throw new RuntimeException("Status não encontrado");
+        if (appointmentOptional.isEmpty()) {
+            throw new RuntimeException("Agendamento não encontrado");
         }
 
-        appointment.setAppointmentStatus(newStatus);
-        appointmentsRepository.save(appointment);
+        appointmentOptional.get().setAppointmentStatus(AppointmentStatus.valueOf(updateStatus.getNewStatus().toUpperCase()));
+        appointmentsRepository.save(appointmentOptional.get());
 
 
     }

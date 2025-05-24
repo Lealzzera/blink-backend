@@ -30,7 +30,7 @@ public class AppointmentDTO {
                 .phone(appointment.getPatient().getPhoneNumber())
                 .duration(appointment.getDuration())
                 .time(appointment.getScheduledTime().toLocalTime())
-                .status(appointment.getAppointmentStatus().getStatus())
+                .status(appointment.getAppointmentStatus().name())
                 .build();
 
     }

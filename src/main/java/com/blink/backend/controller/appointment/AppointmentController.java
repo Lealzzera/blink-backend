@@ -52,7 +52,7 @@ public class AppointmentController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("status")
+    @PutMapping("status")
     public ResponseEntity<Void> updateAppointmentStatus(@RequestBody UpdateAppointmentStatusDTO updateStatus){
 
         clinicAvailabilityService.updateAppointmentStatus(updateStatus);

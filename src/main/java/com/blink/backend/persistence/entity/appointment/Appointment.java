@@ -4,6 +4,8 @@ import com.blink.backend.persistence.entity.auth.Users;
 import com.blink.backend.persistence.entity.clinic.Clinic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -46,8 +48,8 @@ public class Appointment {
     @Column(name = "duration")
     private Integer duration;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "appointment_status_id")
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private AppointmentStatus appointmentStatus;
 
     @ManyToOne(fetch = FetchType.EAGER)
