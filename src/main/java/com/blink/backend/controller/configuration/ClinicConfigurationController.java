@@ -19,7 +19,7 @@ public class ClinicConfigurationController {
 
     private ConfigurationAvailabilityService configurationAvailabilityService;
 
-    @PutMapping("/configurations/availability")
+    @PutMapping("availability")
     public ResponseEntity<Void> updateAvailabilityConfiguration(@RequestBody List<AvailabilityConfigurationDTO> updateAvailabilityConfiguration){
 
         configurationAvailabilityService.updateAvailabilityConfiguration(updateAvailabilityConfiguration);
