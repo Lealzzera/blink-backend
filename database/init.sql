@@ -34,17 +34,12 @@ CREATE TABLE clinic_configuration (
 
 -- APPOINTMENT
 
-CREATE TABLE week_day (
-    id SERIAL PRIMARY KEY,
-    week_day_name VARCHAR(20) NOT NULL
-);
-
 CREATE TABLE clinic_availability (
     id SERIAL PRIMARY KEY,
     clinic_id INT NOT NULL,
-    week_day_id INT NOT NULL,
-    open_time TIME NOT NULL,
-    close_time TIME NOT NULL,
+    week_day VARCHAR(20) NOT NULL,
+    open_time TIME,
+    close_time TIME,
     lunch_start_time TIME,
     lunch_end_time TIME,
     updated_by_user_id INT NOT NULL,
@@ -52,7 +47,6 @@ CREATE TABLE clinic_availability (
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
     is_working_day BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (clinic_id) REFERENCES clinic(id),
-    FOREIGN KEY (week_day_id) REFERENCES week_day(id),
     FOREIGN KEY (updated_by_user_id) REFERENCES users(id)
 );
 
@@ -63,10 +57,6 @@ CREATE TABLE patient (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE TABLE appointment_status (
-    id SERIAL PRIMARY KEY,
-    status VARCHAR(50) NOT NULL
-);
 
 CREATE TABLE service_type (
     id SERIAL PRIMARY KEY,
@@ -79,7 +69,7 @@ CREATE TABLE appointment (
     scheduled_time TIMESTAMP NOT NULL,
     clinic_id INT NOT NULL,
     duration INT NOT NULL, -- duração em minutos
-    appointment_status_id INT NOT NULL,
+    status VARCHAR(50) NOT NULL,
     service_type_id INT NOT NULL,
     notes TEXT,
     attended_by_user_id INT,
@@ -88,7 +78,6 @@ CREATE TABLE appointment (
     updated_at TIMESTAMP DEFAULT NOW(),
     FOREIGN KEY (clinic_id) REFERENCES clinic(id),
     FOREIGN KEY (patient_id) REFERENCES patient(id),
-    FOREIGN KEY (appointment_status_id) REFERENCES appointment_status(id),
     FOREIGN KEY (service_type_id) REFERENCES service_type(id),
     FOREIGN KEY (attended_by_user_id) REFERENCES users(id)
 );

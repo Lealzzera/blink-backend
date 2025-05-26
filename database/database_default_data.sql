@@ -14,57 +14,37 @@ INSERT INTO clinic_configuration (
     1, '11999999999', '30 minutos', 30, FALSE, 1
 );
 
--- WEEK_DAY
-INSERT INTO week_day (week_day_name) VALUES
-('MONDAY'),
-('TUESDAY'),
-('WEDNESDAY'),
-('THURSDAY'),
-('FRIDAY'),
-('SATURDAY'),
-('SUNDAY');
-
 -- clinic_availability
 INSERT INTO clinic_availability (
     clinic_id,
-    week_day_id,
+    week_day,
     open_time,
     close_time,
     lunch_start_time,
     lunch_end_time,
     updated_by_user_id,
     is_working_day
-)
-SELECT
-    1 AS clinic_id,          -- ID da clínica existente
-    wd.id AS week_day_id,
-    '08:00:00' AS open_time,
-    '18:00:00' AS close_time,
-    '12:00:00' AS lunch_start_time,
-    '13:00:00' AS lunch_end_time,
-    1 AS updated_by_user_id, -- ID do usuário que atualizou
-    CASE
-        WHEN wd.week_day_name IN ('SATURDAY', 'SUNDAY') THEN FALSE
-        ELSE TRUE
-    END AS is_working_day
-FROM week_day wd;
+) VALUES
+(1, 'SEGUNDA', '08:00:00', '18:00:00', '12:00:00', '13:00:00', 1, TRUE),
+(1, 'TERCA', '08:00:00', '18:00:00', '12:00:00', '13:00:00', 1, TRUE),
+(1, 'QUARTA', '08:00:00', '18:00:00', '12:00:00', '13:00:00', 1, TRUE),
+(1, 'QUINTA', '08:00:00', '18:00:00', '12:00:00', '13:00:00', 1, TRUE),
+(1, 'SEXTA', '08:00:00', '18:00:00', '12:00:00', '13:00:00', 1, TRUE),
+(1, 'SABADO', '08:00:00', '12:00:00', NULL, NULL, 1, FALSE),
+(1, 'DOMINGO', NULL, NULL, NULL, NULL, 1, FALSE);
 
 -- PATIENT
-INSERT INTO patient (name, phone_number) VALUES ('Maria Oliveira', '11988887777');
+INSERT INTO patient (name, phone_number) VALUES ('João do Brás', '11911112222');
 
--- APPOINTMENT_STATUS
-INSERT INTO appointment_status (status) VALUES ('Agendado');
-INSERT INTO appointment_status (status) VALUES ('Cancelado');
-INSERT INTO appointment_status (status) VALUES ('Compareceu'), ('Não Compareceu');
 
 -- SERVICE_TYPE
 INSERT INTO service_type (service_type) VALUES ('Consulta');
 
 -- APPOINTMENT
 INSERT INTO appointment (
-    patient_id, scheduled_time, clinic_id, duration, appointment_status_id, service_type_id, notes, attended_by_user_id, attended_at
+    patient_id, scheduled_time, clinic_id, duration, service_type_id, notes, attended_by_user_id, attended_at, status
 ) VALUES (
-    1, NOW() + interval '3 day', 1, 30, 1, 1, 'Paciente prefere atendimento pela manhã', 1, NOW()
+    1, NOW() + interval '3 day', 1, 30, 1, 'Paciente prefere atendimento pela manhã', 1, NOW(), 'AGENDADO'
 );
 
 -- SALE
