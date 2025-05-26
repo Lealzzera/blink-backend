@@ -1,24 +1,29 @@
 package com.blink.backend.persistence.entity.appointment;
 
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
-@Setter
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.Arrays;
+
 @Getter
-@Entity
-@Table(name = "week_day")
-public class WeekDay {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+@AllArgsConstructor
+public enum WeekDay {
+    SEGUNDA(DayOfWeek.MONDAY),
+    TERCA(DayOfWeek.TUESDAY),
+    QUARTA(DayOfWeek.WEDNESDAY),
+    QUINTA(DayOfWeek.THURSDAY),
+    SEXTA(DayOfWeek.FRIDAY),
+    SABADO(DayOfWeek.SATURDAY),
+    DOMINGO(DayOfWeek.SUNDAY);
 
-    @Column(name = "week_day_name")
-    private String name;
+    private final DayOfWeek weekDay;
+
+    public static WeekDay fromDate(LocalDate date) {
+        return Arrays.stream(WeekDay.values())
+                .filter(dayWeek -> date.getDayOfWeek().equals(dayWeek.getWeekDay()))
+                .findFirst()
+                .orElseThrow();
+    }
 }

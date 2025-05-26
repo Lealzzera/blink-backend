@@ -72,4 +72,8 @@ public class Appointment {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    public boolean isNotCancelled(){
+        return !AppointmentStatus.CANCELADO.equals(appointmentStatus);
+    }
+
 }

@@ -10,5 +10,5 @@ import java.util.List;
 
 @Repository
 public interface AppointmentsRepository extends JpaRepository<Appointment, Integer> {
-    List<Appointment> findByScheduledTimeBetweenAndAppointmentStatusIsNot(LocalDateTime startDate, LocalDateTime endDate, AppointmentStatus status);
+    List<Appointment> findByScheduledTimeBetween(LocalDateTime startDate, LocalDateTime endDate);
 }

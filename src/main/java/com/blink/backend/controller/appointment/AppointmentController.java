@@ -25,14 +25,15 @@ public class AppointmentController {
     @GetMapping("availability")
     public ResponseEntity<List<ClinicAvailabilityDTO>> getClinicAvailability(
             @RequestParam("start_date") LocalDate startDate,
-            @RequestParam(value = "end_date", required = false) LocalDate endDate) {
+            @RequestParam(value = "end_date", required = false) LocalDate endDate,
+            @RequestParam(value = "hide_cancelled", required = false, defaultValue = "true") Boolean hideCancelled) {
         endDate = isNull(endDate) ? startDate.plusDays(7) : endDate;
 
-        return ResponseEntity.ok(clinicAvailabilityService.getClinicAvailability(startDate, endDate));
+        return ResponseEntity.ok(clinicAvailabilityService.getClinicAvailability(startDate, endDate, hideCancelled));
     }
 
     @PostMapping
-    public ResponseEntity createAppointment(
+    public ResponseEntity<Void> createAppointment(
             @RequestBody CreateAppointmentDTO createAppointmentDTO) {
         Appointment appointment = clinicAvailabilityService.saveAppointment(createAppointmentDTO);
 
@@ -53,14 +54,11 @@ public class AppointmentController {
     }
 
     @PutMapping("status")
-    public ResponseEntity<Void> updateAppointmentStatus(@RequestBody UpdateAppointmentStatusDTO updateStatus){
-
+    public ResponseEntity<Void> updateAppointmentStatus(@RequestBody UpdateAppointmentStatusDTO updateStatus) {
         clinicAvailabilityService.updateAppointmentStatus(updateStatus);
 
         return ResponseEntity.noContent().build();
-
     }
-
 
 
 }

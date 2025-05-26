@@ -8,6 +8,7 @@ import com.blink.backend.persistence.entity.appointment.AppointmentStatus;
 import com.blink.backend.persistence.entity.appointment.ClinicAvailability;
 import com.blink.backend.persistence.entity.appointment.Patient;
 import com.blink.backend.persistence.entity.appointment.ServiceType;
+import com.blink.backend.persistence.entity.appointment.WeekDay;
 import com.blink.backend.persistence.entity.clinic.Clinic;
 import com.blink.backend.persistence.repository.AppointmentsRepository;
 import com.blink.backend.persistence.repository.ClinicAvailabilityRepository;
@@ -37,30 +38,35 @@ public class ClinicAvailabilityService {
 
     public List<ClinicAvailabilityDTO> getClinicAvailability(
             LocalDate startDate,
-            LocalDate endDate) {
+            LocalDate endDate,
+            Boolean hideCancelled) {
 
         return startDate
                 .datesUntil(endDate.plusDays(1))
-                .map(this::fromEntity)
+                .map(date -> this.fromEntity(date, hideCancelled))
                 .filter(Objects::nonNull)
                 .toList();
     }
 
-    private ClinicAvailabilityDTO fromEntity(LocalDate date) {
+    private ClinicAvailabilityDTO fromEntity(LocalDate date, Boolean hideCancelled) {
         ClinicAvailability clinicAvailability = clinicAvailabilityRepository
-                .findByWeekDayNameAndIsWorkingDayTrue(date.getDayOfWeek().name());
+                .findByWeekDayAndIsWorkingDayTrue(WeekDay.fromDate(date));
         List<Appointment> appointments = appointmentsRepository
-                .findByScheduledTimeBetweenAndAppointmentStatusIsNot(
+                .findByScheduledTimeBetween(
                         date.atStartOfDay(),
-                        date.plusDays(1).atStartOfDay(),
-                        CANCELADO);
+                        date.plusDays(1).atStartOfDay());
+
+        if (hideCancelled) {
+            appointments = appointments.stream()
+                    .filter(Appointment::isNotCancelled)
+                    .toList();
+        }
 
         return ClinicAvailabilityDTO.fromEntity(date, clinicAvailability, appointments);
     }
 
 
     public Appointment saveAppointment(CreateAppointmentDTO appointment) {
-
 
         Patient patient = patientRepository.findByPhoneNumber(appointment.getPatientNumber());
 
@@ -108,8 +114,6 @@ public class ClinicAvailabilityService {
 
         appointmentOptional.get().setAppointmentStatus(AppointmentStatus.valueOf(updateStatus.getNewStatus().toUpperCase()));
         appointmentsRepository.save(appointmentOptional.get());
-
-
     }
 
 
