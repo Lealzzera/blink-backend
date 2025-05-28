@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ClinicAvailabilityRepository extends JpaRepository<ClinicAvailability, Integer> {
     ClinicAvailability findByWeekDayAndIsWorkingDayTrue(WeekDay weekDay);
+    ClinicAvailability findByClinicIdAndWeekDayAndIsWorkingDayTrue(Integer id, WeekDay weekDay);
+
 }
