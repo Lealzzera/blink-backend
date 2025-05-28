@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping("configurations")
 public class ClinicConfigurationController {
 
-    private ConfigurationAvailabilityService configurationAvailabilityService;
+    private final ConfigurationAvailabilityService configurationAvailabilityService;
 
     @PutMapping("availability")
     public ResponseEntity<Void> updateAvailabilityConfiguration(@RequestBody List<AvailabilityConfigurationDTO> updateAvailabilityConfiguration){
