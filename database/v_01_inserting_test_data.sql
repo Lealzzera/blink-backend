@@ -9,9 +9,9 @@ INSERT INTO user_clinic (user_id, clinic_id, role) VALUES (1, 1, 'Administrador'
 
 -- CLINIC_CONFIGURATION
 INSERT INTO clinic_configuration (
-    clinic_id, whats_number, appointment_duration, default_appointment_duration, allow_overbooking, updated_by_user_id
+    clinic_id, whats_number, appointment_duration, allow_overbooking, updated_by_user_id
 ) VALUES (
-    1, '11999999999', '30 minutos', 30, FALSE, 1
+    1, '11999999999', 30, FALSE, 1
 );
 
 -- clinic_availability

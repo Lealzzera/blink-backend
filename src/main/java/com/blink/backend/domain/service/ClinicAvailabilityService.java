@@ -5,6 +5,7 @@ import com.blink.backend.controller.appointment.dto.CreateAppointmentDTO;
 import com.blink.backend.controller.appointment.dto.UpdateAppointmentStatusDTO;
 import com.blink.backend.persistence.entity.appointment.*;
 import com.blink.backend.persistence.entity.clinic.Clinic;
+import com.blink.backend.persistence.entity.clinic.ClinicConfiguration;
 import com.blink.backend.persistence.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class ClinicAvailabilityService {
     private final ClinicRepository clinicRepository;
     private final PatientRepository patientRepository;
     private final ServiceTypeRepository serviceTypeRepository;
+    private final ClinicConfigurationRepository clinicConfigurationRepository;
 
 
     public List<ClinicAvailabilityDTO> getClinicAvailability(
@@ -59,7 +61,10 @@ public class ClinicAvailabilityService {
 
     public Appointment saveAppointment(CreateAppointmentDTO appointment) {
 
-        Patient patient = patientRepository.findByPhoneNumber(appointment.getPatientNumber());
+        ClinicConfiguration clinicConfiguration = clinicConfigurationRepository
+                .findByClinicId(appointment.getClinicId());
+        Patient patient = patientRepository
+                .findByPhoneNumber(appointment.getPatientNumber());
 
         Clinic clinic = clinicRepository
                 .findById(appointment.getClinicId()).orElse(null);
@@ -71,7 +76,7 @@ public class ClinicAvailabilityService {
                 .scheduledTime(appointment.getScheduledTime())
                 .clinic(clinic)
                 .serviceType(serviceType)
-                .duration(30)
+                .duration(clinicConfiguration.getAppointmentDuration())
                 .appointmentStatus(AGENDADO)
                 .notes(appointment.getNotes())
                 .build();

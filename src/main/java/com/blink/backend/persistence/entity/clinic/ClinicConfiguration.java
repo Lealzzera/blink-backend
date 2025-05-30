@@ -27,10 +27,7 @@ public class ClinicConfiguration {
     private String whatsNumber;
 
     @Column(name = "appointment_duration")
-    private String appointmentDuration;
-
-    @Column(name = "default_appointment_duration")
-    private Integer defaultAppointmentDuration;
+    private Integer appointmentDuration;
 
     @Column(name = "allow_overbooking")
     private Boolean allowOverbooking;

@@ -1,9 +1,12 @@
 package com.blink.backend.domain.service;
 
+import com.blink.backend.controller.configuration.dto.AppointmentConfigurationDTO;
 import com.blink.backend.controller.configuration.dto.AvailabilityConfigurationDTO;
 import com.blink.backend.persistence.entity.appointment.ClinicAvailability;
 import com.blink.backend.persistence.entity.appointment.WeekDay;
+import com.blink.backend.persistence.entity.clinic.ClinicConfiguration;
 import com.blink.backend.persistence.repository.ClinicAvailabilityRepository;
+import com.blink.backend.persistence.repository.ClinicConfigurationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,9 +14,10 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ConfigurationAvailabilityService {
+public class ClinicConfigurationService {
 
     private final ClinicAvailabilityRepository clinicAvailabilityRepository;
+    private final ClinicConfigurationRepository clinicConfigurationRepository;
 
     public void updateAvailabilityConfiguration(List<AvailabilityConfigurationDTO> updateAvailabilityConfiguration) {
 
@@ -33,5 +37,21 @@ public class ConfigurationAvailabilityService {
 
 
     }
+
+    public void updateAppointmentConfiguration(AppointmentConfigurationDTO appointmentConfiguration) {
+
+        ClinicConfiguration clinicConfiguration = clinicConfigurationRepository
+                .findByClinicId(appointmentConfiguration.getClinicId());
+
+        if (appointmentConfiguration.getDuration() != null)
+            clinicConfiguration.setAppointmentDuration(appointmentConfiguration.getDuration());
+
+        if (appointmentConfiguration.getOverbooking() != null)
+            clinicConfiguration.setAllowOverbooking(appointmentConfiguration.getOverbooking());
+
+        clinicConfigurationRepository.save(clinicConfiguration);
+
+    }
+
 
 }
