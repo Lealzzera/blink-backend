@@ -46,13 +46,6 @@ public class AppointmentController {
         return ResponseEntity.ok(clinicAvailabilityService.getAppointmentDetailsById(id));
     }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<Void> cancelAppointment(@PathVariable Integer id) {
-        clinicAvailabilityService.cancelAppointment(id);
-
-        return ResponseEntity.noContent().build();
-    }
-
     @PutMapping("status")
     public ResponseEntity<Void> updateAppointmentStatus(@RequestBody UpdateAppointmentStatusDTO updateStatus) {
         clinicAvailabilityService.updateAppointmentStatus(updateStatus);

@@ -90,16 +90,6 @@ public class ClinicAvailabilityService {
                 .orElse(null);
     }
 
-    public void cancelAppointment(Integer id) {
-        Optional<Appointment> appointmentOptional = appointmentsRepository.findById(id);
-        if (appointmentOptional.isEmpty()) {
-            throw new RuntimeException("Agendamento não encontrado");
-        }
-
-        appointmentOptional.get().setAppointmentStatus(CANCELADO);
-        appointmentsRepository.save(appointmentOptional.get());
-    }
-
     public void updateAppointmentStatus(UpdateAppointmentStatusDTO updateStatus) {
 
         Optional<Appointment> appointmentOptional = appointmentsRepository.findById(updateStatus.getAppointmentId());

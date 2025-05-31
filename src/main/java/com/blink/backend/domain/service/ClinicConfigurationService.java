@@ -19,6 +19,14 @@ public class ClinicConfigurationService {
     private final ClinicAvailabilityRepository clinicAvailabilityRepository;
     private final ClinicConfigurationRepository clinicConfigurationRepository;
 
+    public List<AvailabilityConfigurationDTO> getAvailabilityConfiguration(Integer clinicId) {
+        return clinicAvailabilityRepository
+                .findByClinicId(clinicId)
+                .stream()
+                .map(AvailabilityConfigurationDTO::fromEntity)
+                .toList();
+    }
+
     public void updateAvailabilityConfiguration(List<AvailabilityConfigurationDTO> updateAvailabilityConfiguration) {
 
         for (AvailabilityConfigurationDTO configuration : updateAvailabilityConfiguration) {
@@ -31,6 +39,7 @@ public class ClinicConfigurationService {
             clinicAvailability.setCloseTime(configuration.getClose());
             clinicAvailability.setLunchStartTime(configuration.getBreakStart());
             clinicAvailability.setLunchEndTime(configuration.getBreakEnd());
+            clinicAvailability.setIsWorkingDay(configuration.getWorkDay());
 
             clinicAvailabilityRepository.save(clinicAvailability);
         }
