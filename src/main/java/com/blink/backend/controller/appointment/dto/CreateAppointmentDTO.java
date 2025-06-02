@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Getter
 @Setter
@@ -24,4 +25,9 @@ public class CreateAppointmentDTO {
     private LocalDateTime scheduledTime;
     private String notes;
 
+    public LocalDateTime getScheduledTimeEnd(Integer duration){
+        return this.getScheduledTime()
+                .plusMinutes(duration)
+                .truncatedTo(ChronoUnit.MINUTES);
+    }
 }

@@ -4,6 +4,8 @@ import com.blink.backend.controller.appointment.dto.ClinicAvailabilityDTO;
 import com.blink.backend.controller.appointment.dto.CreateAppointmentDTO;
 import com.blink.backend.controller.appointment.dto.UpdateAppointmentStatusDTO;
 import com.blink.backend.domain.exception.ConflictException;
+import com.blink.backend.domain.exception.NotFoundException;
+import com.blink.backend.domain.exception.appointment.AppointmentConflictException;
 import com.blink.backend.persistence.entity.appointment.*;
 import com.blink.backend.persistence.entity.clinic.Clinic;
 import com.blink.backend.persistence.entity.clinic.ClinicConfiguration;
@@ -12,12 +14,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.blink.backend.domain.exception.appointment.AppointmentConflictException.AppointmentConflitReason.OVERLAP;
 import static com.blink.backend.persistence.entity.appointment.AppointmentStatus.AGENDADO;
-import static com.blink.backend.persistence.entity.appointment.AppointmentStatus.CANCELADO;
 
 @Service
 @RequiredArgsConstructor
@@ -64,13 +67,13 @@ public class ClinicAvailabilityService {
 
         ClinicConfiguration clinicConfiguration = clinicConfigurationRepository
                 .findByClinicId(appointment.getClinicId());
-        Integer countAppointments = appointmentsRepository.countByScheduledTimeBetween(
-                appointment.getScheduledTime(),
-                appointment.getScheduledTime()
-                        .plusMinutes(clinicConfiguration.getAppointmentDuration()));
-        int permitedAppointment = clinicConfiguration.getAllowOverbooking()? 2:1;
-        if(countAppointments >= permitedAppointment){
-            throw new ConflictException("");
+        Integer countAppointments = appointmentsRepository
+                .countByScheduledTimeBetween(
+                        appointment.getScheduledTime(),
+                        appointment.getScheduledTimeEnd(clinicConfiguration.getAppointmentDuration()));
+        int permittedAppointment = clinicConfiguration.getAllowOverbooking() ? 2 : 1;
+        if (countAppointments >= permittedAppointment) {
+            throw new AppointmentConflictException(OVERLAP);
         }
 
         Patient patient = patientRepository
@@ -97,7 +100,7 @@ public class ClinicAvailabilityService {
 
     public Appointment getAppointmentDetailsById(Integer id) {
         return appointmentsRepository.findById(id)
-                .orElse(null);
+                .orElseThrow(() -> new NotFoundException("agendamento " + id));
     }
 
     public void updateAppointmentStatus(UpdateAppointmentStatusDTO updateStatus) {
