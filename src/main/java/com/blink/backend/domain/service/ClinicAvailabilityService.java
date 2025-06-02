@@ -3,6 +3,7 @@ package com.blink.backend.domain.service;
 import com.blink.backend.controller.appointment.dto.ClinicAvailabilityDTO;
 import com.blink.backend.controller.appointment.dto.CreateAppointmentDTO;
 import com.blink.backend.controller.appointment.dto.UpdateAppointmentStatusDTO;
+import com.blink.backend.domain.exception.ConflictException;
 import com.blink.backend.persistence.entity.appointment.*;
 import com.blink.backend.persistence.entity.clinic.Clinic;
 import com.blink.backend.persistence.entity.clinic.ClinicConfiguration;
@@ -63,6 +64,15 @@ public class ClinicAvailabilityService {
 
         ClinicConfiguration clinicConfiguration = clinicConfigurationRepository
                 .findByClinicId(appointment.getClinicId());
+        Integer countAppointments = appointmentsRepository.countByScheduledTimeBetween(
+                appointment.getScheduledTime(),
+                appointment.getScheduledTime()
+                        .plusMinutes(clinicConfiguration.getAppointmentDuration()));
+        int permitedAppointment = clinicConfiguration.getAllowOverbooking()? 2:1;
+        if(countAppointments >= permitedAppointment){
+            throw new ConflictException("");
+        }
+
         Patient patient = patientRepository
                 .findByPhoneNumber(appointment.getPatientNumber());
 
