@@ -10,4 +10,7 @@ import java.util.List;
 @Repository
 public interface AppointmentsRepository extends JpaRepository<Appointment, Integer> {
     List<Appointment> findByScheduledTimeBetween(LocalDateTime startDate, LocalDateTime endDate);
+
+    Integer countByScheduledTimeBetween(LocalDateTime scheduledTime, LocalDateTime scheduledEnd);
+
 }
