@@ -62,5 +62,18 @@ public class ClinicConfigurationService {
 
     }
 
+    public AppointmentConfigurationDTO getAppointmentConfiguration(Integer clinicId){
+
+        ClinicConfiguration clinicConfiguration = clinicConfigurationRepository
+                .findByClinicId(clinicId);
+
+        return AppointmentConfigurationDTO
+                .builder()
+                .clinicId(clinicId)
+                .duration(clinicConfiguration.getAppointmentDuration())
+                .overbooking(clinicConfiguration.getAllowOverbooking())
+                .build();
+    }
+
 
 }

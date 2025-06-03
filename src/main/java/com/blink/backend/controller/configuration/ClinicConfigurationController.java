@@ -45,4 +45,10 @@ public class ClinicConfigurationController {
         return ResponseEntity.ok(clinicConfigurationService.getAvailabilityConfiguration(clinicId));
     }
 
+    @GetMapping("appointments/{clinicId}")
+    public ResponseEntity<AppointmentConfigurationDTO> getAppointmentConfiguration(@RequestParam Integer clinicId){
+
+        return ResponseEntity.ok(clinicConfigurationService.getAppointmentConfiguration(clinicId));
+
+    }
 }

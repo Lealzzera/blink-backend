@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.blink.backend.domain.exception.appointment.AppointmentConflictException.AppointmentConflitReason.OVERLAP;
+import static com.blink.backend.domain.exception.appointment.AppointmentConflictException.AppointmentConflitReason.*;
 import static com.blink.backend.persistence.entity.appointment.AppointmentStatus.AGENDADO;
 
 @Service
@@ -75,6 +75,25 @@ public class ClinicAvailabilityService {
         if (countAppointments >= permittedAppointment) {
             throw new AppointmentConflictException(OVERLAP);
         }
+
+        WeekDay weekDay = WeekDay.fromDate(appointment.getScheduledTime().toLocalDate());
+        ClinicAvailability availability = clinicAvailabilityRepository
+                .findByClinicIdAndWeekDayAndIsWorkingDayTrue(appointment.getClinicId(), weekDay);
+
+        if(availability == null){
+            throw new AppointmentConflictException(OUTSIDE_WORK_DAY);
+        }
+
+        if(appointment.getScheduledTime().toLocalTime().isBefore(availability.getOpenTime()) ||
+                appointment.getScheduledTimeEnd(clinicConfiguration.getAppointmentDuration()).toLocalTime().isAfter(availability.getCloseTime())) {
+            throw new AppointmentConflictException(OUTSIDE_WORK_HOURS);
+        }
+
+        if(appointment.getScheduledTimeEnd(clinicConfiguration.getAppointmentDuration()).toLocalTime().isAfter(availability.getLunchStartTime()) &&
+                appointment.getScheduledTime().toLocalTime().isBefore(availability.getLunchEndTime())){
+            throw new AppointmentConflictException(DURING_BREAK);
+        }
+
 
         Patient patient = patientRepository
                 .findByPhoneNumber(appointment.getPatientNumber());
