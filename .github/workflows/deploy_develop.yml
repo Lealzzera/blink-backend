@@ -36,7 +36,7 @@ jobs:
           username: ${{ secrets.HETZNER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "blink-be.tar.gz"
-          target: "~/deploy"
+          target: "/opt/backend-dev"
 
       - name: Executar container no Hetzner
         uses: appleboy/ssh-action@v1.0.0
@@ -45,7 +45,7 @@ jobs:
           username: ${{ secrets.HETZNER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            docker load < ~/deploy/blink-be.tar.gz
+            docker load < /opt/backend-dev/blink-be.tar.gz
             docker stop blink-be || true
             docker rm blink-be || true
-            docker run -d --name blink-be -p 3003:51234 --network blink-docker-network --env-file ~/deploy/.env blink-be
+            docker run -d --name blink-be -p 3003:51234 --network blink-docker-network --env-file /opt/backend-dev/.env blink-be
