@@ -46,8 +46,4 @@ jobs:
             docker load < ~/deploy/blink-be.tar.gz
             docker stop blink-be || true
             docker rm blink-be || true
-            docker run -d --name blink-be \
-        			-p 3003:51234 \ # opcional para nao expor a porta
-        			--network blink_net \
-              --env-file ~/deploy/.env \
-              blink-be
+            docker run -d --name blink-be -p 3003:51234 --network blink-docker-network --env-file ~/deploy/.env blink-be
