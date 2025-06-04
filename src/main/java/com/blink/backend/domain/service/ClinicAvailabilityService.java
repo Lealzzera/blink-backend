@@ -1,5 +1,6 @@
 package com.blink.backend.domain.service;
 
+import com.blink.backend.controller.appointment.dto.AppointmentDetailsDTO;
 import com.blink.backend.controller.appointment.dto.ClinicAvailabilityDTO;
 import com.blink.backend.controller.appointment.dto.CreateAppointmentDTO;
 import com.blink.backend.controller.appointment.dto.UpdateAppointmentStatusDTO;
@@ -117,8 +118,9 @@ public class ClinicAvailabilityService {
 
     }
 
-    public Appointment getAppointmentDetailsById(Integer id) {
+    public AppointmentDetailsDTO getAppointmentDetailsById(Integer id) {
         return appointmentsRepository.findById(id)
+                .map(AppointmentDetailsDTO::fromEntity)
                 .orElseThrow(() -> new NotFoundException("agendamento " + id));
     }
 

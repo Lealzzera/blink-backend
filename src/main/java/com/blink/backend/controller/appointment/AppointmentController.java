@@ -1,5 +1,6 @@
 package com.blink.backend.controller.appointment;
 
+import com.blink.backend.controller.appointment.dto.AppointmentDetailsDTO;
 import com.blink.backend.controller.appointment.dto.ClinicAvailabilityDTO;
 import com.blink.backend.controller.appointment.dto.CreateAppointmentDTO;
 import com.blink.backend.controller.appointment.dto.UpdateAppointmentStatusDTO;
@@ -41,7 +42,7 @@ public class AppointmentController {
     }
 
     @GetMapping("{id}/details")
-    public ResponseEntity<Appointment> getAppointmentDetailsById(
+    public ResponseEntity<AppointmentDetailsDTO> getAppointmentDetailsById(
             @PathVariable Integer id) {
         return ResponseEntity.ok(clinicAvailabilityService.getAppointmentDetailsById(id));
     }
