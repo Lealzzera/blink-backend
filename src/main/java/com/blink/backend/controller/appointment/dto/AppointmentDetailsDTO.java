@@ -1,9 +1,6 @@
 package com.blink.backend.controller.appointment.dto;
 
 import com.blink.backend.persistence.entity.appointment.Appointment;
-import com.blink.backend.persistence.entity.auth.Users;
-import com.blink.backend.persistence.entity.clinic.Clinic;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

@@ -49,7 +49,7 @@ CREATE TABLE clinic_availability (
     FOREIGN KEY (updated_by_user_id) REFERENCES users(id)
 );
 
-CREATE TABLE clinic_availability_exceptions (
+CREATE TABLE clinic_availability_exception (
     id SERIAL PRIMARY KEY,
     clinic_id INT NOT NULL,
     exception_day DATE NOT NULL,

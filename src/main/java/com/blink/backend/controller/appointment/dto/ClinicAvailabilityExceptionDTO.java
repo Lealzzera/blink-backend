@@ -1,11 +1,8 @@
 package com.blink.backend.controller.appointment.dto;
 
-import com.blink.backend.persistence.entity.clinic.Clinic;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
