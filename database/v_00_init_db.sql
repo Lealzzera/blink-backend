@@ -49,6 +49,18 @@ CREATE TABLE clinic_availability (
     FOREIGN KEY (updated_by_user_id) REFERENCES users(id)
 );
 
+CREATE TABLE clinic_availability_exceptions (
+    id SERIAL PRIMARY KEY,
+    clinic_id INT NOT NULL,
+    exception_day DATE NOT NULL,
+    is_working_day BOOLEAN NOT NULL,
+    open_time TIME,
+    close_time TIME,
+    lunch_start_time TIME,
+    lunch_end_time TIME,
+    FOREIGN KEY (clinic_id) REFERENCES clinic(id)
+);
+
 CREATE TABLE patient (
     id SERIAL PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
