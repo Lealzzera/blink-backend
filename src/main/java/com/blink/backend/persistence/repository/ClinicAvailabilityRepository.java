@@ -13,5 +13,7 @@ public interface ClinicAvailabilityRepository extends JpaRepository<ClinicAvaila
     ClinicAvailability findByWeekDayAndIsWorkingDayTrue(WeekDay weekDay);
     ClinicAvailability findByClinicIdAndWeekDayAndIsWorkingDayTrue(Integer id, WeekDay weekDay);
 
+    ClinicAvailability findByClinicIdAndWeekDay(Integer id, WeekDay weekDay);
+
     List<ClinicAvailability> findByClinicId(Integer clinicId);
 }
