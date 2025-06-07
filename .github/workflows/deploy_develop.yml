@@ -30,14 +30,13 @@ jobs:
         run: docker save blink-be | gzip > blink-be.tar.gz
 
       - name: Enviar imagem para Hetzner
-        uses: appleboy/drone-scp@v1.6.14
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HETZNER_HOST }}
           username: ${{ secrets.HETZNER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "blink-be.tar.gz"
           target: "/opt/backend-dev"
-          tar: false
 
       - name: Executar container no Hetzner
         uses: appleboy/ssh-action@v1.0.0
