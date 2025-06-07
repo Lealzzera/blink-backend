@@ -37,6 +37,9 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "blink-be.tar.gz"
           target: "/opt/backend-dev"
+          tar_tmp_path: ""
+          strip_components: 0
+          rm: false
 
       - name: Executar container no Hetzner
         uses: appleboy/ssh-action@v1.0.0
