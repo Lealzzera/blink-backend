@@ -31,7 +31,7 @@ public class ClinicConfigurationService {
 
         for (AvailabilityConfigurationDTO configuration : updateAvailabilityConfiguration) {
             ClinicAvailability clinicAvailability = clinicAvailabilityRepository
-                    .findByClinicIdAndWeekDayAndIsWorkingDayTrue(
+                    .findByClinicIdAndWeekDay(
                             configuration.getClinicId(),
                             WeekDay.valueOf(configuration.getWeekDay()));
 
@@ -43,7 +43,6 @@ public class ClinicConfigurationService {
 
             clinicAvailabilityRepository.save(clinicAvailability);
         }
-
 
     }
 
@@ -62,7 +61,7 @@ public class ClinicConfigurationService {
 
     }
 
-    public AppointmentConfigurationDTO getAppointmentConfiguration(Integer clinicId){
+    public AppointmentConfigurationDTO getAppointmentConfiguration(Integer clinicId) {
 
         ClinicConfiguration clinicConfiguration = clinicConfigurationRepository
                 .findByClinicId(clinicId);
