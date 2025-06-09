@@ -45,7 +45,7 @@ jobs:
           username: ${{ secrets.HETZNER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            sudo docker load < /opt/backend-dev/blink-be.tar.gz
-            sudo docker stop blink-be || true
-            sudo docker rm blink-be || true
-            sudo docker run -d --name blink-be -p 3003:51234 --network blink-docker-network --env-file /opt/backend-dev/.env blink-be
+            docker load < /opt/backend-dev/blink-be.tar.gz
+            docker stop blink-be || true
+            docker rm blink-be || true
+            docker run -d --name blink-be -p 3003:51234 --network blink-docker-network --env-file /opt/backend-dev/.env blink-be
