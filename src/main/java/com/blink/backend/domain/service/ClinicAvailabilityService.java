@@ -74,58 +74,58 @@ public class ClinicAvailabilityService {
     }
 
 
-    public Appointment saveAppointment(CreateAppointmentDTO appointment) {
+    public Appointment saveAppointment(CreateAppointmentDTO appointmentRequest) {
 
         ClinicConfiguration clinicConfiguration = clinicConfigurationRepository
-                .findByClinicId(appointment.getClinicId());
+                .findByClinicId(appointmentRequest.getClinicId());
         Integer countAppointments = appointmentsRepository
                 .countByScheduledTimeBetweenAndAppointmentStatusNot(
-                        appointment.getScheduledTime(),
-                        appointment.getScheduledTimeEnd(clinicConfiguration.getAppointmentDuration()),
+                        appointmentRequest.getScheduledTime(),
+                        appointmentRequest.getScheduledTimeEnd(clinicConfiguration.getAppointmentDuration()),
                         AppointmentStatus.CANCELADO);
         int permittedAppointment = clinicConfiguration.getAllowOverbooking() ? 2 : 1;
         if (countAppointments >= permittedAppointment) {
             throw new AppointmentConflictException(OVERLAP);
         }
 
-        WeekDay weekDay = WeekDay.fromDate(appointment.getScheduledTime().toLocalDate());
+        WeekDay weekDay = WeekDay.fromDate(appointmentRequest.getScheduledTime().toLocalDate());
         ClinicAvailability availability = clinicAvailabilityRepository
-                .findByClinicIdAndWeekDayAndIsWorkingDayTrue(appointment.getClinicId(), weekDay);
+                .findByClinicIdAndWeekDayAndIsWorkingDayTrue(appointmentRequest.getClinicId(), weekDay);
 
         if (availability == null) {
             throw new AppointmentConflictException(OUTSIDE_WORK_DAY);
         }
 
-        if (appointment.getScheduledTime().toLocalTime().isBefore(availability.getOpenTime()) ||
-                appointment.getScheduledTimeEnd(clinicConfiguration.getAppointmentDuration()).toLocalTime().isAfter(availability.getCloseTime())) {
+        if (appointmentRequest.getScheduledTime().toLocalTime().isBefore(availability.getOpenTime()) ||
+                appointmentRequest.getScheduledTimeEnd(clinicConfiguration.getAppointmentDuration()).toLocalTime().isAfter(availability.getCloseTime())) {
             throw new AppointmentConflictException(OUTSIDE_WORK_HOURS);
         }
 
-        if (appointment.getScheduledTimeEnd(clinicConfiguration.getAppointmentDuration()).toLocalTime().isAfter(availability.getLunchStartTime()) &&
-                appointment.getScheduledTime().toLocalTime().isBefore(availability.getLunchEndTime())) {
+        if (appointmentRequest.getScheduledTimeEnd(clinicConfiguration.getAppointmentDuration()).toLocalTime().isAfter(availability.getLunchStartTime()) &&
+                appointmentRequest.getScheduledTime().toLocalTime().isBefore(availability.getLunchEndTime())) {
             throw new AppointmentConflictException(DURING_BREAK);
         }
 
 
         Patient patient = patientRepository
-                .findByPhoneNumber(appointment.getPatientNumber());
+                .findByPhoneNumber(appointmentRequest.getPatientNumber());
 
         Clinic clinic = clinicRepository
-                .findById(appointment.getClinicId()).orElse(null);
+                .findById(appointmentRequest.getClinicId()).orElse(null);
         ServiceType serviceType = serviceTypeRepository
-                .findById(appointment.getServiceTypeId()).orElse(null);
+                .findById(appointmentRequest.getServiceTypeId()).orElse(null);
 
-        Appointment appointment1 = Appointment.builder()
+        Appointment appointment = Appointment.builder()
                 .patient(patient)
-                .scheduledTime(appointment.getScheduledTime())
+                .scheduledTime(appointmentRequest.getScheduledTime())
                 .clinic(clinic)
                 .serviceType(serviceType)
                 .duration(clinicConfiguration.getAppointmentDuration())
                 .appointmentStatus(AGENDADO)
-                .notes(appointment.getNotes())
+                .notes(appointmentRequest.getNotes())
                 .build();
 
-        return appointmentsRepository.save(appointment1);
+        return appointmentsRepository.save(appointment);
 
     }
 
