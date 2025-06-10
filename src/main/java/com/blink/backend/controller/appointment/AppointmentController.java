@@ -42,7 +42,7 @@ public class AppointmentController {
 
     @PostMapping
     public ResponseEntity<Void> createAppointment(
-            @RequestBody CreateAppointmentDTO createAppointmentDTO) {
+            @RequestBody CreateAppointmentDTO createAppointmentDTO) { //TODO trim no phone number
         Appointment appointment = clinicAvailabilityService.saveAppointment(createAppointmentDTO);
 
         return ResponseEntity.created(URI.create(appointment.getId().toString())).build();
