@@ -82,17 +82,17 @@ public class ClinicAvailabilityService {
         ClinicAvailability availability = clinicAvailabilityRepository
                 .findByClinicIdAndWeekDayAndIsWorkingDayTrue(appointment.getClinicId(), weekDay);
 
-        if(availability == null){
+        if (availability == null) {
             throw new AppointmentConflictException(OUTSIDE_WORK_DAY);
         }
 
-        if(appointment.getScheduledTime().toLocalTime().isBefore(availability.getOpenTime()) ||
+        if (appointment.getScheduledTime().toLocalTime().isBefore(availability.getOpenTime()) ||
                 appointment.getScheduledTimeEnd(clinicConfiguration.getAppointmentDuration()).toLocalTime().isAfter(availability.getCloseTime())) {
             throw new AppointmentConflictException(OUTSIDE_WORK_HOURS);
         }
 
-        if(appointment.getScheduledTimeEnd(clinicConfiguration.getAppointmentDuration()).toLocalTime().isAfter(availability.getLunchStartTime()) &&
-                appointment.getScheduledTime().toLocalTime().isBefore(availability.getLunchEndTime())){
+        if (appointment.getScheduledTimeEnd(clinicConfiguration.getAppointmentDuration()).toLocalTime().isAfter(availability.getLunchStartTime()) &&
+                appointment.getScheduledTime().toLocalTime().isBefore(availability.getLunchEndTime())) {
             throw new AppointmentConflictException(DURING_BREAK);
         }
 
@@ -122,19 +122,16 @@ public class ClinicAvailabilityService {
     public AppointmentDetailsDTO getAppointmentDetailsById(Integer id) {
         return appointmentsRepository.findById(id)
                 .map(AppointmentDetailsDTO::fromEntity)
-                .orElseThrow(() -> new NotFoundException("agendamento " + id));
+                .orElseThrow(() -> new NotFoundException("Agendamento " + id));
     }
 
     public void updateAppointmentStatus(UpdateAppointmentStatusDTO updateStatus) {
 
-        Optional<Appointment> appointmentOptional = appointmentsRepository.findById(updateStatus.getAppointmentId());
+        Appointment appointment = appointmentsRepository.findById(updateStatus.getAppointmentId())
+                .orElseThrow(() -> new NotFoundException("Agendamento " + updateStatus.getAppointmentId()));
 
-        if (appointmentOptional.isEmpty()) {
-            throw new RuntimeException("Agendamento não encontrado");
-        }
-
-        appointmentOptional.get().setAppointmentStatus(AppointmentStatus.valueOf(updateStatus.getNewStatus().toUpperCase()));
-        appointmentsRepository.save(appointmentOptional.get());
+        appointment.setAppointmentStatus(AppointmentStatus.valueOf(updateStatus.getNewStatus().toUpperCase()));
+        appointmentsRepository.save(appointment);
     }
 
 
