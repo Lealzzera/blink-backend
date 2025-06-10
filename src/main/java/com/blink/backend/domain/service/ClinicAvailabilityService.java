@@ -69,9 +69,10 @@ public class ClinicAvailabilityService {
         ClinicConfiguration clinicConfiguration = clinicConfigurationRepository
                 .findByClinicId(appointment.getClinicId());
         Integer countAppointments = appointmentsRepository
-                .countByScheduledTimeBetween(
+                .countByScheduledTimeBetweenAndAppointmentStatusNot(
                         appointment.getScheduledTime(),
-                        appointment.getScheduledTimeEnd(clinicConfiguration.getAppointmentDuration()));
+                        appointment.getScheduledTimeEnd(clinicConfiguration.getAppointmentDuration()),
+                        AppointmentStatus.CANCELADO);
         int permittedAppointment = clinicConfiguration.getAllowOverbooking() ? 2 : 1;
         if (countAppointments >= permittedAppointment) {
             throw new AppointmentConflictException(OVERLAP);
