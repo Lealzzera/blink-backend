@@ -2,6 +2,7 @@ package com.blink.backend.controller.appointment.dto;
 
 import com.blink.backend.persistence.entity.appointment.Appointment;
 import com.blink.backend.persistence.entity.appointment.ClinicAvailability;
+import com.blink.backend.persistence.entity.appointment.ClinicAvailabilityException;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -49,4 +50,24 @@ public class ClinicAvailabilityDTO {
                         .collect(Collectors.toList()))
                 .build();
     }
+    public static ClinicAvailabilityDTO fromException(
+            LocalDate day,
+            ClinicAvailabilityException clinicAvailabilityException,
+            List<Appointment> appointments) {
+        if(!clinicAvailabilityException.getIsWorkingDay()){
+            return null;
+        }
+        return ClinicAvailabilityDTO.builder()
+                .date(day)
+                .open(clinicAvailabilityException.getOpenTime())
+                .close(clinicAvailabilityException.getCloseTime())
+                .breakStart(clinicAvailabilityException.getLunchStartTime())
+                .breakEnd(clinicAvailabilityException.getLunchEndTime())
+                .appointments(appointments
+                        .stream()
+                        .map(AppointmentDTO::fromEntity)
+                        .collect(Collectors.toList()))
+                .build();
+    }
+
 }

@@ -9,12 +9,14 @@ import com.blink.backend.domain.exception.appointment.AppointmentConflictExcepti
 import com.blink.backend.persistence.entity.appointment.Appointment;
 import com.blink.backend.persistence.entity.appointment.AppointmentStatus;
 import com.blink.backend.persistence.entity.appointment.ClinicAvailability;
+import com.blink.backend.persistence.entity.appointment.ClinicAvailabilityException;
 import com.blink.backend.persistence.entity.appointment.Patient;
 import com.blink.backend.persistence.entity.appointment.ServiceType;
 import com.blink.backend.persistence.entity.appointment.WeekDay;
 import com.blink.backend.persistence.entity.clinic.Clinic;
 import com.blink.backend.persistence.entity.clinic.ClinicConfiguration;
 import com.blink.backend.persistence.repository.AppointmentsRepository;
+import com.blink.backend.persistence.repository.ClinicAvailabilityExceptionRepository;
 import com.blink.backend.persistence.repository.ClinicAvailabilityRepository;
 import com.blink.backend.persistence.repository.ClinicConfigurationRepository;
 import com.blink.backend.persistence.repository.ClinicRepository;
@@ -26,6 +28,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static com.blink.backend.domain.exception.appointment.AppointmentConflictException.AppointmentConflitReason.DURING_BREAK;
 import static com.blink.backend.domain.exception.appointment.AppointmentConflictException.AppointmentConflitReason.OUTSIDE_WORK_DAY;
@@ -42,6 +45,7 @@ public class ClinicAvailabilityService {
     private final PatientRepository patientRepository;
     private final ServiceTypeRepository serviceTypeRepository;
     private final ClinicConfigurationRepository clinicConfigurationRepository;
+    private final ClinicAvailabilityExceptionRepository clinicAvailabilityExceptionRepository;
 
 
     public List<ClinicAvailabilityDTO> getClinicAvailability(
@@ -57,6 +61,11 @@ public class ClinicAvailabilityService {
     }
 
     private ClinicAvailabilityDTO fromEntity(LocalDate date, Boolean hideCancelled) {
+
+
+        Optional<ClinicAvailabilityException> clinicAvailabilityException = clinicAvailabilityExceptionRepository
+                .findByExceptionDay(date);
+
         ClinicAvailability clinicAvailability = clinicAvailabilityRepository
                 .findByWeekDayAndIsWorkingDayTrue(WeekDay.fromDate(date));
         List<Appointment> appointments = appointmentsRepository
@@ -70,7 +79,17 @@ public class ClinicAvailabilityService {
                     .toList();
         }
 
-        return ClinicAvailabilityDTO.fromEntity(date, clinicAvailability, appointments);
+        ClinicAvailabilityDTO clinicAvailabilityDTO;
+
+        if(clinicAvailabilityException.isEmpty()){
+            clinicAvailabilityDTO = ClinicAvailabilityDTO.fromEntity(date, clinicAvailability, appointments);
+
+        }else {
+            clinicAvailabilityDTO = ClinicAvailabilityDTO.fromException(date, clinicAvailabilityException.get(), appointments);
+        }
+
+        return clinicAvailabilityDTO;
+
     }
 
 
