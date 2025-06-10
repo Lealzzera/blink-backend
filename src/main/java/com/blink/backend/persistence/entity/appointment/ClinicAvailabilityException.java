@@ -1,12 +1,8 @@
 package com.blink.backend.persistence.entity.appointment;
 
-
-import com.blink.backend.persistence.entity.auth.Users;
 import com.blink.backend.persistence.entity.clinic.Clinic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,29 +10,37 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Setter
 @Getter
 @Entity
-@Table(name = "clinic_availability")
-public class ClinicAvailability {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "clinic_availability_exception")
+public class ClinicAvailabilityException {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "clinic_id")
     private Clinic clinic;
 
-    @Column(name = "week_day")
-    @Enumerated(EnumType.STRING)
-    private WeekDay weekDay;
+    @Column(name = "exception_day")
+    private LocalDate exceptionDay;
+
+    @Column(name = "is_working_day")
+    private Boolean isWorkingDay;
 
     @Column(name = "open_time")
     private LocalTime openTime;
@@ -50,16 +54,4 @@ public class ClinicAvailability {
     @Column(name = "lunch_end_time")
     private LocalTime lunchEndTime;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "updated_by_user_id")
-    private Users updatedByUserId;
-
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    @Column(name = "is_working_day")
-    private Boolean isWorkingDay = true;
 }

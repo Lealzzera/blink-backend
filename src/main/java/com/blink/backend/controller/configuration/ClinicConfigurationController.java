@@ -1,6 +1,7 @@
 package com.blink.backend.controller.configuration;
 
 
+import com.blink.backend.controller.appointment.dto.ClinicAvailabilityExceptionDTO;
 import com.blink.backend.controller.configuration.dto.AppointmentConfigurationDTO;
 import com.blink.backend.controller.configuration.dto.AvailabilityConfigurationDTO;
 import com.blink.backend.domain.service.ClinicConfigurationService;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,4 +44,12 @@ public class ClinicConfigurationController {
     public ResponseEntity<AppointmentConfigurationDTO> getAppointmentConfiguration(@PathVariable Integer clinicId){
         return ResponseEntity.ok(clinicConfigurationService.getAppointmentConfiguration(clinicId));
     }
+
+    @PostMapping("availability/exception")
+    public ResponseEntity<Void> createAvailabilityException(@RequestBody ClinicAvailabilityExceptionDTO availabilityExceptionDTO){
+
+        clinicConfigurationService.createAvailabilityException(availabilityExceptionDTO);
+        return ResponseEntity.noContent().build();
+    }
+
 }
