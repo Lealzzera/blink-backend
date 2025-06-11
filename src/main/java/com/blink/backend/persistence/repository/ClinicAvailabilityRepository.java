@@ -6,11 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ClinicAvailabilityRepository extends JpaRepository<ClinicAvailability, Integer> {
     ClinicAvailability findByWeekDayAndIsWorkingDayTrue(WeekDay weekDay);
-    ClinicAvailability findByClinicIdAndWeekDayAndIsWorkingDayTrue(Integer id, WeekDay weekDay);
+    Optional<ClinicAvailability> findByClinicIdAndWeekDayAndIsWorkingDayTrue(Integer id, WeekDay weekDay);
 
     ClinicAvailability findByClinicIdAndWeekDay(Integer id, WeekDay weekDay);
 

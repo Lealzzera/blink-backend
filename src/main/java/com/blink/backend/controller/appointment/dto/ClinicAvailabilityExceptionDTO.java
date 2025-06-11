@@ -20,12 +20,12 @@ public class ClinicAvailabilityExceptionDTO {
     private LocalDate exceptionDay;
     private Boolean isWorkingDay;
     @JsonFormat(pattern = "HH:mm")
-    private LocalTime openTime;
+    private LocalTime open;
     @JsonFormat(pattern = "HH:mm")
-    private LocalTime closeTime;
+    private LocalTime close;
     @JsonFormat(pattern = "HH:mm")
-    private LocalTime lunchStartTime;
+    private LocalTime breakStart;
     @JsonFormat(pattern = "HH:mm")
-    private LocalTime lunchEndTime;
+    private LocalTime breakEnd;
 
 }

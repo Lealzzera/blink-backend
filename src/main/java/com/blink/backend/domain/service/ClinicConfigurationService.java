@@ -91,10 +91,10 @@ public class ClinicConfigurationService {
                 .clinic(clinic)
                 .exceptionDay(availabilityExceptionDTO.getExceptionDay())
                 .isWorkingDay(availabilityExceptionDTO.getIsWorkingDay())
-                .openTime(availabilityExceptionDTO.getOpenTime())
-                .closeTime(availabilityExceptionDTO.getCloseTime())
-                .lunchStartTime(availabilityExceptionDTO.getLunchStartTime())
-                .lunchEndTime(availabilityExceptionDTO.getLunchEndTime())
+                .openTime(availabilityExceptionDTO.getOpen())
+                .closeTime(availabilityExceptionDTO.getClose())
+                .lunchStartTime(availabilityExceptionDTO.getBreakStart())
+                .lunchEndTime(availabilityExceptionDTO.getBreakEnd())
                 .build();
 
         clinicAvailabilityExceptionRepository.save(clinicAvailabilityException);

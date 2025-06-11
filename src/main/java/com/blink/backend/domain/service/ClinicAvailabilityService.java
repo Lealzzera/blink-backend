@@ -6,6 +6,7 @@ import com.blink.backend.controller.appointment.dto.CreateAppointmentDTO;
 import com.blink.backend.controller.appointment.dto.UpdateAppointmentStatusDTO;
 import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.domain.exception.appointment.AppointmentConflictException;
+import com.blink.backend.domain.model.Availability;
 import com.blink.backend.persistence.entity.appointment.Appointment;
 import com.blink.backend.persistence.entity.appointment.AppointmentStatus;
 import com.blink.backend.persistence.entity.appointment.ClinicAvailability;
@@ -35,6 +36,7 @@ import static com.blink.backend.domain.exception.appointment.AppointmentConflict
 import static com.blink.backend.domain.exception.appointment.AppointmentConflictException.AppointmentConflitReason.OUTSIDE_WORK_HOURS;
 import static com.blink.backend.domain.exception.appointment.AppointmentConflictException.AppointmentConflitReason.OVERLAP;
 import static com.blink.backend.persistence.entity.appointment.AppointmentStatus.AGENDADO;
+import static java.util.Objects.isNull;
 
 @Service
 @RequiredArgsConstructor
@@ -61,8 +63,6 @@ public class ClinicAvailabilityService {
     }
 
     private ClinicAvailabilityDTO fromEntity(LocalDate date, Boolean hideCancelled) {
-
-
         Optional<ClinicAvailabilityException> clinicAvailabilityException = clinicAvailabilityExceptionRepository
                 .findByExceptionDay(date);
 
@@ -81,10 +81,10 @@ public class ClinicAvailabilityService {
 
         ClinicAvailabilityDTO clinicAvailabilityDTO;
 
-        if(clinicAvailabilityException.isEmpty()){
+        if (clinicAvailabilityException.isEmpty()) {
             clinicAvailabilityDTO = ClinicAvailabilityDTO.fromEntity(date, clinicAvailability, appointments);
 
-        }else {
+        } else {
             clinicAvailabilityDTO = ClinicAvailabilityDTO.fromException(date, clinicAvailabilityException.get(), appointments);
         }
 
@@ -97,49 +97,62 @@ public class ClinicAvailabilityService {
 
         ClinicConfiguration clinicConfiguration = clinicConfigurationRepository
                 .findByClinicId(appointmentRequest.getClinicId());
+        Integer appointmentDuration = clinicConfiguration.getAppointmentDuration();
         Integer countAppointments = appointmentsRepository
                 .countByScheduledTimeBetweenAndAppointmentStatusNot(
                         appointmentRequest.getScheduledTime(),
-                        appointmentRequest.getScheduledTimeEnd(clinicConfiguration.getAppointmentDuration()),
+                        appointmentRequest.getScheduledTimeEnd(appointmentDuration),
                         AppointmentStatus.CANCELADO);
-        int permittedAppointment = clinicConfiguration.getAllowOverbooking() ? 2 : 1;
-        if (countAppointments >= permittedAppointment) {
+
+        if (countAppointments >= clinicConfiguration.getMaximumOverbookingAppointments()) {
             throw new AppointmentConflictException(OVERLAP);
         }
 
-        WeekDay weekDay = WeekDay.fromDate(appointmentRequest.getScheduledTime().toLocalDate());
-        ClinicAvailability availability = clinicAvailabilityRepository
-                .findByClinicIdAndWeekDayAndIsWorkingDayTrue(appointmentRequest.getClinicId(), weekDay);
+        Optional<ClinicAvailabilityException> exception = clinicAvailabilityExceptionRepository
+                .findByExceptionDay(appointmentRequest.getScheduledTime().toLocalDate());
+        Availability availability;
+        if (exception.isEmpty()) {
+            ClinicAvailability clinicAvailability = clinicAvailabilityRepository
+                    .findByClinicIdAndWeekDayAndIsWorkingDayTrue(appointmentRequest.getClinicId(),
+                            WeekDay.fromDate(appointmentRequest.getScheduledTime().toLocalDate()))
+                    .orElseThrow(() -> new AppointmentConflictException(OUTSIDE_WORK_DAY));
+            availability = Availability.fromClinicAvailability(clinicAvailability);
+        } else {
+            availability = Availability.fromClinicAvailabilityException(exception.get());
+        }
 
-        if (availability == null) {
+        if (!availability.getIsWorkingDay()) {
             throw new AppointmentConflictException(OUTSIDE_WORK_DAY);
         }
 
         if (appointmentRequest.getScheduledTime().toLocalTime().isBefore(availability.getOpenTime()) ||
-                appointmentRequest.getScheduledTimeEnd(clinicConfiguration.getAppointmentDuration()).toLocalTime().isAfter(availability.getCloseTime())) {
+                appointmentRequest.getScheduledTimeEnd(appointmentDuration).toLocalTime().isAfter(availability.getCloseTime())) {
             throw new AppointmentConflictException(OUTSIDE_WORK_HOURS);
         }
 
-        if (appointmentRequest.getScheduledTimeEnd(clinicConfiguration.getAppointmentDuration()).toLocalTime().isAfter(availability.getLunchStartTime()) &&
+        if (!isNull(availability.getLunchStartTime()) &&
+                !isNull(availability.getLunchEndTime()) &&
+                appointmentRequest.getScheduledTimeEnd(appointmentDuration).toLocalTime().isAfter(availability.getLunchStartTime()) &&
                 appointmentRequest.getScheduledTime().toLocalTime().isBefore(availability.getLunchEndTime())) {
             throw new AppointmentConflictException(DURING_BREAK);
         }
 
-
         Patient patient = patientRepository
-                .findByPhoneNumber(appointmentRequest.getPatientNumber());
-
+                .findByPhoneNumber(appointmentRequest.getPatientNumber())
+                .orElseThrow(() -> new NotFoundException("Paciente"));
         Clinic clinic = clinicRepository
-                .findById(appointmentRequest.getClinicId()).orElse(null);
+                .findById(appointmentRequest.getClinicId())
+                .orElseThrow(() -> new NotFoundException("Clinica"));
         ServiceType serviceType = serviceTypeRepository
-                .findById(appointmentRequest.getServiceTypeId()).orElse(null);
+                .findById(appointmentRequest.getServiceTypeId())
+                .orElseThrow(() -> new NotFoundException("Tipo de serviço"));
 
         Appointment appointment = Appointment.builder()
                 .patient(patient)
                 .scheduledTime(appointmentRequest.getScheduledTime())
                 .clinic(clinic)
                 .serviceType(serviceType)
-                .duration(clinicConfiguration.getAppointmentDuration())
+                .duration(appointmentDuration)
                 .appointmentStatus(AGENDADO)
                 .notes(appointmentRequest.getNotes())
                 .build();
@@ -155,7 +168,6 @@ public class ClinicAvailabilityService {
     }
 
     public void updateAppointmentStatus(UpdateAppointmentStatusDTO updateStatus) {
-
         Appointment appointment = appointmentsRepository.findById(updateStatus.getAppointmentId())
                 .orElseThrow(() -> new NotFoundException("Agendamento " + updateStatus.getAppointmentId()));
 
