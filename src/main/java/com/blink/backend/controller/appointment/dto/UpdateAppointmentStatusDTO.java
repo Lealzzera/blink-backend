@@ -10,8 +10,6 @@ import lombok.Setter;
 @Getter
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UpdateAppointmentStatusDTO {
-
     private Integer appointmentId;
     private String newStatus;
-
 }
