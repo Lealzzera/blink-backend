@@ -3,6 +3,7 @@ package com.blink.backend.domain.service;
 import com.blink.backend.controller.appointment.dto.AppointmentDetailsDTO;
 import com.blink.backend.controller.appointment.dto.ClinicAvailabilityDTO;
 import com.blink.backend.controller.appointment.dto.CreateAppointmentDTO;
+import com.blink.backend.controller.appointment.dto.SaleDTO;
 import com.blink.backend.controller.appointment.dto.UpdateAppointmentStatusDTO;
 import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.domain.exception.appointment.AppointmentConflictException;
@@ -12,8 +13,10 @@ import com.blink.backend.persistence.entity.appointment.AppointmentStatus;
 import com.blink.backend.persistence.entity.appointment.ClinicAvailability;
 import com.blink.backend.persistence.entity.appointment.ClinicAvailabilityException;
 import com.blink.backend.persistence.entity.appointment.Patient;
+import com.blink.backend.persistence.entity.appointment.Sale;
 import com.blink.backend.persistence.entity.appointment.ServiceType;
 import com.blink.backend.persistence.entity.appointment.WeekDay;
+import com.blink.backend.persistence.entity.auth.Users;
 import com.blink.backend.persistence.entity.clinic.Clinic;
 import com.blink.backend.persistence.entity.clinic.ClinicConfiguration;
 import com.blink.backend.persistence.repository.AppointmentsRepository;
@@ -22,11 +25,14 @@ import com.blink.backend.persistence.repository.ClinicAvailabilityRepository;
 import com.blink.backend.persistence.repository.ClinicConfigurationRepository;
 import com.blink.backend.persistence.repository.ClinicRepository;
 import com.blink.backend.persistence.repository.PatientRepository;
+import com.blink.backend.persistence.repository.SaleRepository;
 import com.blink.backend.persistence.repository.ServiceTypeRepository;
+import com.blink.backend.persistence.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -48,6 +54,8 @@ public class ClinicAvailabilityService {
     private final ServiceTypeRepository serviceTypeRepository;
     private final ClinicConfigurationRepository clinicConfigurationRepository;
     private final ClinicAvailabilityExceptionRepository clinicAvailabilityExceptionRepository;
+    private final SaleRepository saleRepository;
+    private final UsersRepository usersRepository;
 
 
     public List<ClinicAvailabilityDTO> getClinicAvailability(
@@ -173,6 +181,31 @@ public class ClinicAvailabilityService {
 
         appointment.setAppointmentStatus(AppointmentStatus.valueOf(updateStatus.getNewStatus().toUpperCase()));
         appointmentsRepository.save(appointment);
+    }
+
+    public SaleDTO createSale(SaleDTO saleDTO){
+
+        Appointment appointment = appointmentsRepository.findById(saleDTO.getAppointmentId())
+                .orElseThrow(() -> new NotFoundException("Agendamento " + saleDTO.getAppointmentId()));
+
+        ServiceType serviceType = serviceTypeRepository.findById(saleDTO.getServiceType())
+                .orElseThrow(()-> new NotFoundException("Tipo de serviço"));
+
+        Users user = usersRepository.findById(saleDTO.getRegisteredByUser())
+                .orElseThrow(() -> new NotFoundException("Usuário"));
+
+
+        Sale sale = new Sale();
+        sale.setAppointment(appointment);
+        sale.setPatient(appointment.getPatient());
+        sale.setServiceType(serviceType);
+        sale.setSaleValue(saleDTO.getSaleValue());
+        sale.setRegisteredByUser(user);
+        sale.setSaleRegisteredAt(LocalDateTime.now());
+
+        sale = saleRepository.save(sale);
+
+        return SaleDTO.fromEntity(sale);
     }
 
 

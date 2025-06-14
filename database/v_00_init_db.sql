@@ -99,7 +99,7 @@ CREATE TABLE sale (
     appointment_id INT,
     sale_value NUMERIC(10,2) NOT NULL,
     sale_registered_by_user_id INT NOT NULL,
-    sale_registered_at TIMESTAMP NOT NULL,
+    sale_registered_at TIMESTAMP DEFAULT NOW() NOT NULL,
     service_type_id INT NOT NULL,
     FOREIGN KEY (service_type_id) REFERENCES service_type(id),
     FOREIGN KEY (appointment_id) REFERENCES appointment(id),
