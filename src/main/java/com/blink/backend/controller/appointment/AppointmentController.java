@@ -62,15 +62,7 @@ public class AppointmentController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("sale")
-    public ResponseEntity<SaleDTO> createSale(@RequestBody SaleDTO saleDTO){
 
-        SaleDTO createdSale = clinicAvailabilityService.createSale(saleDTO);
-        return ResponseEntity.created(URI
-                .create("appointments/sale"+ createdSale
-                        .getAppointmentId())).body(createdSale);
-
-    }
 
 
 }

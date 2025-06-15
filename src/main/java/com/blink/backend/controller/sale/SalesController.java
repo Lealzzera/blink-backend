@@ -1,0 +1,40 @@
+package com.blink.backend.controller.sale;
+
+import com.blink.backend.controller.appointment.dto.SaleDTO;
+import com.blink.backend.domain.service.SalesService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.net.URI;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("sales")
+public class SalesController {
+
+    private final SalesService salesService;
+
+
+    @GetMapping("{id}/details")
+    public ResponseEntity<SaleDTO> getSalesDetailsById(
+            @PathVariable Integer id) {
+        return ResponseEntity.ok(salesService.getSaleDetailsById(id));
+    }
+
+    @PostMapping("sale")
+    public ResponseEntity<SaleDTO> createSale(@RequestBody SaleDTO saleDTO){
+
+        SaleDTO createdSale = salesService.createSale(saleDTO);
+        return ResponseEntity.created(URI
+                .create("appointments/sale"+ createdSale
+                        .getAppointmentId())).body(createdSale);
+
+    }
+
+}

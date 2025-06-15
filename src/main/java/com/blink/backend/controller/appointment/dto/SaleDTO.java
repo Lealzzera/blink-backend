@@ -2,8 +2,10 @@ package com.blink.backend.controller.appointment.dto;
 
 
 import com.blink.backend.persistence.entity.appointment.Sale;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -24,16 +27,18 @@ public class SaleDTO {
     private BigDecimal saleValue;
     private Integer serviceType;
     private Integer registeredByUser;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime saleRegisteredAt;
 
     public static SaleDTO fromEntity(Sale sale) {
 
-        SaleDTO saleDTO = new SaleDTO();
-        saleDTO.setAppointmentId(sale.getAppointment().getId());
-        saleDTO.setServiceType(sale.getAppointment().getId());
-        saleDTO.setSaleValue(sale.getSaleValue());
-        saleDTO.setRegisteredByUser(sale.getRegisteredByUser().getId());
-
-        return saleDTO;
+        return SaleDTO.builder()
+                .appointmentId(sale.getAppointment().getId())
+                .serviceType(sale.getServiceType().getId())
+                .saleValue(sale.getSaleValue())
+                .registeredByUser(sale.getRegisteredByUser().getId())
+                .saleRegisteredAt(sale.getSaleRegisteredAt())
+                .build();
 
     }
 

@@ -8,6 +8,9 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -24,16 +27,20 @@ public class AppointmentDetailsDTO {
     private String notes;
     private UserDTO attendedByUser;
     private LocalDateTime attendedAt;
+    private List<SaleDTO> sales;
 
-    public static AppointmentDetailsDTO fromEntity(Appointment appointment){
+    public static AppointmentDetailsDTO fromEntity(Appointment appointment) {
         PatientDTO patientDTO = PatientDTO.builder()
                 .name(appointment.getPatient().getName())
                 .phoneNumber(appointment.getPatient().getPhoneNumber())
                 .build();
-        UserDTO userDTO = UserDTO.builder()
-                .id(appointment.getAttendedByUser().getId())
-                .name(appointment.getAttendedByUser().getName())
-                .build();
+        UserDTO userDTO = null;
+        if (!Objects.isNull(appointment.getAttendedByUser())) {
+            userDTO = UserDTO.builder()
+                    .id(appointment.getAttendedByUser().getId())
+                    .name(appointment.getAttendedByUser().getName())
+                    .build();
+        }
         return AppointmentDetailsDTO.builder()
                 .id(appointment.getId())
                 .patient(patientDTO)
@@ -44,6 +51,7 @@ public class AppointmentDetailsDTO {
                 .notes(appointment.getNotes())
                 .attendedByUser(userDTO)
                 .clinicId(appointment.getClinic().getId())
+                .sales(appointment.getSale().stream().map(SaleDTO::fromEntity).collect(Collectors.toList()))
                 .build();
     }
 }

@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Setter
 @Getter
@@ -22,6 +24,7 @@ public class AppointmentDTO {
     private String phone;
     private Integer duration;
     private String status;
+    private List<SaleDTO> sale;
 
     public static AppointmentDTO fromEntity(Appointment appointment) {
         return AppointmentDTO.builder()
@@ -31,7 +34,11 @@ public class AppointmentDTO {
                 .duration(appointment.getDuration())
                 .time(appointment.getScheduledTime().toLocalTime())
                 .status(appointment.getAppointmentStatus().name())
+                .sale(appointment.getSale().stream().map(SaleDTO::fromEntity).collect(Collectors.toList()))
                 .build();
 
     }
+
+
+
 }

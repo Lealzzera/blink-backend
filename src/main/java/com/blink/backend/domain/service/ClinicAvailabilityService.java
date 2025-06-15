@@ -54,8 +54,7 @@ public class ClinicAvailabilityService {
     private final ServiceTypeRepository serviceTypeRepository;
     private final ClinicConfigurationRepository clinicConfigurationRepository;
     private final ClinicAvailabilityExceptionRepository clinicAvailabilityExceptionRepository;
-    private final SaleRepository saleRepository;
-    private final UsersRepository usersRepository;
+
 
 
     public List<ClinicAvailabilityDTO> getClinicAvailability(
@@ -183,30 +182,7 @@ public class ClinicAvailabilityService {
         appointmentsRepository.save(appointment);
     }
 
-    public SaleDTO createSale(SaleDTO saleDTO){
 
-        Appointment appointment = appointmentsRepository.findById(saleDTO.getAppointmentId())
-                .orElseThrow(() -> new NotFoundException("Agendamento " + saleDTO.getAppointmentId()));
-
-        ServiceType serviceType = serviceTypeRepository.findById(saleDTO.getServiceType())
-                .orElseThrow(()-> new NotFoundException("Tipo de serviço"));
-
-        Users user = usersRepository.findById(saleDTO.getRegisteredByUser())
-                .orElseThrow(() -> new NotFoundException("Usuário"));
-
-
-        Sale sale = new Sale();
-        sale.setAppointment(appointment);
-        sale.setPatient(appointment.getPatient());
-        sale.setServiceType(serviceType);
-        sale.setSaleValue(saleDTO.getSaleValue());
-        sale.setRegisteredByUser(user);
-        sale.setSaleRegisteredAt(LocalDateTime.now());
-
-        sale = saleRepository.save(sale);
-
-        return SaleDTO.fromEntity(sale);
-    }
 
 
 }
