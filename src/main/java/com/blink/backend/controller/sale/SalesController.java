@@ -22,12 +22,12 @@ public class SalesController {
 
 
     @GetMapping("{id}/details")
-    public ResponseEntity<SaleDTO> getSalesDetailsById(
+    public ResponseEntity<SaleDTO> getSaleDetailsById(
             @PathVariable Integer id) {
         return ResponseEntity.ok(salesService.getSaleDetailsById(id));
     }
 
-    @PostMapping("sale")
+    @PostMapping("")
     public ResponseEntity<SaleDTO> createSale(@RequestBody SaleDTO saleDTO){
 
         SaleDTO createdSale = salesService.createSale(saleDTO);

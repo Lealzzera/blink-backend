@@ -34,7 +34,7 @@ public class AppointmentDTO {
                 .duration(appointment.getDuration())
                 .time(appointment.getScheduledTime().toLocalTime())
                 .status(appointment.getAppointmentStatus().name())
-                .sale(appointment.getSale().stream().map(SaleDTO::fromEntity).collect(Collectors.toList()))
+                .sale(appointment.getSales().stream().map(SaleDTO::fromEntity).collect(Collectors.toList()))
                 .build();
 
     }

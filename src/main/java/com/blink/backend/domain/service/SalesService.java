@@ -41,15 +41,24 @@ public class SalesService {
         Users user = usersRepository.findById(saleDTO.getRegisteredByUser())
                 .orElseThrow(() -> new NotFoundException("Usuário"));
 
+        Sale sale = Sale.builder()
+                .appointment(appointment)
+                .patient(appointment.getPatient())
+                .serviceType(serviceType)
+                .value(saleDTO.getValue())
+                .registeredByUser(user)
+                .registeredAt(LocalDateTime.now())
+                .build();
 
-        Sale sale = new Sale();
-        sale.setAppointment(appointment);
-        sale.setPatient(appointment.getPatient());
-        sale.setServiceType(serviceType);
-        sale.setSaleValue(saleDTO.getSaleValue());
-        sale.setRegisteredByUser(user);
-        sale.setSaleRegisteredAt(LocalDateTime.now());
+        //Sale sale = new Sale();
+        //sale.setAppointment(appointment);
+        //sale.setPatient(appointment.getPatient());
+        //sale.setServiceType(serviceType);
+        //sale.setSaleValue(saleDTO.getValue());
+        //sale.setRegisteredByUser(user);
+        //sale.setSaleRegisteredAt(LocalDateTime.now());
 
+        //return saleRepository.save(sale);
         sale = saleRepository.save(sale);
 
         return SaleDTO.fromEntity(sale);

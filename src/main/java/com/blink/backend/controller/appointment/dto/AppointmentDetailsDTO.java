@@ -51,7 +51,7 @@ public class AppointmentDetailsDTO {
                 .notes(appointment.getNotes())
                 .attendedByUser(userDTO)
                 .clinicId(appointment.getClinic().getId())
-                .sales(appointment.getSale().stream().map(SaleDTO::fromEntity).collect(Collectors.toList()))
+                .sales(appointment.getSales().stream().map(SaleDTO::fromEntity).collect(Collectors.toList()))
                 .build();
     }
 }

@@ -5,7 +5,6 @@ import com.blink.backend.persistence.entity.appointment.Sale;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,20 +23,20 @@ import java.time.LocalDateTime;
 public class SaleDTO {
 
     private Integer appointmentId;
-    private BigDecimal saleValue;
+    private BigDecimal value;
     private Integer serviceType;
     private Integer registeredByUser;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-    private LocalDateTime saleRegisteredAt;
+    private LocalDateTime registeredAt;
 
     public static SaleDTO fromEntity(Sale sale) {
 
         return SaleDTO.builder()
                 .appointmentId(sale.getAppointment().getId())
                 .serviceType(sale.getServiceType().getId())
-                .saleValue(sale.getSaleValue())
+                .value(sale.getValue())
                 .registeredByUser(sale.getRegisteredByUser().getId())
-                .saleRegisteredAt(sale.getSaleRegisteredAt())
+                .registeredAt(sale.getRegisteredAt())
                 .build();
 
     }

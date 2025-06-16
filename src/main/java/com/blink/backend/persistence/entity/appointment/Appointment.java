@@ -1,6 +1,5 @@
 package com.blink.backend.persistence.entity.appointment;
 
-import com.blink.backend.controller.appointment.dto.SaleDTO;
 import com.blink.backend.persistence.entity.auth.Users;
 import com.blink.backend.persistence.entity.clinic.Clinic;
 import jakarta.persistence.CascadeType;
@@ -77,7 +76,7 @@ public class Appointment {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "appointment", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    private List<Sale> sale;
+    private List<Sale> sales;
 
     public boolean isNotCancelled(){
         return !AppointmentStatus.CANCELADO.equals(appointmentStatus);
