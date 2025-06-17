@@ -49,7 +49,7 @@ INSERT INTO appointment (
 
 -- SALE
 INSERT INTO sale (
-    patient_id, appointment_id, sale_value, sale_registered_by_user_id, sale_registered_at, service_type_id
+    patient_id, appointment_id, value, registered_by_user_id, registered_at, service_type_id
 ) VALUES (
     1, 1, 200.00, 1, NOW(), 1
 );

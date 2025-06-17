@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Entity
+@Builder
 @Table(name = "sale")
 public class Sale {
 
@@ -35,14 +37,14 @@ public class Sale {
     private Appointment appointment;
 
     @Column(name = "sale_value", precision = 10, scale = 2)
-    private BigDecimal saleValue;
+    private BigDecimal value;
 
     @ManyToOne
     @JoinColumn(name = "sale_registered_by_user_id")
     private Users registeredByUser;
 
     @Column(name = "sale_registered_at")
-    private LocalDateTime saleRegisteredAt;
+    private LocalDateTime registeredAt;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "service_type_id")

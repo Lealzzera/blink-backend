@@ -3,6 +3,7 @@ package com.blink.backend.controller.appointment;
 import com.blink.backend.controller.appointment.dto.AppointmentDetailsDTO;
 import com.blink.backend.controller.appointment.dto.ClinicAvailabilityDTO;
 import com.blink.backend.controller.appointment.dto.CreateAppointmentDTO;
+import com.blink.backend.controller.appointment.dto.SaleDTO;
 import com.blink.backend.controller.appointment.dto.UpdateAppointmentStatusDTO;
 import com.blink.backend.domain.service.ClinicAvailabilityService;
 import com.blink.backend.persistence.entity.appointment.Appointment;
@@ -60,6 +61,8 @@ public class AppointmentController {
 
         return ResponseEntity.noContent().build();
     }
+
+
 
 
 }
