@@ -27,7 +27,7 @@ public class SalesController {
         return ResponseEntity.ok(salesService.getSaleDetailsById(id));
     }
 
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<SaleDTO> createSale(@RequestBody SaleDTO saleDTO){
 
         SaleDTO createdSale = salesService.createSale(saleDTO);

@@ -24,7 +24,7 @@ public class AppointmentDTO {
     private String phone;
     private Integer duration;
     private String status;
-    private List<SaleDTO> sale;
+    private List<SaleDTO> sales;
 
     public static AppointmentDTO fromEntity(Appointment appointment) {
         return AppointmentDTO.builder()
@@ -34,7 +34,7 @@ public class AppointmentDTO {
                 .duration(appointment.getDuration())
                 .time(appointment.getScheduledTime().toLocalTime())
                 .status(appointment.getAppointmentStatus().name())
-                .sale(appointment.getSales().stream().map(SaleDTO::fromEntity).collect(Collectors.toList()))
+                .sales(appointment.getSales().stream().map(SaleDTO::fromEntity).collect(Collectors.toList()))
                 .build();
 
     }
