@@ -20,9 +20,9 @@ import com.blink.backend.persistence.repository.AppointmentsRepository;
 import com.blink.backend.persistence.repository.ClinicAvailabilityExceptionRepository;
 import com.blink.backend.persistence.repository.ClinicAvailabilityRepository;
 import com.blink.backend.persistence.repository.ClinicConfigurationRepository;
-import com.blink.backend.persistence.repository.ClinicRepository;
 import com.blink.backend.persistence.repository.PatientRepository;
 import com.blink.backend.persistence.repository.ServiceTypeRepository;
+import com.blink.backend.persistence.repository.clinic.ClinicRepositoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +43,7 @@ import static java.util.Objects.isNull;
 public class ClinicAvailabilityService {
     private final ClinicAvailabilityRepository clinicAvailabilityRepository;
     private final AppointmentsRepository appointmentsRepository;
-    private final ClinicRepository clinicRepository;
+    private final ClinicRepositoryService clinicRepository;
     private final PatientRepository patientRepository;
     private final ServiceTypeRepository serviceTypeRepository;
     private final ClinicConfigurationRepository clinicConfigurationRepository;
@@ -93,7 +93,8 @@ public class ClinicAvailabilityService {
     }
 
 
-    public Appointment saveAppointment(CreateAppointmentDTO appointmentRequest) {
+    public Appointment saveAppointment(CreateAppointmentDTO appointmentRequest)
+            throws NotFoundException, AppointmentConflictException {
 
         ClinicConfiguration clinicConfiguration = clinicConfigurationRepository
                 .findByClinicId(appointmentRequest.getClinicId());
@@ -141,8 +142,7 @@ public class ClinicAvailabilityService {
                 .findByPhoneNumber(appointmentRequest.getPatientNumber())
                 .orElseThrow(() -> new NotFoundException("Paciente"));
         Clinic clinic = clinicRepository
-                .findById(appointmentRequest.getClinicId())
-                .orElseThrow(() -> new NotFoundException("Clinica"));
+                .findById(appointmentRequest.getClinicId());
         ServiceType serviceType = serviceTypeRepository
                 .findById(appointmentRequest.getServiceTypeId())
                 .orElseThrow(() -> new NotFoundException("Tipo de serviço"));
@@ -161,13 +161,13 @@ public class ClinicAvailabilityService {
 
     }
 
-    public AppointmentDetailsDTO getAppointmentDetailsById(Integer id) {
+    public AppointmentDetailsDTO getAppointmentDetailsById(Integer id) throws NotFoundException {
         return appointmentsRepository.findById(id)
                 .map(AppointmentDetailsDTO::fromEntity)
                 .orElseThrow(() -> new NotFoundException("Agendamento " + id));
     }
 
-    public void updateAppointmentStatus(UpdateAppointmentStatusDTO updateStatus) {
+    public void updateAppointmentStatus(UpdateAppointmentStatusDTO updateStatus) throws NotFoundException {
         Appointment appointment = appointmentsRepository.findById(updateStatus.getAppointmentId())
                 .orElseThrow(() -> new NotFoundException("Agendamento " + updateStatus.getAppointmentId()));
 

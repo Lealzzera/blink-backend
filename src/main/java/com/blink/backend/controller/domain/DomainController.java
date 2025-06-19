@@ -1,5 +1,6 @@
 package com.blink.backend.controller.domain;
 
+import com.blink.backend.domain.model.message.WhatsAppStatus;
 import com.blink.backend.persistence.entity.appointment.AppointmentStatus;
 import com.blink.backend.persistence.entity.appointment.WeekDay;
 import lombok.RequiredArgsConstructor;
@@ -24,5 +25,10 @@ public class DomainController {
     @GetMapping("appointment-status")
     public ResponseEntity<List<AppointmentStatus>> getAppointmentStatus() {
         return ResponseEntity.ok(Arrays.stream(AppointmentStatus.values()).toList());
+    }
+
+    @GetMapping("whats-app-status")
+    public ResponseEntity<List<WhatsAppStatus>> getWhatsAppStatus() {
+        return ResponseEntity.ok(Arrays.stream(WhatsAppStatus.values()).toList());
     }
 }

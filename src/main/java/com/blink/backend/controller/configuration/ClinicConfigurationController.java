@@ -4,6 +4,7 @@ package com.blink.backend.controller.configuration;
 import com.blink.backend.controller.appointment.dto.ClinicAvailabilityExceptionDTO;
 import com.blink.backend.controller.configuration.dto.AppointmentConfigurationDTO;
 import com.blink.backend.controller.configuration.dto.AvailabilityConfigurationDTO;
+import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.domain.service.ClinicConfigurationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -41,13 +42,14 @@ public class ClinicConfigurationController {
     }
 
     @GetMapping("appointments/{clinicId}")
-    public ResponseEntity<AppointmentConfigurationDTO> getAppointmentConfiguration(@PathVariable Integer clinicId){
+    public ResponseEntity<AppointmentConfigurationDTO> getAppointmentConfiguration(@PathVariable Integer clinicId) {
         return ResponseEntity.ok(clinicConfigurationService.getAppointmentConfiguration(clinicId));
     }
 
     @PostMapping("availability/exception")
-    public ResponseEntity<Void> createAvailabilityException(@RequestBody ClinicAvailabilityExceptionDTO availabilityExceptionDTO){
-
+    public ResponseEntity<Void> createAvailabilityException(
+            @RequestBody ClinicAvailabilityExceptionDTO availabilityExceptionDTO)
+            throws NotFoundException {
         clinicConfigurationService.createAvailabilityException(availabilityExceptionDTO);
         return ResponseEntity.noContent().build();
     }

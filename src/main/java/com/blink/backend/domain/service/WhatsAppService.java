@@ -1,15 +1,13 @@
 package com.blink.backend.domain.service;
 
-import com.blink.backend.domain.integration.WahaClient;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import com.blink.backend.controller.message.dto.SendMessageRequest;
+import com.blink.backend.controller.message.dto.WhatsAppStatusDto;
+import com.blink.backend.domain.exception.NotFoundException;
+import com.blink.backend.domain.exception.message.WhatsAppNotConnectedException;
 
-@Service
-@RequiredArgsConstructor
-public class WhatsAppService {
+public interface WhatsAppService {
 
-    private final WahaClient wahaClient;
-    public byte[] getWahaQrCode(){
-        return wahaClient.getWahaQrCode();
-    }
+    WhatsAppStatusDto getWhatsAppStatusByClinicId(Integer clinicId) throws NotFoundException;
+    byte[] getWhatsAppQrCodeByClinic(Integer clinicId) throws NotFoundException;
+    void sendMessage(SendMessageRequest sendMessageRequest) throws NotFoundException, WhatsAppNotConnectedException;
 }
