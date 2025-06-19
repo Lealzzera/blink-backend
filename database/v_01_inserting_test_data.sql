@@ -36,7 +36,6 @@ INSERT INTO clinic_availability (
 -- PATIENT
 INSERT INTO patient (name, phone_number) VALUES ('João do Brás', '11911112222');
 
-
 -- SERVICE_TYPE
 INSERT INTO service_type (service_type) VALUES ('Consulta');
 
