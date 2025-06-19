@@ -1,6 +1,5 @@
 package com.blink.backend.controller.message;
 
-import com.blink.backend.controller.message.dto.MessageReceivedRequest;
 import com.blink.backend.controller.message.dto.SendMessageRequest;
 import com.blink.backend.controller.message.dto.WhatsAppStatusDto;
 import com.blink.backend.domain.exception.NotFoundException;
