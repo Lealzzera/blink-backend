@@ -97,14 +97,14 @@ CREATE TABLE sale (
     id SERIAL PRIMARY KEY,
     patient_id INT NOT NULL,
     appointment_id INT,
-    sale_value NUMERIC(10,2) NOT NULL,
-    sale_registered_by_user_id INT NOT NULL,
-    sale_registered_at TIMESTAMP NOT NULL,
+    value NUMERIC(10,2) NOT NULL,
+    registered_by_user_id INT NOT NULL,
+    registered_at TIMESTAMP DEFAULT NOW() NOT NULL,
     service_type_id INT NOT NULL,
     FOREIGN KEY (service_type_id) REFERENCES service_type(id),
     FOREIGN KEY (appointment_id) REFERENCES appointment(id),
     FOREIGN KEY (patient_id) REFERENCES patient(id),
-    FOREIGN KEY (sale_registered_by_user_id) REFERENCES users(id)
+    FOREIGN KEY (registered_by_user_id) REFERENCES users(id)
 );
 
 -- MESSAGE
