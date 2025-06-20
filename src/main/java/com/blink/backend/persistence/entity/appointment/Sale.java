@@ -36,20 +36,18 @@ public class Sale {
     @JoinColumn(name = "appointment_id")
     private Appointment appointment;
 
-    @Column(name = "sale_value", precision = 10, scale = 2)
+    @Column(name = "value", precision = 10, scale = 2)
     private BigDecimal value;
 
     @ManyToOne
-    @JoinColumn(name = "sale_registered_by_user_id")
+    @JoinColumn(name = "registered_by_user_id")
     private Users registeredByUser;
 
-    @Column(name = "sale_registered_at")
+    @Column(name = "registered_at")
     private LocalDateTime registeredAt;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "service_type_id")
     private ServiceType serviceType;
-
-
 
 }
