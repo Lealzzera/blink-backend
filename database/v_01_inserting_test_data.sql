@@ -2,7 +2,8 @@
 INSERT INTO users (name) VALUES ('João da Silva');
 
 -- CLINIC
-INSERT INTO clinic (clinic_name) VALUES ('Clínica Saúde Total');
+INSERT INTO clinic (clinic_name, waha_session)
+VALUES ('Clínica Saúde Total', 'default');
 
 -- USER_CLINIC
 INSERT INTO user_clinic (user_id, clinic_id, role) VALUES (1, 1, 'Administrador');

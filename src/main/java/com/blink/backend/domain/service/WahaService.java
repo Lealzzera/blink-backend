@@ -1,5 +1,6 @@
 package com.blink.backend.domain.service;
 
+import com.blink.backend.controller.message.dto.MessageReceivedRequest;
 import com.blink.backend.controller.message.dto.SendMessageRequest;
 import com.blink.backend.controller.message.dto.WhatsAppStatusDto;
 import com.blink.backend.domain.exception.NotFoundException;
@@ -44,10 +45,10 @@ public class WahaService implements WhatsAppService {
         Clinic clinic = clinicRepository.findById(clinicId);
 
         if (getWhatsAppStatusByClinic(clinic).isShutdown()) {
-            restartWahaSession(clinic.getTokenizedName());
+            restartWahaSession(clinic.getWahaSession());
         }
 
-        return wahaClient.getWahaQrCode(clinic.getTokenizedName());
+        return wahaClient.getWahaQrCode(clinic.getWahaSession());
     }
 
     @Override
@@ -58,10 +59,15 @@ public class WahaService implements WhatsAppService {
             throw new WhatsAppNotConnectedException();
         }
         wahaClient.sendMessage(SendWahaMessageRequest.builder()
-                .session(clinic.getTokenizedName())
+                .session(clinic.getWahaSession())
                 .phoneNumber(sendMessageRequest.getPhoneNumber().concat("@c.us"))
                 .text(sendMessageRequest.getMessage())
                 .build());
+    }
+
+    @Override
+    public void receiveMessage(MessageReceivedRequest message) throws NotFoundException {
+
     }
 
     private void restartWahaSession(String tokenizedName) {
@@ -81,7 +87,7 @@ public class WahaService implements WhatsAppService {
     }
 
     private WhatsAppStatusDto getWhatsAppStatusByClinic(Clinic clinic) {
-        ResponseEntity<WahaSessionStatusResponse> response = wahaClient.getWahaSessionStatus(clinic.getTokenizedName());
+        ResponseEntity<WahaSessionStatusResponse> response = wahaClient.getWahaSessionStatus(clinic.getWahaSession());
         if (HttpStatus.NOT_FOUND.equals(response.getStatusCode()) ||
                 isNull(response.getBody()) ||
                 response.getBody().getStatus().isShutdown()) {

@@ -1,5 +1,6 @@
 package com.blink.backend.controller.message;
 
+import com.blink.backend.controller.message.dto.MessageReceivedRequest;
 import com.blink.backend.controller.message.dto.SendMessageRequest;
 import com.blink.backend.controller.message.dto.WhatsAppStatusDto;
 import com.blink.backend.domain.exception.NotFoundException;
@@ -40,7 +41,7 @@ public class WhatsAppController {
     }
 
     @PostMapping("receive-message")
-    public ResponseEntity<Void> receiveMessage(@RequestBody /*MessageReceivedRequest*/ String message) {
+    public ResponseEntity<Void> receiveMessage(@RequestBody MessageReceivedRequest message) {
         log.info(message);
         return ResponseEntity.ok().build();
     }

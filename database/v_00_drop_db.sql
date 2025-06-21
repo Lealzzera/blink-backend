@@ -8,8 +8,6 @@ DROP TABLE public.clinic_availability CASCADE;
 
 DROP TABLE public.clinic_availability_exception CASCADE;
 
-DROP TABLE public.clinic_availability_exceptions CASCADE;
-
 DROP TABLE public.clinic_configuration CASCADE;
 
 DROP TABLE public.patient CASCADE;

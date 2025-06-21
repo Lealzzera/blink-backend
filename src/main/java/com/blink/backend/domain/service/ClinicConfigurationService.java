@@ -25,8 +25,6 @@ public class ClinicConfigurationService {
 
     private final ClinicAvailabilityRepository clinicAvailabilityRepository;
     private final ClinicConfigurationRepository clinicConfigurationRepository;
-    private final ClinicAvailabilityExceptionRepository clinicAvailabilityExceptionRepository;
-    private final ClinicRepositoryService clinicRepository;
 
     public List<AvailabilityConfigurationDTO> getAvailabilityConfiguration(Integer clinicId) {
         return clinicAvailabilityRepository
@@ -83,29 +81,5 @@ public class ClinicConfigurationService {
                 .build();
     }
 
-    public Integer createAvailabilityException(ClinicAvailabilityExceptionDTO availabilityExceptionDTO) throws NotFoundException {
 
-        Clinic clinic = clinicRepository.findById(availabilityExceptionDTO.getClinicId());
-
-        ClinicAvailabilityException clinicAvailabilityException = ClinicAvailabilityException
-                .builder()
-                .clinic(clinic)
-                .exceptionDay(availabilityExceptionDTO.getExceptionDay())
-                .isWorkingDay(availabilityExceptionDTO.getIsWorkingDay())
-                .openTime(availabilityExceptionDTO.getOpen())
-                .closeTime(availabilityExceptionDTO.getClose())
-                .lunchStartTime(availabilityExceptionDTO.getBreakStart())
-                .lunchEndTime(availabilityExceptionDTO.getBreakEnd())
-                .build();
-
-        ClinicAvailabilityException exception = clinicAvailabilityExceptionRepository.save(clinicAvailabilityException);
-
-        return exception.getId();
-    }
-
-    public ClinicAvailabilityExceptionDTO getClinicAvailabilityExceptionById(Integer id) {
-        return clinicAvailabilityExceptionRepository.findById(id)
-                .map(ClinicAvailabilityExceptionDTO::fromEntity)
-                .orElseThrow(() -> new NotFoundException("Exceção"));
-    }
 }

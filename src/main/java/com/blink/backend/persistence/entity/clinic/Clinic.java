@@ -28,10 +28,6 @@ public class Clinic {
     @OneToOne(mappedBy = "clinic")
     private ClinicConfiguration clinicConfiguration;
 
-    public String getTokenizedName() { //TODO descomentar code quando tiver waha plus
-        return "default";
-        /*return stripAccents(normalizeSpace(clinicName))
-                .toLowerCase()
-                .replace("\s", "_");*/
-    }
+    @Column(name = "waha_session")
+    private String wahaSession;
 }

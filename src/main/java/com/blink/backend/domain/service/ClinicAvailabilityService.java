@@ -139,7 +139,7 @@ public class ClinicAvailabilityService {
         }
 
         Patient patient = patientRepository
-                .findByPhoneNumber(appointmentRequest.getPatientNumber())
+                .findByPhoneNumber(appointmentRequest.getPatientNumber().trim())
                 .orElseThrow(() -> new NotFoundException("Paciente"));
         Clinic clinic = clinicRepository
                 .findById(appointmentRequest.getClinicId());

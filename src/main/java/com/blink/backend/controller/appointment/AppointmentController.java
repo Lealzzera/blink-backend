@@ -45,7 +45,7 @@ public class AppointmentController {
     @PostMapping
     public ResponseEntity<Void> createAppointment(
             @RequestBody CreateAppointmentDTO createAppointmentDTO)
-            throws NotFoundException, AppointmentConflictException { //TODO trim no phone number
+            throws NotFoundException, AppointmentConflictException {
         Appointment appointment = clinicAvailabilityService.saveAppointment(createAppointmentDTO);
 
         return ResponseEntity.created(URI.create(appointment.getId().toString())).build();

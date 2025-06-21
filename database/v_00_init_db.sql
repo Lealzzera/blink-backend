@@ -6,7 +6,8 @@ CREATE TABLE users (
 
 CREATE TABLE clinic (
     id SERIAL PRIMARY KEY,
-    clinic_name VARCHAR(255) NOT NULL
+    clinic_name VARCHAR(255) NOT NULL,
+    waha_session VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE user_clinic (
