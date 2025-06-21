@@ -10,8 +10,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
@@ -21,6 +23,8 @@ import java.time.LocalDateTime;
 @Getter
 @Entity
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "sale")
 public class Sale {
 
@@ -36,20 +40,18 @@ public class Sale {
     @JoinColumn(name = "appointment_id")
     private Appointment appointment;
 
-    @Column(name = "sale_value", precision = 10, scale = 2)
+    @Column(name = "value", precision = 10, scale = 2)
     private BigDecimal value;
 
     @ManyToOne
-    @JoinColumn(name = "sale_registered_by_user_id")
+    @JoinColumn(name = "registered_by_user_id")
     private Users registeredByUser;
 
-    @Column(name = "sale_registered_at")
+    @Column(name = "registered_at")
     private LocalDateTime registeredAt;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "service_type_id")
     private ServiceType serviceType;
-
-
 
 }

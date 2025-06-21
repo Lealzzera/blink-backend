@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -47,11 +49,15 @@ public class ClinicConfigurationController {
     }
 
     @PostMapping("availability/exception")
-    public ResponseEntity<Void> createAvailabilityException(
-            @RequestBody ClinicAvailabilityExceptionDTO availabilityExceptionDTO)
+    public ResponseEntity<Integer> createAvailabilityException(@RequestBody ClinicAvailabilityExceptionDTO availabilityExceptionDTO)
             throws NotFoundException {
-        clinicConfigurationService.createAvailabilityException(availabilityExceptionDTO);
-        return ResponseEntity.noContent().build();
+        URI uri = URI.create(clinicConfigurationService.createAvailabilityException(availabilityExceptionDTO).toString());
+        return ResponseEntity.created(uri).build();
+    }
+
+    @GetMapping("availability/exception/{id}")
+    public ResponseEntity<ClinicAvailabilityExceptionDTO> getClinicAvailabilityExceptionById(@RequestParam Integer id) {
+        return ResponseEntity.ok(clinicConfigurationService.getClinicAvailabilityExceptionById(id));
     }
 
 }

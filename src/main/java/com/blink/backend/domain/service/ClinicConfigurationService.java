@@ -14,6 +14,7 @@ import com.blink.backend.persistence.repository.ClinicAvailabilityRepository;
 import com.blink.backend.persistence.repository.ClinicConfigurationRepository;
 import com.blink.backend.persistence.repository.clinic.ClinicRepositoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -82,7 +83,7 @@ public class ClinicConfigurationService {
                 .build();
     }
 
-    public void createAvailabilityException(ClinicAvailabilityExceptionDTO availabilityExceptionDTO) throws NotFoundException {
+    public Integer createAvailabilityException(ClinicAvailabilityExceptionDTO availabilityExceptionDTO) throws NotFoundException {
 
         Clinic clinic = clinicRepository.findById(availabilityExceptionDTO.getClinicId());
 
@@ -97,9 +98,14 @@ public class ClinicConfigurationService {
                 .lunchEndTime(availabilityExceptionDTO.getBreakEnd())
                 .build();
 
-        clinicAvailabilityExceptionRepository.save(clinicAvailabilityException);
+        ClinicAvailabilityException exception = clinicAvailabilityExceptionRepository.save(clinicAvailabilityException);
 
+        return exception.getId();
     }
 
-
+    public ClinicAvailabilityExceptionDTO getClinicAvailabilityExceptionById(Integer id) {
+        return clinicAvailabilityExceptionRepository.findById(id)
+                .map(ClinicAvailabilityExceptionDTO::fromEntity)
+                .orElseThrow(() -> new NotFoundException("Exceção"));
+    }
 }
