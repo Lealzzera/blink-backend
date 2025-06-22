@@ -34,9 +34,9 @@ public class SalesController {
             throws NotFoundException {
 
         SaleDTO createdSale = salesService.createSale(saleDTO);
-        return ResponseEntity.created(URI
-                .create("appointments/sale" + createdSale
-                        .getAppointmentId())).body(createdSale);
+        return ResponseEntity
+                .created(URI.create(createdSale.getAppointmentId().toString()))
+                .body(createdSale);
 
     }
 

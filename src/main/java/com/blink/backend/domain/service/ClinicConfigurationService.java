@@ -1,20 +1,13 @@
 package com.blink.backend.domain.service;
 
-import com.blink.backend.controller.appointment.dto.ClinicAvailabilityExceptionDTO;
 import com.blink.backend.controller.configuration.dto.AppointmentConfigurationDTO;
 import com.blink.backend.controller.configuration.dto.AvailabilityConfigurationDTO;
-import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.persistence.entity.appointment.ClinicAvailability;
-import com.blink.backend.persistence.entity.appointment.ClinicAvailabilityException;
 import com.blink.backend.persistence.entity.appointment.WeekDay;
-import com.blink.backend.persistence.entity.clinic.Clinic;
 import com.blink.backend.persistence.entity.clinic.ClinicConfiguration;
-import com.blink.backend.persistence.repository.ClinicAvailabilityExceptionRepository;
 import com.blink.backend.persistence.repository.ClinicAvailabilityRepository;
 import com.blink.backend.persistence.repository.ClinicConfigurationRepository;
-import com.blink.backend.persistence.repository.clinic.ClinicRepositoryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
