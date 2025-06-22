@@ -46,6 +46,10 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             docker load < /opt/backend-dev/blink-be.tar.gz
-            docker stop blink-be || true
-            docker rm blink-be || true
-            docker run -d --name blink-be -p 3003:51234 --network blink-docker-network --env-file /opt/backend-dev/.env blink-be
+            docker stop blink-be-dev || true
+            docker rm blink-be-dev || true
+            docker run -d --name blink-be-dev \
+            -p 3003:51234 \
+            -e SPRING_PROFILES_ACTIVE=dev
+            --network blink-docker-network \
+            --env-file /opt/backend-dev/.env blink-be
