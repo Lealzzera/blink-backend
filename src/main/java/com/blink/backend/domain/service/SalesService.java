@@ -24,13 +24,13 @@ public class SalesService {
     private final AppointmentsRepository appointmentsRepository;
     private final ServiceTypeRepository serviceTypeRepository;
 
-    public SaleDTO getSaleDetailsById(Integer id) {
+    public SaleDTO getSaleDetailsById(Integer id) throws NotFoundException {
         return saleRepository.findById(id)
                 .map(SaleDTO::fromEntity)
                 .orElseThrow(() -> new NotFoundException("Venda " + id));
     }
 
-    public SaleDTO createSale(SaleDTO saleDTO){
+    public SaleDTO createSale(SaleDTO saleDTO) throws NotFoundException {
 
         Appointment appointment = appointmentsRepository.findById(saleDTO.getAppointmentId())
                 .orElseThrow(() -> new NotFoundException("Agendamento " + saleDTO.getAppointmentId()));

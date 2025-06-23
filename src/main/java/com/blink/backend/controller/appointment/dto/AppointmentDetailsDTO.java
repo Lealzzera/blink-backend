@@ -2,8 +2,6 @@ package com.blink.backend.controller.appointment.dto;
 
 import com.blink.backend.persistence.entity.appointment.Appointment;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,7 +13,6 @@ import java.util.stream.Collectors;
 @Getter
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class AppointmentDetailsDTO {
     private Integer id;
     private PatientDTO patient;

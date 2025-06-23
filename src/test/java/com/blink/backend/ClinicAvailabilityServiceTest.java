@@ -16,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,7 +40,7 @@ public class ClinicAvailabilityServiceTest {
 
     @Test
     @DisplayName("Sucesso de atualizar o status do agendamento")
-    void updateAppointmentStatusSuccess() {
+    void updateAppointmentStatusSuccess() throws NotFoundException {
         UpdateAppointmentStatusDTO dto = MockObjects.getUpdateAppointmentStatus(1, "AGENDADO");
         Appointment appointment = MockObjects.getAppointment();
         when(appointmentsRepository.findById(eq(dto.getAppointmentId())))

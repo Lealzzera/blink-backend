@@ -1,12 +1,18 @@
 package com.blink.backend.persistence.entity.appointment;
 
+import com.blink.backend.persistence.entity.clinic.Clinic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -14,6 +20,9 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "patient")
 public class Patient {
     @Id
@@ -29,5 +38,9 @@ public class Patient {
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    @ManyToOne
+    @JoinColumn(name = "clinic_id")
+    private Clinic clinic;
 }
 

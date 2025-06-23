@@ -27,4 +27,7 @@ public class Clinic {
 
     @OneToOne(mappedBy = "clinic")
     private ClinicConfiguration clinicConfiguration;
+
+    @Column(name = "waha_session")
+    private String wahaSession;
 }

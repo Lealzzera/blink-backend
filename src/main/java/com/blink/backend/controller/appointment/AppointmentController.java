@@ -3,8 +3,9 @@ package com.blink.backend.controller.appointment;
 import com.blink.backend.controller.appointment.dto.AppointmentDetailsDTO;
 import com.blink.backend.controller.appointment.dto.ClinicAvailabilityDTO;
 import com.blink.backend.controller.appointment.dto.CreateAppointmentDTO;
-import com.blink.backend.controller.appointment.dto.SaleDTO;
 import com.blink.backend.controller.appointment.dto.UpdateAppointmentStatusDTO;
+import com.blink.backend.domain.exception.NotFoundException;
+import com.blink.backend.domain.exception.appointment.AppointmentConflictException;
 import com.blink.backend.domain.service.ClinicAvailabilityService;
 import com.blink.backend.persistence.entity.appointment.Appointment;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,8 @@ public class AppointmentController {
 
     @PostMapping
     public ResponseEntity<Void> createAppointment(
-            @RequestBody CreateAppointmentDTO createAppointmentDTO) { //TODO trim no phone number
+            @RequestBody CreateAppointmentDTO createAppointmentDTO)
+            throws NotFoundException, AppointmentConflictException {
         Appointment appointment = clinicAvailabilityService.saveAppointment(createAppointmentDTO);
 
         return ResponseEntity.created(URI.create(appointment.getId().toString())).build();
@@ -51,12 +53,13 @@ public class AppointmentController {
 
     @GetMapping("{id}/details")
     public ResponseEntity<AppointmentDetailsDTO> getAppointmentDetailsById(
-            @PathVariable Integer id) {
+            @PathVariable Integer id) throws NotFoundException {
         return ResponseEntity.ok(clinicAvailabilityService.getAppointmentDetailsById(id));
     }
 
     @PutMapping("status")
-    public ResponseEntity<Void> updateAppointmentStatus(@RequestBody UpdateAppointmentStatusDTO updateStatus) {
+    public ResponseEntity<Void> updateAppointmentStatus(@RequestBody UpdateAppointmentStatusDTO updateStatus)
+            throws NotFoundException {
         clinicAvailabilityService.updateAppointmentStatus(updateStatus);
 
         return ResponseEntity.noContent().build();

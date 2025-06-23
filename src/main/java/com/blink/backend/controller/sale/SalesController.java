@@ -1,6 +1,7 @@
 package com.blink.backend.controller.sale;
 
 import com.blink.backend.controller.appointment.dto.SaleDTO;
+import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.domain.service.SalesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,17 +24,19 @@ public class SalesController {
 
     @GetMapping("{id}/details")
     public ResponseEntity<SaleDTO> getSaleDetailsById(
-            @PathVariable Integer id) {
+            @PathVariable Integer id)
+            throws NotFoundException {
         return ResponseEntity.ok(salesService.getSaleDetailsById(id));
     }
 
     @PostMapping
-    public ResponseEntity<SaleDTO> createSale(@RequestBody SaleDTO saleDTO){
+    public ResponseEntity<SaleDTO> createSale(@RequestBody SaleDTO saleDTO)
+            throws NotFoundException {
 
         SaleDTO createdSale = salesService.createSale(saleDTO);
-        return ResponseEntity.created(URI
-                .create("appointments/sale"+ createdSale
-                        .getAppointmentId())).body(createdSale);
+        return ResponseEntity
+                .created(URI.create(createdSale.getAppointmentId().toString()))
+                .body(createdSale);
 
     }
 
