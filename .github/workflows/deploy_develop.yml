@@ -48,8 +48,4 @@ jobs:
             docker load < /opt/backend/dev/blink-be.tar.gz
             docker stop blink-be-dev || true
             docker rm blink-be-dev || true
-            docker run -d --name blink-be-dev \
-            -p 3003:3003 \
-            -e SPRING_PROFILES_ACTIVE=dev
-            --network blink-docker-network \
-            --env-file /opt/backend/dev/.env blink-be
+            docker run -d --name blink-be-dev -p 3003:3003 -e SPRING_PROFILES_ACTIVE=dev --network blink-docker-network --env-file /opt/backend/dev/.env blink-be
