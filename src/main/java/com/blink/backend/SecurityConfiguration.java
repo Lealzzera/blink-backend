@@ -1,6 +1,9 @@
 package com.blink.backend;
 
 import com.blink.backend.interceptor.EndpointLoggingInterceptor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import io.swagger.v3.core.jackson.ModelResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,5 +35,10 @@ public class SecurityConfiguration {
                         .addPathPatterns("/**");
             }
         };
+    }
+
+    @Bean
+    public ModelResolver modelResolver(ObjectMapper objectMapper) {
+        return new ModelResolver(objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE));
     }
 }

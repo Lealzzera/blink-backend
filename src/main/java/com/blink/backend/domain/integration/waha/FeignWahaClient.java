@@ -1,4 +1,4 @@
-package com.blink.backend.domain.integration;
+package com.blink.backend.domain.integration.waha;
 
 import com.blink.backend.domain.integration.waha.dto.CreateWahaSessionRequest;
 import com.blink.backend.domain.integration.waha.dto.SendWahaMessageRequest;

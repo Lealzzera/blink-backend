@@ -41,8 +41,8 @@ public class WhatsAppController {
     }
 
     @PostMapping("receive-message")
-    public ResponseEntity<Void> receiveMessage(@RequestBody MessageReceivedRequest message) {
-        log.info(message);
+    public ResponseEntity<Void> receiveMessage(@RequestBody MessageReceivedRequest message) throws NotFoundException {
+        whatsAppService.receiveMessage(message);
         return ResponseEntity.ok().build();
     }
 }

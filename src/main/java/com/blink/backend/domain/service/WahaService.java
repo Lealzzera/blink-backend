@@ -5,7 +5,9 @@ import com.blink.backend.controller.message.dto.SendMessageRequest;
 import com.blink.backend.controller.message.dto.WhatsAppStatusDto;
 import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.domain.exception.message.WhatsAppNotConnectedException;
-import com.blink.backend.domain.integration.FeignWahaClient;
+import com.blink.backend.domain.integration.n8n.N8nClient;
+import com.blink.backend.domain.integration.n8n.dto.N8nMessageReceived;
+import com.blink.backend.domain.integration.waha.FeignWahaClient;
 import com.blink.backend.domain.integration.waha.dto.CreateWahaSessionRequest;
 import com.blink.backend.domain.integration.waha.dto.SendWahaMessageRequest;
 import com.blink.backend.domain.integration.waha.dto.WahaSessionConfig;
@@ -33,6 +35,7 @@ public class WahaService implements WhatsAppService {
     @Value("${waha-webhook-url}")
     private final String wahaWebhookUrl;
     private final String WAHA_RECEIVE_MESSAGE_PATH = "/message/whats-app/receive-message";
+    private final N8nClient n8nClient;
 
     @Override
     public WhatsAppStatusDto getWhatsAppStatusByClinicId(Integer clinicId) throws NotFoundException {
@@ -67,7 +70,10 @@ public class WahaService implements WhatsAppService {
 
     @Override
     public void receiveMessage(MessageReceivedRequest message) throws NotFoundException {
-
+        n8nClient.receiveMessage(N8nMessageReceived.builder()
+                .sender(message.getPayload().getFrom().replace("@c.us", ""))
+                .message(message.getPayload().getMessage())
+                .build());
     }
 
     private void restartWahaSession(String tokenizedName) {
