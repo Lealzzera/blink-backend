@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.util.ContentCachingRequestWrapper;
 
 import java.io.IOException;
 import java.util.stream.Collectors;
@@ -20,11 +21,10 @@ public class EndpointLoggingInterceptor implements HandlerInterceptor {
         long startTime = System.currentTimeMillis();
         request.setAttribute(START_TIME_ATTRIBUTE, startTime);
 
-        log.info("Request started - method={}, path={}, start-time={}, body={}",
+        log.info("Request started - method={}, path={}, start-time={}",
                 request.getMethod(),
                 request.getRequestURI(),
-                startTime,
-                request.getReader().lines().collect(Collectors.joining(System.lineSeparator())));
+                startTime);
 
         return true;
     }
@@ -36,11 +36,10 @@ public class EndpointLoggingInterceptor implements HandlerInterceptor {
             long endTime = System.currentTimeMillis();
             long duration = endTime - startTime;
 
-            log.info("Request completed - method={}, path={}, status={}, end-time={}, duration={}ms",
+            log.info("Request completed - method={}, path={}, status={}, duration={}ms",
                     request.getMethod(),
                     request.getRequestURI(),
                     response.getStatus(),
-                    endTime,
                     duration);
         }
     }
