@@ -53,12 +53,12 @@ public class SecurityConfiguration {
             public Schema<?> resolve(AnnotatedType type, ModelConverterContext context, Iterator<ModelConverter> chain) {
                 if (type.getType() == LocalDateTime.class) {
                     return new StringSchema()
-                            .format("date-time")
+                            .format("string")
                             .example("2025-01-01 15:30")
                             .description("yyyy-MM-dd HH:mm");
                 } else if (type.getType() == LocalTime.class) {
                     return new StringSchema()
-                            .format("time")
+                            .format("string")
                             .example("09:00")
                             .description("HH:mm");
                 }
