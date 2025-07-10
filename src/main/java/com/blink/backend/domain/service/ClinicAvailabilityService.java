@@ -64,7 +64,7 @@ public class ClinicAvailabilityService {
 
     private ClinicAvailabilityDTO fromEntity(LocalDate date, Boolean hideCancelled) {
         Optional<ClinicAvailabilityException> clinicAvailabilityException = clinicAvailabilityExceptionRepository
-                .findByExceptionDay(date);
+                .findByExceptionDayAndClinicId(date, 1); //TODO mudar para receber clinic id
 
         ClinicAvailability clinicAvailability = clinicAvailabilityRepository
                 .findByWeekDayAndIsWorkingDayTrue(WeekDay.fromDate(date));
@@ -110,7 +110,8 @@ public class ClinicAvailabilityService {
         }
 
         Optional<ClinicAvailabilityException> exception = clinicAvailabilityExceptionRepository
-                .findByExceptionDay(appointmentRequest.getScheduledTime().toLocalDate());
+                .findByExceptionDayAndClinicId(appointmentRequest.getScheduledTime().toLocalDate(),
+                        appointmentRequest.getClinicId());
         Availability availability;
         if (exception.isEmpty()) {
             ClinicAvailability clinicAvailability = clinicAvailabilityRepository

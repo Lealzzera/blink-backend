@@ -20,17 +20,18 @@ public class ClinicAvailabilityExceptionService {
     public Integer createAvailabilityException(ClinicAvailabilityExceptionDTO availabilityExceptionDTO) throws NotFoundException {
 
         Clinic clinic = clinicRepository.findById(availabilityExceptionDTO.getClinicId());
-
-        ClinicAvailabilityException clinicAvailabilityException = ClinicAvailabilityException
-                .builder()
-                .clinic(clinic)
-                .exceptionDay(availabilityExceptionDTO.getExceptionDay())
-                .isWorkingDay(availabilityExceptionDTO.getIsWorkingDay())
-                .openTime(availabilityExceptionDTO.getOpen())
-                .closeTime(availabilityExceptionDTO.getClose())
-                .lunchStartTime(availabilityExceptionDTO.getBreakStart())
-                .lunchEndTime(availabilityExceptionDTO.getBreakEnd())
-                .build();
+        ClinicAvailabilityException clinicAvailabilityException = clinicAvailabilityExceptionRepository
+                .findByExceptionDayAndClinicId(availabilityExceptionDTO.getExceptionDay(), clinic.getId())
+                .orElse(ClinicAvailabilityException
+                        .builder()
+                        .clinic(clinic)
+                        .exceptionDay(availabilityExceptionDTO.getExceptionDay())
+                        .isWorkingDay(availabilityExceptionDTO.getIsWorkingDay())
+                        .openTime(availabilityExceptionDTO.getOpen())
+                        .closeTime(availabilityExceptionDTO.getClose())
+                        .lunchStartTime(availabilityExceptionDTO.getBreakStart())
+                        .lunchEndTime(availabilityExceptionDTO.getBreakEnd())
+                        .build());
 
         ClinicAvailabilityException exception = clinicAvailabilityExceptionRepository.save(clinicAvailabilityException);
 
