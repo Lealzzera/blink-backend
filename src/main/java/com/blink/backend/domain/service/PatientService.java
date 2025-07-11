@@ -24,11 +24,13 @@ public class PatientService {
 
     public Integer createPatient(CreatePatientRequest patientRequest) throws NotFoundException {
         Clinic clinic = clinicRepository.findById(patientRequest.getClinicId());
-        Patient patient = Patient.builder()
-                .clinic(clinic)
-                .phoneNumber(patientRequest.getPhoneNumber())
-                .name(patientRequest.getName())
-                .build();
+        Patient patient = patientRepository.findByPhoneNumber(patientRequest.getPhoneNumber())
+                .orElse(
+                        Patient.builder()
+                                .clinic(clinic)
+                                .phoneNumber(patientRequest.getPhoneNumber())
+                                .name(patientRequest.getName())
+                                .build());
         return patientRepository.save(patient).getId();
     }
 
