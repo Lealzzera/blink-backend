@@ -11,6 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(name = "n8n-client", url = "${n8n-url}", dismiss404 = true)
 public interface N8nClient {
 
-    @PostMapping("webhook/n8n/receive-message")
+    @PostMapping("webhook-test/n8n/receive-message")
     ResponseEntity<String> receiveMessage(@RequestBody N8nMessageReceived message);
 }

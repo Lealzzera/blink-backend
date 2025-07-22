@@ -8,5 +8,4 @@ import org.springframework.stereotype.Repository;
 public interface SaleRepository extends JpaRepository<Sale,Integer> {
 
 
-
 }
