@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("domain")
+@RequestMapping("api/v1/domain")
 public class DomainController {
 
     @GetMapping("week-days")

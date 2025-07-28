@@ -22,7 +22,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("configurations")
+@RequestMapping("api/v1/configurations")
 public class ClinicConfigurationController {
     private final ClinicConfigurationService clinicConfigurationService;
     private final ClinicAvailabilityExceptionService clinicAvailabilityExceptionService;

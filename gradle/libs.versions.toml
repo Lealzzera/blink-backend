@@ -1,5 +1,3 @@
-
-
 [versions]
 spring-boot = "3.5.0"
 spring-cloud = "4.3.0"
@@ -8,10 +6,13 @@ postgresql = "42.7.7"
 lombok = "1.18.38"
 
 [libraries]
+
 springboot-starter-web = { group = "org.springframework.boot", name = "spring-boot-starter-web", version.ref = "spring-boot" }
 springboot-starter-jpa = { group = "org.springframework.boot", name = "spring-boot-starter-data-jpa", version.ref = "spring-boot" }
 springboot-starter-test = { group = "org.springframework.boot", name = "spring-boot-starter-test", version.ref = "spring-boot" }
+springboot-starter-actuator = { group = "org.springframework.boot", name = "spring-boot-starter-actuator", version.ref = "spring-boot" }
 springboot-starter-openapi = { group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-ui", version.ref = "spring-doc" }
+springboot-starter-security = { group = "org.springframework.boot", name = "spring-boot-starter-security", version.ref = "spring-boot" }
 springboot-starter-openfeign = { group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version.ref = "spring-cloud" }
 postgresql = { group = "org.postgresql", name = "postgresql", version.ref = "postgresql" }
 lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }
@@ -20,4 +21,4 @@ lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" 
 
 
 [bundles]
-spring-starter = ["springboot-starter-web", "springboot-starter-jpa", "springboot-starter-openapi", "springboot-starter-openfeign"]
+spring-starter = ["springboot-starter-web", "springboot-starter-jpa", "springboot-starter-openapi", "springboot-starter-openfeign", "springboot-starter-security", "springboot-starter-actuator"]
