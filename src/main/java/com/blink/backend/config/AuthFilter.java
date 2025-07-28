@@ -40,13 +40,16 @@ public class AuthFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        final String authHeader = request.getHeader("Authorization");
+        String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null /*|| !authHeader.startsWith("Bearer ")*/) {
             filterChain.doFilter(request, response);
             return;
         }
-        final User user = Optional.ofNullable(supabaseClient.getUserInfo("Bearer " + authHeader))
+        if (!authHeader.startsWith("Bearer ")) {
+            authHeader = "Bearer ".concat(authHeader);
+        }
+        final User user = Optional.ofNullable(supabaseClient.getUserInfo(authHeader))
                 .map(SupabaseUserDetailsResponse::toDomain)
                 .orElseThrow();
         if (user.getUsername() != null && SecurityContextHolder.getContext().getAuthentication() == null) {
