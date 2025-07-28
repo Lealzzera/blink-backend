@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("message/whats-app")
+@RequestMapping("api/v1/message/whats-app")
 public class WhatsAppController {
     private final WhatsAppService whatsAppService;
 
