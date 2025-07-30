@@ -70,9 +70,17 @@ public class WahaService implements WhatsAppService {
 
     @Override
     public void receiveMessage(MessageReceivedRequest message) throws NotFoundException {
+        //consultar banco de dados verificando se tem paciente com esse numero para aquela clinica
+        //buscar dados de agendamento se paciente existir
+        String sender = message.getPayload().getFrom().replace("@c.us", ""); // a pessoa que mandou a mensagem
+        /*if(sender != "numero de quem responder"){
+            return;
+        }*/
         n8nClient.receiveMessage(N8nMessageReceived.builder()
-                .sender(message.getPayload().getFrom().replace("@c.us", ""))
+                .sender(sender)
                 .message(message.getPayload().getMessage())
+                //passar algum dado do paciente (ex: nome, para a IA usar, e não precisar buscar da memoria sempre
+                //passar dados de agendamento -> assim a IA pode perguntar se quer confirmar, ou se foi tudo certo
                 .build());
     }
 
