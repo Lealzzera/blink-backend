@@ -6,6 +6,7 @@ import com.blink.backend.controller.message.dto.WhatsAppStatusDto;
 import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.domain.exception.message.WhatsAppNotConnectedException;
 import com.blink.backend.domain.integration.n8n.N8nClient;
+import com.blink.backend.domain.integration.n8n.dto.AppointmentsData;
 import com.blink.backend.domain.integration.n8n.dto.N8nMessageReceived;
 import com.blink.backend.domain.integration.waha.FeignWahaClient;
 import com.blink.backend.domain.integration.waha.dto.CreateWahaSessionRequest;
@@ -13,7 +14,11 @@ import com.blink.backend.domain.integration.waha.dto.SendWahaMessageRequest;
 import com.blink.backend.domain.integration.waha.dto.WahaSessionConfig;
 import com.blink.backend.domain.integration.waha.dto.WahaSessionStatusResponse;
 import com.blink.backend.domain.integration.waha.dto.WahaWebhooks;
+import com.blink.backend.persistence.entity.appointment.Appointment;
+import com.blink.backend.persistence.entity.appointment.Patient;
 import com.blink.backend.persistence.entity.clinic.Clinic;
+import com.blink.backend.persistence.repository.AppointmentsRepository;
+import com.blink.backend.persistence.repository.PatientRepository;
 import com.blink.backend.persistence.repository.clinic.ClinicRepositoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +26,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.blink.backend.domain.integration.waha.dto.WahaWebhookEventTypes.MESSAGE;
 import static com.blink.backend.domain.model.message.WhatsAppStatus.SHUTDOWN;
@@ -36,6 +44,8 @@ public class WahaService implements WhatsAppService {
     private final String wahaWebhookUrl;
     private final String WAHA_RECEIVE_MESSAGE_PATH = "/message/whats-app/receive-message";
     private final N8nClient n8nClient;
+    private final PatientRepository patientRepository;
+    private final AppointmentsRepository appointmentsRepository;
 
     @Override
     public WhatsAppStatusDto getWhatsAppStatusByClinicId(Integer clinicId) throws NotFoundException {
@@ -70,17 +80,26 @@ public class WahaService implements WhatsAppService {
 
     @Override
     public void receiveMessage(MessageReceivedRequest message) throws NotFoundException {
-        //consultar banco de dados verificando se tem paciente com esse numero para aquela clinica
-        //buscar dados de agendamento se paciente existir
+
         String sender = message.getPayload().getFrom().replace("@c.us", ""); // a pessoa que mandou a mensagem
-        /*if(sender != "numero de quem responder"){
-            return;
-        }*/
+
+        Optional<Patient> patient = patientRepository.findByPhoneNumber(sender);
+
+        String patientName = "";
+        List<Appointment> appointment = List.of();
+
+        if (patient.isPresent()) {
+
+            patientName = patient.get().getName();
+            appointment = appointmentsRepository
+                    .findAllByPatientIdAndScheduledTimeAfter(patient.get().getId(), LocalDateTime.now().minusDays(7));
+        }
+
         n8nClient.receiveMessage(N8nMessageReceived.builder()
                 .sender(sender)
+                .senderName(patientName)
                 .message(message.getPayload().getMessage())
-                //passar algum dado do paciente (ex: nome, para a IA usar, e não precisar buscar da memoria sempre
-                //passar dados de agendamento -> assim a IA pode perguntar se quer confirmar, ou se foi tudo certo
+                .appointmentsData(appointment.stream().map(AppointmentsData::fromAppointment).collect(Collectors.toList()))
                 .build());
     }
 
