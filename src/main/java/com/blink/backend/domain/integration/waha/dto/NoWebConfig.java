@@ -7,17 +7,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class WahaSessionConfig {
+public class NoWebConfig {
 
-    private WahaMeConfig me;
-    private List<WahaWebhooks> webhooks;
-    private NoWebConfig noweb;
+    private StoreConfig store;
 }

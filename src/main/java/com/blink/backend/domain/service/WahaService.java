@@ -5,12 +5,15 @@ import com.blink.backend.controller.message.dto.SendMessageRequest;
 import com.blink.backend.controller.message.dto.WhatsAppStatusDto;
 import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.domain.exception.message.WhatsAppNotConnectedException;
+import com.blink.backend.domain.integration.blink.fe.BlinkFeClient;
 import com.blink.backend.domain.integration.n8n.N8nClient;
 import com.blink.backend.domain.integration.n8n.dto.AppointmentsData;
 import com.blink.backend.domain.integration.n8n.dto.N8nMessageReceived;
 import com.blink.backend.domain.integration.waha.FeignWahaClient;
 import com.blink.backend.domain.integration.waha.dto.CreateWahaSessionRequest;
+import com.blink.backend.domain.integration.waha.dto.NoWebConfig;
 import com.blink.backend.domain.integration.waha.dto.SendWahaMessageRequest;
+import com.blink.backend.domain.integration.waha.dto.StoreConfig;
 import com.blink.backend.domain.integration.waha.dto.WahaSessionConfig;
 import com.blink.backend.domain.integration.waha.dto.WahaSessionStatusResponse;
 import com.blink.backend.domain.integration.waha.dto.WahaWebhooks;
@@ -46,6 +49,7 @@ public class WahaService implements WhatsAppService {
     private final N8nClient n8nClient;
     private final PatientRepository patientRepository;
     private final AppointmentsRepository appointmentsRepository;
+    private final BlinkFeClient blinkFeClient;
 
     @Override
     public WhatsAppStatusDto getWhatsAppStatusByClinicId(Integer clinicId) throws NotFoundException {
@@ -94,7 +98,7 @@ public class WahaService implements WhatsAppService {
             appointment = appointmentsRepository
                     .findAllByPatientIdAndScheduledTimeAfter(patient.get().getId(), LocalDateTime.now().minusDays(7));
         }
-
+        //blinkFeClient.sendReceivedMessageToFrontEnd(null);
         n8nClient.receiveMessage(N8nMessageReceived.builder()
                 .sender(sender)
                 .senderName(patientName)
@@ -108,6 +112,12 @@ public class WahaService implements WhatsAppService {
                 .url(wahaWebhookUrl.concat(WAHA_RECEIVE_MESSAGE_PATH))
                 .events(List.of(MESSAGE))
                 .build();
+        NoWebConfig noWebConfig = NoWebConfig.builder()
+                .store(StoreConfig.builder()
+                        .enabled(true)
+                        .fullSync(false)
+                        .build())
+                .build();
 
         wahaClient.deleteWahaSession(tokenizedName);
         wahaClient.createWahaSession(CreateWahaSessionRequest.builder()
@@ -115,6 +125,7 @@ public class WahaService implements WhatsAppService {
                 .start(true)
                 .config(WahaSessionConfig.builder()
                         .webhooks(List.of(wahaWebhooks))
+                        .noweb(noWebConfig)
                         .build())
                 .build());
     }

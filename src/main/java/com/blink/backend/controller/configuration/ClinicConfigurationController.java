@@ -9,6 +9,7 @@ import com.blink.backend.domain.service.ClinicAvailabilityExceptionService;
 import com.blink.backend.domain.service.ClinicConfigurationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -73,4 +74,9 @@ public class ClinicConfigurationController {
         return ResponseEntity.ok(clinicAvailabilityExceptionService.getClinicAvailabilityExceptionByClinic(clinicId));
     }
 
+    @DeleteMapping("availability/exception/{id}")
+    public ResponseEntity<Void> deleteAvailabilityException(@PathVariable Integer id) throws NotFoundException {
+        clinicAvailabilityExceptionService.deleteClinicAvailabilityException(id);
+        return ResponseEntity.noContent().build();
+    }
 }
