@@ -26,7 +26,6 @@ import java.util.List;
 @RequestMapping("api/v1/configurations")
 public class ClinicConfigurationController {
     private final ClinicConfigurationService clinicConfigurationService;
-    private final ClinicAvailabilityExceptionService clinicAvailabilityExceptionService;
 
     @PutMapping("availability")
     public ResponseEntity<Void> updateAvailabilityConfiguration(
@@ -54,29 +53,4 @@ public class ClinicConfigurationController {
         return ResponseEntity.ok(clinicConfigurationService.getAppointmentConfiguration(clinicId));
     }
 
-    @PostMapping("availability/exception")//TODO irregular ou atypical ou alternative
-    public ResponseEntity<Integer> createAvailabilityException(
-            @RequestBody ClinicAvailabilityExceptionDTO availabilityExceptionDTO)
-            throws NotFoundException {
-        URI uri = URI.create(clinicAvailabilityExceptionService.createAvailabilityException(availabilityExceptionDTO).toString());
-        return ResponseEntity.created(uri).build();
-    }
-
-    @GetMapping("availability/exception/{id}")
-    public ResponseEntity<ClinicAvailabilityExceptionDTO> getClinicAvailabilityExceptionById(@PathVariable Integer id)
-            throws NotFoundException {
-        return ResponseEntity.ok(clinicAvailabilityExceptionService.getClinicAvailabilityExceptionById(id));
-    }
-
-    @GetMapping("availability/{clinicId}/exception")
-    public ResponseEntity<List<ClinicAvailabilityExceptionDTO>> getClinicAvailabilityException(@PathVariable Integer clinicId) {
-
-        return ResponseEntity.ok(clinicAvailabilityExceptionService.getClinicAvailabilityExceptionByClinic(clinicId));
-    }
-
-    @DeleteMapping("availability/exception/{id}")
-    public ResponseEntity<Void> deleteAvailabilityException(@PathVariable Integer id) throws NotFoundException {
-        clinicAvailabilityExceptionService.deleteClinicAvailabilityException(id);
-        return ResponseEntity.noContent().build();
-    }
 }
