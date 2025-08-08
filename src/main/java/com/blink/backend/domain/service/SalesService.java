@@ -1,9 +1,11 @@
 package com.blink.backend.domain.service;
 
 import com.blink.backend.controller.appointment.dto.SaleDTO;
+import com.blink.backend.controller.appointment.dto.UpdateSaleStatusDTO;
 import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.persistence.entity.appointment.Appointment;
 import com.blink.backend.persistence.entity.appointment.Sale;
+import com.blink.backend.persistence.entity.appointment.SaleStatus;
 import com.blink.backend.persistence.entity.appointment.ServiceType;
 import com.blink.backend.persistence.entity.auth.Users;
 import com.blink.backend.persistence.repository.AppointmentsRepository;
@@ -46,6 +48,7 @@ public class SalesService {
                 .patient(appointment.getPatient())
                 .serviceType(serviceType)
                 .value(saleDTO.getValue())
+                .status(SaleStatus.NAO_PAGO)
                 .registeredByUser(user)
                 .registeredAt(LocalDateTime.now())
                 .build();
@@ -53,6 +56,15 @@ public class SalesService {
         sale = saleRepository.save(sale);
 
         return SaleDTO.fromEntity(sale);
+    }
+
+    public void updateSaleStatus(UpdateSaleStatusDTO saleStatus) throws NotFoundException {
+        Sale sale = saleRepository.findById(saleStatus.getSaleId())
+                .orElseThrow(() -> new NotFoundException("Venda " + saleStatus.getSaleId()));
+
+        sale.setStatus(SaleStatus.valueOf(saleStatus.getNewStatus().toUpperCase()));
+        saleRepository.save(sale);
+
     }
 
 }

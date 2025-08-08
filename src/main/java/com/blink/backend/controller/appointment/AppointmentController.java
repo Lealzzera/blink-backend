@@ -27,7 +27,7 @@ import static java.util.Objects.isNull;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("appointments")
+@RequestMapping("api/v1/appointments")
 public class AppointmentController {
 
     private final ClinicAvailabilityService clinicAvailabilityService;

@@ -45,8 +45,8 @@ INSERT INTO appointment (patient_id, scheduled_time, clinic_id, duration, servic
 VALUES (1, NOW() + interval '3 day', 1, 30, 1, 'Paciente prefere atendimento pela manhã', 1, NOW(), 'AGENDADO');
 
 -- SALE
-INSERT INTO sale (patient_id, appointment_id, value, registered_by_user_id, registered_at, service_type_id)
-VALUES (1, 1, 200.00, 1, NOW(), 1);
+INSERT INTO sale (patient_id, appointment_id, value, status, registered_by_user_id, registered_at, service_type_id)
+VALUES (1, 1, 200.00, 'PAGO', 1, NOW(), 1);
 
 -- CHAT
 INSERT INTO chat (patient_id, clinic_id, is_ai_answer)

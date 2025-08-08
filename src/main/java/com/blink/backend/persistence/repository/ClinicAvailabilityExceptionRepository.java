@@ -11,8 +11,8 @@ import java.util.Optional;
 @Repository
 public interface ClinicAvailabilityExceptionRepository extends JpaRepository<ClinicAvailabilityException, Integer> {
 
-    Optional<ClinicAvailabilityException> findByExceptionDay(LocalDate exceptionDay);
+    Optional<ClinicAvailabilityException> findByExceptionDayAndClinicId(LocalDate exceptionDay, Integer clinicId);
 
-    List<ClinicAvailabilityException> findByClinicId(Integer clinicId);
+    List<ClinicAvailabilityException> findByClinicIdAndExceptionDayAfterOrderByExceptionDayDesc(Integer clinicId, LocalDate date);
 
 }

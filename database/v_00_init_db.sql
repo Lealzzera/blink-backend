@@ -111,6 +111,7 @@ CREATE TABLE sale
     patient_id            INT                     NOT NULL,
     appointment_id        INT,
     value                 NUMERIC(10, 2)          NOT NULL,
+    status                VARCHAR(255)            NOT NULL,
     registered_by_user_id INT                     NOT NULL,
     registered_at         TIMESTAMP DEFAULT NOW() NOT NULL,
     service_type_id       INT                     NOT NULL,

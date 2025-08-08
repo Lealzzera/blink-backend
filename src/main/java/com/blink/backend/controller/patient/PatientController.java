@@ -17,7 +17,7 @@ import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("patient")
+@RequestMapping("api/v1/patient")
 public class PatientController {
 
     private final PatientService patientService;

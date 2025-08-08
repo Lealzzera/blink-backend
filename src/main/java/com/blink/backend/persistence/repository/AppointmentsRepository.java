@@ -12,5 +12,6 @@ import java.util.List;
 public interface AppointmentsRepository extends JpaRepository<Appointment, Integer> {
     List<Appointment> findByScheduledTimeBetween(LocalDateTime startDate, LocalDateTime endDate);
     Integer countByScheduledTimeBetweenAndAppointmentStatusNot(LocalDateTime scheduledTime, LocalDateTime scheduledEnd, AppointmentStatus appointmentStatus);
+    List<Appointment> findAllByPatientIdAndScheduledTimeAfter(Integer patientId, LocalDateTime localDateTime);
 
 }

@@ -5,26 +5,43 @@ import com.blink.backend.controller.message.dto.SendMessageRequest;
 import com.blink.backend.controller.message.dto.WhatsAppStatusDto;
 import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.domain.exception.message.WhatsAppNotConnectedException;
-import com.blink.backend.domain.integration.FeignWahaClient;
+import com.blink.backend.domain.integration.blink.fe.BlinkFeClient;
+import com.blink.backend.domain.integration.blink.fe.dto.ReceivedMessageBlinkFeRequest;
+import com.blink.backend.domain.integration.n8n.N8nClient;
+import com.blink.backend.domain.integration.n8n.dto.AppointmentsData;
+import com.blink.backend.domain.integration.n8n.dto.N8nMessageReceived;
+import com.blink.backend.domain.integration.waha.FeignWahaClient;
 import com.blink.backend.domain.integration.waha.dto.CreateWahaSessionRequest;
+import com.blink.backend.domain.integration.waha.dto.NoWebConfig;
 import com.blink.backend.domain.integration.waha.dto.SendWahaMessageRequest;
+import com.blink.backend.domain.integration.waha.dto.StoreConfig;
 import com.blink.backend.domain.integration.waha.dto.WahaSessionConfig;
 import com.blink.backend.domain.integration.waha.dto.WahaSessionStatusResponse;
 import com.blink.backend.domain.integration.waha.dto.WahaWebhooks;
+import com.blink.backend.persistence.entity.appointment.Appointment;
+import com.blink.backend.persistence.entity.appointment.Patient;
 import com.blink.backend.persistence.entity.clinic.Clinic;
+import com.blink.backend.persistence.repository.AppointmentsRepository;
+import com.blink.backend.persistence.repository.ChatRepository;
+import com.blink.backend.persistence.repository.PatientRepository;
 import com.blink.backend.persistence.repository.clinic.ClinicRepositoryService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.blink.backend.domain.integration.waha.dto.WahaWebhookEventTypes.MESSAGE;
 import static com.blink.backend.domain.model.message.WhatsAppStatus.SHUTDOWN;
 import static java.util.Objects.isNull;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class WahaService implements WhatsAppService {
@@ -33,6 +50,11 @@ public class WahaService implements WhatsAppService {
     @Value("${waha-webhook-url}")
     private final String wahaWebhookUrl;
     private final String WAHA_RECEIVE_MESSAGE_PATH = "/message/whats-app/receive-message";
+    private final N8nClient n8nClient;
+    private final PatientRepository patientRepository;
+    private final AppointmentsRepository appointmentsRepository;
+    private final BlinkFeClient blinkFeClient;
+    private final ChatRepository chatRepository;
 
     @Override
     public WhatsAppStatusDto getWhatsAppStatusByClinicId(Integer clinicId) throws NotFoundException {
@@ -66,7 +88,18 @@ public class WahaService implements WhatsAppService {
     }
 
     @Override
-    public void receiveMessage(MessageReceivedRequest message) throws NotFoundException {
+    public void receiveMessage(MessageReceivedRequest messageReceivedRequest) throws NotFoundException {
+        String sender = messageReceivedRequest.getPayload().getFrom().replace("@c.us", ""); // a pessoa que mandou a mensagem
+        String message = messageReceivedRequest.getPayload().getMessage();
+        String session = messageReceivedRequest.getSession();
+        Optional<Patient> optionalPatient = patientRepository.findByPhoneNumber(sender);
+        Clinic clinic = clinicRepository.findByWahaSession(session);
+
+        sendReceivedMessageToBlinkFe(sender, message, clinic.getId());
+        if (optionalPatient.isPresent() && !isAiResponseTurnedOn(optionalPatient.get().getId(), clinic.getId())) {
+            return; // isso eh pra evitar que a IA responda automaticamente
+        }
+        sendReceivedMessageToN8n(sender, message, optionalPatient);
 
     }
 
@@ -75,6 +108,12 @@ public class WahaService implements WhatsAppService {
                 .url(wahaWebhookUrl.concat(WAHA_RECEIVE_MESSAGE_PATH))
                 .events(List.of(MESSAGE))
                 .build();
+        NoWebConfig noWebConfig = NoWebConfig.builder()
+                .store(StoreConfig.builder()
+                        .enabled(true)
+                        .fullSync(false)
+                        .build())
+                .build();
 
         wahaClient.deleteWahaSession(tokenizedName);
         wahaClient.createWahaSession(CreateWahaSessionRequest.builder()
@@ -82,6 +121,7 @@ public class WahaService implements WhatsAppService {
                 .start(true)
                 .config(WahaSessionConfig.builder()
                         .webhooks(List.of(wahaWebhooks))
+                        .noweb(noWebConfig)
                         .build())
                 .build());
     }
@@ -105,5 +145,40 @@ public class WahaService implements WhatsAppService {
                 .status(responseBody.getStatus().getConnectionStatus())
                 .connectedPhoneNumber(phoneNumber)
                 .build();
+    }
+
+    private void sendReceivedMessageToN8n(String sender, String message, Optional<Patient> patient) {
+
+        String patientName = "";
+        List<Appointment> appointment = List.of();
+
+        if (patient.isPresent()) {
+            patientName = patient.get().getName();
+            appointment = appointmentsRepository
+                    .findAllByPatientIdAndScheduledTimeAfter(patient.get().getId(), LocalDateTime.now().minusDays(7));
+        }
+
+        n8nClient.receiveMessage(N8nMessageReceived.builder()
+                .sender(sender)
+                .message(message)
+                .senderName(patientName)
+                .appointmentsData(appointment.stream().map(AppointmentsData::fromAppointment).collect(Collectors.toList()))
+                .build());
+    }
+
+    private void sendReceivedMessageToBlinkFe(String sender, String message, Integer clinicId) {
+        try {
+            blinkFeClient.sendReceivedMessageToFrontEnd(ReceivedMessageBlinkFeRequest.builder()
+                    .sender(sender)
+                    .message(message)
+                    .clinicId(clinicId)
+                    .build());
+        } catch (Exception e) {
+            log.error("Message not sent to front end, message={}", e.getMessage());
+        }
+    }
+
+    private boolean isAiResponseTurnedOn(Integer patientId, Integer clinicId) {
+        return chatRepository.findIsAiAnswerByPatientIdAndClinicId(patientId, clinicId);
     }
 }
