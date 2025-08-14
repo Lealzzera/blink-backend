@@ -14,7 +14,7 @@ public class ChatConfigurationService {
     public void toggleAiAnswerMode(Integer clinicId, String phoneNumber) throws NotFoundException {
         Chat chat = chatRepository.findByClinicIdAndPatientPhoneNumber(clinicId, phoneNumber)
                 .orElseThrow(() -> new NotFoundException("Configuração de chat"));
-        chat.setAiAnswer(!chat.isAiAnswer());
+        chat.setAiAnswer(!chat.getAiAnswer());
         chatRepository.save(chat);
     }
 }

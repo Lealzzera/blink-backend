@@ -1,9 +1,5 @@
 package com.blink.backend.config;
 
-import com.blink.backend.interceptor.EndpointLoggingInterceptor;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import io.swagger.v3.core.jackson.ModelResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,10 +11,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
@@ -82,6 +76,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .authorizeHttpRequests(req -> req
+                        .requestMatchers(POST, "/api/v1/message/whats-app/receive-message").permitAll()
                         .requestMatchers(GET, "/**").hasAnyAuthority(AUTHENTICATED.getAuthority())
                         .requestMatchers(POST, "/**").hasAnyAuthority(AUTHENTICATED.getAuthority())
                         .requestMatchers(PUT, "/**").hasAnyAuthority(AUTHENTICATED.getAuthority())

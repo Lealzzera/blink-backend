@@ -49,5 +49,5 @@ INSERT INTO sale (patient_id, appointment_id, value, status, registered_by_user_
 VALUES (1, 1, 200.00, 'PAGO', 1, NOW(), 1);
 
 -- CHAT
-INSERT INTO chat (patient_id, clinic_id, is_ai_answer)
+INSERT INTO chat (patient_id, clinic_id, ai_answer)
 VALUES (1, 1, TRUE);

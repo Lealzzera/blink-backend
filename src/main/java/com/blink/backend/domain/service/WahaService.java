@@ -49,7 +49,7 @@ public class WahaService implements WhatsAppService {
     private final ClinicRepositoryService clinicRepository;
     @Value("${waha-webhook-url}")
     private final String wahaWebhookUrl;
-    private final String WAHA_RECEIVE_MESSAGE_PATH = "/message/whats-app/receive-message";
+    private final String WAHA_RECEIVE_MESSAGE_PATH = "/api/v1/message/whats-app/receive-message";
     private final N8nClient n8nClient;
     private final PatientRepository patientRepository;
     private final AppointmentsRepository appointmentsRepository;
@@ -96,8 +96,9 @@ public class WahaService implements WhatsAppService {
         Clinic clinic = clinicRepository.findByWahaSession(session);
 
         sendReceivedMessageToBlinkFe(sender, message, clinic.getId());
-        if (optionalPatient.isPresent() && !isAiResponseTurnedOn(optionalPatient.get().getId(), clinic.getId())) {
-            return; // isso eh pra evitar que a IA responda automaticamente
+        if (!isAiResponseTurnedOn(optionalPatient, clinic.getId())) {
+            log.info("Automatic response turned off for patient {}", sender);
+            return;
         }
         sendReceivedMessageToN8n(sender, message, optionalPatient);
 
@@ -178,7 +179,8 @@ public class WahaService implements WhatsAppService {
         }
     }
 
-    private boolean isAiResponseTurnedOn(Integer patientId, Integer clinicId) {
-        return chatRepository.findIsAiAnswerByPatientIdAndClinicId(patientId, clinicId);
+    private boolean isAiResponseTurnedOn(Optional<Patient> patient, Integer clinicId) {
+        return patient.isPresent() &&
+                chatRepository.findAiAnswerByPatientIdAndClinicId(patient.get().getId(), clinicId);
     }
 }

@@ -128,7 +128,7 @@ CREATE TABLE chat
     id           SERIAL PRIMARY KEY,
     patient_id   INT,
     clinic_id    INT,
-    is_ai_answer BOOLEAN DEFAULT TRUE,
+    ai_answer BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (patient_id) REFERENCES patient (id),
     FOREIGN KEY (clinic_id) REFERENCES clinic (id)
 );

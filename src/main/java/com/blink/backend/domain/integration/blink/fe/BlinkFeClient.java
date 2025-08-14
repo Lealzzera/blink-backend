@@ -9,6 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Component
 @FeignClient(name = "blink-fe-client", url = "${blink-fe-url}", dismiss404 = true)
 public interface BlinkFeClient {
-    @PostMapping("")
+    @PostMapping("/api/v1/message/whats-app/receive-message")
     ResponseEntity<String> sendReceivedMessageToFrontEnd(ReceivedMessageBlinkFeRequest request);
 }
