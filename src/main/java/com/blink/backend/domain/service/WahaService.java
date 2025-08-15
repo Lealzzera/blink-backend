@@ -109,10 +109,14 @@ public class WahaService implements WhatsAppService {
 
     }
 
-    public List<ChatOverviewDto> getChatsOverview(Integer clinicId) throws NotFoundException {
+    public List<ChatOverviewDto> getChatsOverview(Integer clinicId) throws NotFoundException, WhatsAppNotConnectedException {
         Clinic clinic = clinicRepository.findById(clinicId);
 
         ResponseEntity<List<WahaChatOverviewDto>> response = wahaClient.getOverview(clinic.getWahaSession());
+
+        if(response.getStatusCode().is4xxClientError()){
+            throw new WhatsAppNotConnectedException();
+        }
         if (response.getBody() == null) {
             return List.of();
         }
@@ -133,10 +137,13 @@ public class WahaService implements WhatsAppService {
                 .collect(Collectors.toList());
     }
 
-    public List<ChatHistoryDto> getChatHistory(Integer clinicId, String phoneNumber) throws NotFoundException {
+    public List<ChatHistoryDto> getChatHistory(Integer clinicId, String phoneNumber) throws NotFoundException, WhatsAppNotConnectedException {
         Clinic clinic = clinicRepository.findById(clinicId);
         ResponseEntity<List<WahaChatHistory>> response = wahaClient.getMessages(clinic.getWahaSession(), phoneNumber/*, 10*/);
 
+        if(response.getStatusCode().is4xxClientError()){
+            throw new WhatsAppNotConnectedException();
+        }
         if (response.getBody() == null) {
             return List.of();
         }

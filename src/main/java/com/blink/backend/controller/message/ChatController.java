@@ -3,6 +3,7 @@ package com.blink.backend.controller.message;
 import com.blink.backend.controller.message.dto.ChatHistoryDto;
 import com.blink.backend.controller.message.dto.ChatOverviewDto;
 import com.blink.backend.domain.exception.NotFoundException;
+import com.blink.backend.domain.exception.message.WhatsAppNotConnectedException;
 import com.blink.backend.domain.service.ChatConfigurationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,7 @@ public class ChatController {
     @GetMapping("{clinicId}/overview")
     public ResponseEntity<List<ChatOverviewDto>> getChatsOverview(
             @PathVariable Integer clinicId)
-            throws NotFoundException {
+            throws NotFoundException, WhatsAppNotConnectedException {
         return ResponseEntity.ok(chatConfigurationService.getChatOverView(clinicId));
     }
 
@@ -40,7 +41,7 @@ public class ChatController {
     public ResponseEntity<List<ChatHistoryDto>> getChatHistory(
             @PathVariable Integer clinicId,
             @PathVariable String phoneNumber)
-            throws NotFoundException {
+            throws NotFoundException, WhatsAppNotConnectedException {
         return ResponseEntity.ok(chatConfigurationService.getChatHistory(clinicId, phoneNumber));
     }
 
