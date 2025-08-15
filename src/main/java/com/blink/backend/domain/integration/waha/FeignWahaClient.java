@@ -1,5 +1,7 @@
 package com.blink.backend.domain.integration.waha;
 
+import com.blink.backend.domain.integration.waha.dto.WahaChatHistory;
+import com.blink.backend.domain.integration.waha.dto.WahaChatOverviewDto;
 import com.blink.backend.domain.integration.waha.dto.CreateWahaSessionRequest;
 import com.blink.backend.domain.integration.waha.dto.SendWahaMessageRequest;
 import com.blink.backend.domain.integration.waha.dto.WahaSessionStatusResponse;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 @Component
 @FeignClient(name = "waha-client", url = "${waha-url}", dismiss404 = true)
@@ -37,8 +41,8 @@ public interface FeignWahaClient {
 
     //?limit=10&offset=0
     @GetMapping("api/{session}/chats/{chatId}/messages?limit=10")
-    ResponseEntity<Void> getMessages(@PathVariable String session, @PathVariable String chatId/*, @RequestParam Integer limit*/);
+    ResponseEntity<List<WahaChatHistory>> getMessages(@PathVariable String session, @PathVariable String chatId/*, @RequestParam Integer limit*/);
 
     @GetMapping("/api/{session}/chats/overview?limit=20&offset=0")
-    ResponseEntity<Void> getOverview(@PathVariable String session);
+    ResponseEntity<List<WahaChatOverviewDto>> getOverview(@PathVariable String session);
 }

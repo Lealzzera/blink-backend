@@ -17,6 +17,8 @@ import com.blink.backend.domain.integration.waha.dto.CreateWahaSessionRequest;
 import com.blink.backend.domain.integration.waha.dto.NoWebConfig;
 import com.blink.backend.domain.integration.waha.dto.SendWahaMessageRequest;
 import com.blink.backend.domain.integration.waha.dto.StoreConfig;
+import com.blink.backend.domain.integration.waha.dto.WahaChatHistory;
+import com.blink.backend.domain.integration.waha.dto.WahaChatOverviewDto;
 import com.blink.backend.domain.integration.waha.dto.WahaSessionConfig;
 import com.blink.backend.domain.integration.waha.dto.WahaSessionStatusResponse;
 import com.blink.backend.domain.integration.waha.dto.WahaWebhooks;
@@ -108,15 +110,38 @@ public class WahaService implements WhatsAppService {
 
     public List<ChatOverviewDto> getChatsOverview(Integer clinicId) throws NotFoundException {
         Clinic clinic = clinicRepository.findById(clinicId);
-        ResponseEntity response = wahaClient.getOverview(clinic.getWahaSession());
-        response.getBody();
-        return List.of();
+
+        ResponseEntity<List<WahaChatOverviewDto>> response = wahaClient.getOverview(clinic.getWahaSession());
+        if (response.getBody() == null) {
+            return List.of();
+        }
+
+        return response.getBody()
+                .stream()
+                .map(chat -> {
+                    Optional<Patient> optionalPatient = patientRepository.findByPhoneNumber(chat.getId());
+                    Boolean aiAnswer = optionalPatient
+                            .map(patient -> chatRepository
+                                    .findAiAnswerByPatientIdAndClinicId(patient.getId(), clinicId))
+                            .orElse(true);
+                    String patientName = optionalPatient.map(Patient::getName).orElse(null);
+
+                    return chat.toChatOverviewDto(aiAnswer, patientName);
+                })
+                .collect(Collectors.toList());
     }
 
     public List<ChatHistoryDto> getChatHistory(Integer clinicId, String phoneNumber) throws NotFoundException {
         Clinic clinic = clinicRepository.findById(clinicId);
-        wahaClient.getMessages(clinic.getWahaSession(), phoneNumber/*, 10*/);
-        return List.of();
+        ResponseEntity<List<WahaChatHistory>> response = wahaClient.getMessages(clinic.getWahaSession(), phoneNumber/*, 10*/);
+
+        if (response.getBody() == null) {
+            return List.of();
+        }
+
+        return response.getBody().stream()
+                .map(WahaChatHistory::toChatHistoryDto)
+                .toList();
     }
 
     private void restartWahaSession(String tokenizedName) {
