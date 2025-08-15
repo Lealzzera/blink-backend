@@ -16,23 +16,19 @@ public class DashboardService {
 
     public DashboardDTO getDashboardData(Integer clinicId) {
 
-        Long totalNovasMensagens = dashboardRepository.countNovasMensagens(clinicId);
-        Long totalAgendamentosRealizados = dashboardRepository.countAgendamentosRealizados(clinicId);
-        Long totalComparecimentos = dashboardRepository.countComparecimentos(clinicId);
-        Long totalVendas = dashboardRepository.countVendas(clinicId);
-        BigDecimal totalValorVendas = dashboardRepository.sumValorVendas(clinicId);
+        Long receivedMessagesCountTotal = dashboardRepository.countNovasMensagens(clinicId);
+        Long appointmentsCountTotal = dashboardRepository.countAgendamentosRealizados(clinicId);
+        Long showUpsCountTotal = dashboardRepository.countComparecimentos(clinicId);
+        Long salesCountTotal = dashboardRepository.countVendas(clinicId);
+        BigDecimal salesValueTotal = dashboardRepository.sumValorVendas(clinicId);
 
-        /*DashboardService dashboardService = DashboardService.builder() */
-
-        return new DashboardDTO(
-                totalNovasMensagens,
-                totalAgendamentosRealizados,
-                totalComparecimentos,
-                totalVendas,
-                totalValorVendas
-        );
-
-        
+        return DashboardDTO.builder()
+                .receivedMessagesCountTotal(receivedMessagesCountTotal)
+                .appointmentsCountTotal(appointmentsCountTotal)
+                .showUpsCountTotal(showUpsCountTotal)
+                .salesCountTotal(salesCountTotal)
+                .salesValueTotal(salesValueTotal)
+                .build();
     }
 
 
