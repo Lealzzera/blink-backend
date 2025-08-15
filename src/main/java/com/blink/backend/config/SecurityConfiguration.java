@@ -61,7 +61,9 @@ public class SecurityConfiguration {
     public SecurityFilterChain swaggerSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .securityMatcher(SWAGGER_MATCHER)
-                .authorizeHttpRequests(auth -> auth.anyRequest().hasRole("SWAGGER"))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/error**").permitAll()
+                        .anyRequest().hasRole("SWAGGER"))
                 .httpBasic(Customizer.withDefaults())
                 .authenticationProvider(swaggerAuthProvider())
                 .csrf(AbstractHttpConfigurer::disable);

@@ -111,46 +111,48 @@ public class WahaService implements WhatsAppService {
 
     public List<ChatOverviewDto> getChatsOverview(Integer clinicId) throws NotFoundException, WhatsAppNotConnectedException {
         Clinic clinic = clinicRepository.findById(clinicId);
+        try {
+            ResponseEntity<List<WahaChatOverviewDto>> response = wahaClient.getOverview(clinic.getWahaSession());
+            if (response.getBody() == null) {
+                return List.of();
+            }
 
-        ResponseEntity<List<WahaChatOverviewDto>> response = wahaClient.getOverview(clinic.getWahaSession());
+            return response.getBody()
+                    .stream()
+                    .map(chat -> {
+                        Optional<Patient> optionalPatient = patientRepository.findByPhoneNumber(chat.getId());
+                        Boolean aiAnswer = optionalPatient
+                                .map(patient -> chatRepository
+                                        .findAiAnswerByPatientIdAndClinicId(patient.getId(), clinicId))
+                                .orElse(true);
+                        String patientName = optionalPatient.map(Patient::getName).orElse(null);
 
-        if(response.getStatusCode().is4xxClientError()){
+                        return chat.toChatOverviewDto(aiAnswer, patientName);
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
             throw new WhatsAppNotConnectedException();
         }
-        if (response.getBody() == null) {
-            return List.of();
-        }
 
-        return response.getBody()
-                .stream()
-                .map(chat -> {
-                    Optional<Patient> optionalPatient = patientRepository.findByPhoneNumber(chat.getId());
-                    Boolean aiAnswer = optionalPatient
-                            .map(patient -> chatRepository
-                                    .findAiAnswerByPatientIdAndClinicId(patient.getId(), clinicId))
-                            .orElse(true);
-                    String patientName = optionalPatient.map(Patient::getName).orElse(null);
-
-                    return chat.toChatOverviewDto(aiAnswer, patientName);
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
     }
 
     public List<ChatHistoryDto> getChatHistory(Integer clinicId, String phoneNumber) throws NotFoundException, WhatsAppNotConnectedException {
         Clinic clinic = clinicRepository.findById(clinicId);
-        ResponseEntity<List<WahaChatHistory>> response = wahaClient.getMessages(clinic.getWahaSession(), phoneNumber/*, 10*/);
+        try {
+            ResponseEntity<List<WahaChatHistory>> response = wahaClient.getMessages(clinic.getWahaSession(), phoneNumber/*, 10*/);
 
-        if(response.getStatusCode().is4xxClientError()){
+
+            if (response.getBody() == null) {
+                return List.of();
+            }
+
+            return response.getBody().stream()
+                    .map(WahaChatHistory::toChatHistoryDto)
+                    .toList();
+        } catch (Exception e) {
             throw new WhatsAppNotConnectedException();
         }
-        if (response.getBody() == null) {
-            return List.of();
-        }
-
-        return response.getBody().stream()
-                .map(WahaChatHistory::toChatHistoryDto)
-                .toList();
     }
 
     private void restartWahaSession(String tokenizedName) {
