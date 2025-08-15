@@ -13,6 +13,7 @@ public class ChatOverviewDto {
     private String phoneNumber;
     private String pictureUrl;
     private String patientName;
+    private String whatsAppName;
     private String lastMessage;
     private LocalDateTime sentAt;
     private Boolean fromMe;

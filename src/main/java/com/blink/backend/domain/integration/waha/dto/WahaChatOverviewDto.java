@@ -20,6 +20,7 @@ import java.util.TimeZone;
 public class WahaChatOverviewDto {
     private String id;
     private String picture;
+    private String name;
     private OverviewLastMessageDto lastMessage;
 
     public ChatOverviewDto toChatOverviewDto(Boolean aiAnswer, String patientName) {
@@ -34,6 +35,7 @@ public class WahaChatOverviewDto {
                 .fromMe(lastMessage.getFromMe())
                 .aiAnswer(aiAnswer)
                 .patientName(patientName)
+                .whatsAppName(name)
                 .build();
     }
 }
