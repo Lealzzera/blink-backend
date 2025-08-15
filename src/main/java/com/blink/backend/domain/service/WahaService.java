@@ -38,6 +38,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -128,6 +129,7 @@ public class WahaService implements WhatsAppService {
 
                     return chat.toChatOverviewDto(aiAnswer, patientName);
                 })
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 

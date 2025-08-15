@@ -23,6 +23,9 @@ public class WahaChatOverviewDto {
     private OverviewLastMessageDto lastMessage;
 
     public ChatOverviewDto toChatOverviewDto(Boolean aiAnswer, String patientName) {
+        if (id.contains("@g.us") || id.contains("status@")) {
+            return null;
+        }
         return ChatOverviewDto.builder()
                 .phoneNumber(id.replace("@c.us", ""))
                 .pictureUrl(picture)
