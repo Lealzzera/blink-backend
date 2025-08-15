@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class ChatHistoryDto {
-    private String text;
+    private String messageText;
     private Boolean fromMe;
     private LocalDateTime sentAt;
     private AckStatus ack;

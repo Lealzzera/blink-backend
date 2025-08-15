@@ -14,6 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChatConfigurationService {
     private final ChatRepository chatRepository;
+    private final WahaService wahaService;
 
     public void toggleAiAnswerMode(Integer clinicId, String phoneNumber) throws NotFoundException {
         Chat chat = chatRepository.findByClinicIdAndPatientPhoneNumber(clinicId, phoneNumber)
@@ -22,11 +23,11 @@ public class ChatConfigurationService {
         chatRepository.save(chat);
     }
 
-    public List<ChatOverviewDto> getChatOverView(Integer clinicId) {
-        return List.of();
+    public List<ChatOverviewDto> getChatOverView(Integer clinicId) throws NotFoundException {
+        return wahaService.getChatsOverview(clinicId);
     }
 
-    public List<ChatHistoryDto> getChatHistory(Integer clinicId, String phoneNumber) {
-        return List.of();
+    public List<ChatHistoryDto> getChatHistory(Integer clinicId, String phoneNumber) throws NotFoundException {
+        return wahaService.getChatHistory(clinicId, phoneNumber);
     }
 }

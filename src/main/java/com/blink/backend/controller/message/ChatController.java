@@ -30,12 +30,17 @@ public class ChatController {
     }
 
     @GetMapping("{clinicId}/overview")
-    public ResponseEntity<List<ChatOverviewDto>> getChatsOverview(@PathVariable Integer clinicId) {
+    public ResponseEntity<List<ChatOverviewDto>> getChatsOverview(
+            @PathVariable Integer clinicId)
+            throws NotFoundException {
         return ResponseEntity.ok(chatConfigurationService.getChatOverView(clinicId));
     }
 
     @GetMapping("{clinicId}/overview/{phoneNumber}")
-    public ResponseEntity<List<ChatHistoryDto>> getChatHistory(@PathVariable Integer clinicId, @PathVariable String phoneNumber) {
+    public ResponseEntity<List<ChatHistoryDto>> getChatHistory(
+            @PathVariable Integer clinicId,
+            @PathVariable String phoneNumber)
+            throws NotFoundException {
         return ResponseEntity.ok(chatConfigurationService.getChatHistory(clinicId, phoneNumber));
     }
 

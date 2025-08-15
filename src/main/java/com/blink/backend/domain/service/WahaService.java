@@ -1,5 +1,7 @@
 package com.blink.backend.domain.service;
 
+import com.blink.backend.controller.message.dto.ChatHistoryDto;
+import com.blink.backend.controller.message.dto.ChatOverviewDto;
 import com.blink.backend.controller.message.dto.MessageReceivedRequest;
 import com.blink.backend.controller.message.dto.SendMessageRequest;
 import com.blink.backend.controller.message.dto.WhatsAppStatusDto;
@@ -102,6 +104,19 @@ public class WahaService implements WhatsAppService {
         }
         sendReceivedMessageToN8n(sender, message, optionalPatient);
 
+    }
+
+    public List<ChatOverviewDto> getChatsOverview(Integer clinicId) throws NotFoundException {
+        Clinic clinic = clinicRepository.findById(clinicId);
+        ResponseEntity response = wahaClient.getOverview(clinic.getWahaSession());
+        response.getBody();
+        return List.of();
+    }
+
+    public List<ChatHistoryDto> getChatHistory(Integer clinicId, String phoneNumber) throws NotFoundException {
+        Clinic clinic = clinicRepository.findById(clinicId);
+        wahaClient.getMessages(clinic.getWahaSession(), phoneNumber/*, 10*/);
+        return List.of();
     }
 
     private void restartWahaSession(String tokenizedName) {
