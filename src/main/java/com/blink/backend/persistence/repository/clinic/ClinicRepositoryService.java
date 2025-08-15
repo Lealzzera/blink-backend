@@ -19,4 +19,8 @@ public class ClinicRepositoryService {
     public Optional<Clinic> findOptionalById(Integer id) {
         return clinicRepository.findById(id);
     }
+
+    public Clinic findByWahaSession(String session) throws NotFoundException {
+        return clinicRepository.findByWahaSession(session).orElseThrow(() -> new NotFoundException("Clinica"));
+    }
 }

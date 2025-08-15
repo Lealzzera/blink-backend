@@ -7,8 +7,10 @@ import com.blink.backend.persistence.entity.clinic.Clinic;
 import com.blink.backend.persistence.repository.ClinicAvailabilityExceptionRepository;
 import com.blink.backend.persistence.repository.clinic.ClinicRepositoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -45,8 +47,17 @@ public class ClinicAvailabilityExceptionService {
     }
 
     public List<ClinicAvailabilityExceptionDTO> getClinicAvailabilityExceptionByClinic(Integer clinicId) {
-        return clinicAvailabilityExceptionRepository.findByClinicId(clinicId)
+        return clinicAvailabilityExceptionRepository.findByClinicIdAndExceptionDayAfterOrderByExceptionDayDesc(clinicId,
+                        LocalDate.now().minusDays(7))
                 .stream().map(ClinicAvailabilityExceptionDTO::fromEntity)
                 .toList();
+    }
+
+    public void deleteClinicAvailabilityException(Integer id) throws NotFoundException {
+        try {
+            clinicAvailabilityExceptionRepository.deleteById(id);
+        } catch (OptimisticLockingFailureException ex) {
+            throw new NotFoundException("Exceção");
+        }
     }
 }

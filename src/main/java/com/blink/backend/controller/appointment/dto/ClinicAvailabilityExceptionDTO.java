@@ -14,6 +14,7 @@ import java.time.LocalTime;
 @Builder
 public class ClinicAvailabilityExceptionDTO {
 
+    private Integer id;
     private Integer clinicId;
     private LocalDate exceptionDay;
     private Boolean isWorkingDay;
@@ -28,6 +29,7 @@ public class ClinicAvailabilityExceptionDTO {
 
     public static ClinicAvailabilityExceptionDTO fromEntity(ClinicAvailabilityException clinicAvailabilityException) {
         return ClinicAvailabilityExceptionDTO.builder()
+                .id(clinicAvailabilityException.getId())
                 .clinicId(clinicAvailabilityException.getClinic().getId())
                 .exceptionDay(clinicAvailabilityException.getExceptionDay())
                 .isWorkingDay(clinicAvailabilityException.getIsWorkingDay())

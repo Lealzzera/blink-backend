@@ -30,7 +30,7 @@ public class Chat {
     @JoinColumn(name = "clinic_id")
     private Clinic clinic;
 
-    @Column(name = "is_ai_answer")
-    private boolean isAiAnswer = true;
+    @Column(name = "ai_answer")
+    private Boolean aiAnswer = true;
 
 }
