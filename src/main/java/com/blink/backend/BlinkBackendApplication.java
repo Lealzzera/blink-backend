@@ -21,6 +21,6 @@ public class BlinkBackendApplication {
 
     @PostConstruct
     public void init(){
-        TimeZone.setDefault(TimeZone.getTimeZone("BET"));
+        TimeZone.setDefault(TimeZone.getTimeZone("America/Sao_Paulo"));
     }
 }
