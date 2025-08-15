@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,13 +21,16 @@ public class DashboardController {
     private final DashboardService dashboardService;
 
     @GetMapping("{clinicId}")
-    public DashboardDTO getDashboard(@PathVariable Integer clinicId,
-                                     @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-                                     @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
-
-        return dashboardService.getDashboardData(clinicId, startDate, endDate);
+    public DashboardDTO getDashboard(
+            @PathVariable Integer clinicId,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate) {
+        startDate = Objects.isNull(startDate) ? LocalDate.now().minusDays(1) : startDate;
+        endDate = Objects.isNull(endDate) ? LocalDate.now() : endDate;
+        return dashboardService.getDashboardData(clinicId,
+                startDate.atStartOfDay(),
+                endDate.plusDays(1).atStartOfDay());
     }
-
 
 
 }
