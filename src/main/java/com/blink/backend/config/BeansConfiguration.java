@@ -58,7 +58,9 @@ public class BeansConfiguration {
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:3000",
                 "https://localhost:3000",
-                "https://be.blinkdentalmarketing.com.br"
+                "https://be.blinkdentalmarketing.com.br",
+                "https://blink-fe-dev:3000",
+                "http://blink-fe-dev:3000"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("*"));
