@@ -30,7 +30,7 @@ import com.blink.backend.persistence.repository.ChatRepository;
 import com.blink.backend.persistence.repository.PatientRepository;
 import com.blink.backend.persistence.repository.clinic.ClinicRepositoryService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +46,7 @@ import static com.blink.backend.domain.integration.waha.dto.WahaWebhookEventType
 import static com.blink.backend.domain.model.message.WhatsAppStatus.SHUTDOWN;
 import static java.util.Objects.isNull;
 
-@Slf4j
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class WahaService implements WhatsAppService {
@@ -112,11 +112,14 @@ public class WahaService implements WhatsAppService {
     public List<ChatOverviewDto> getChatsOverview(Integer clinicId) throws NotFoundException, WhatsAppNotConnectedException {
         Clinic clinic = clinicRepository.findById(clinicId);
         try {
+            log.info("calling-waha-chat-overview, clinicId={}", clinicId);
             ResponseEntity<List<WahaChatOverviewDto>> response = wahaClient.getOverview(clinic.getWahaSession());
             if (response.getBody() == null) {
+                log.info("null-overview-response, clinicId={}", clinicId);
                 return List.of();
             }
 
+            log.info("extracting-waha-chat-overview, clinicId={}", clinicId);
             return response.getBody()
                     .stream()
                     .map(chat -> {

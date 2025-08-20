@@ -7,10 +7,12 @@ import com.blink.backend.domain.exception.message.WhatsAppNotConnectedException;
 import com.blink.backend.persistence.entity.message.Chat;
 import com.blink.backend.persistence.repository.ChatRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class ChatConfigurationService {
@@ -25,7 +27,10 @@ public class ChatConfigurationService {
     }
 
     public List<ChatOverviewDto> getChatOverView(Integer clinicId) throws NotFoundException, WhatsAppNotConnectedException {
-        return wahaService.getChatsOverview(clinicId);
+        log.info("init-get-chat-overview, clinicId={}", clinicId);
+        List<ChatOverviewDto> response = wahaService.getChatsOverview(clinicId);
+        log.info("end-get-chat-overview, clinicId={}", clinicId);
+        return response;
     }
 
     public List<ChatHistoryDto> getChatHistory(Integer clinicId, String phoneNumber) throws NotFoundException, WhatsAppNotConnectedException {
