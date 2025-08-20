@@ -1,5 +1,6 @@
 package com.blink.backend.domain.integration.waha;
 
+import com.blink.backend.config.FeignConfigs;
 import com.blink.backend.domain.integration.waha.dto.WahaChatHistory;
 import com.blink.backend.domain.integration.waha.dto.WahaChatOverviewDto;
 import com.blink.backend.domain.integration.waha.dto.CreateWahaSessionRequest;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @Component
-@FeignClient(name = "waha-client", url = "${waha-url}", dismiss404 = true)
+@FeignClient(name = "waha-client", url = "${waha-url}", dismiss404 = true, configuration = FeignConfigs.WahaClientConfig.class)
 public interface FeignWahaClient {
 
     @GetMapping(value = "api/{sessionName}/auth/qr", consumes = MediaType.IMAGE_PNG_VALUE)
