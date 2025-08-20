@@ -11,7 +11,7 @@ public class FeignConfigs {
 
         @Bean
         public RequestInterceptor wahaClientInterceptor() {
-            return template -> template.header("Authorization", "Bearer ".concat(wahaApiKey));
+            return template -> template.header("X-Api-Key", wahaApiKey);
         }
     }
 }
