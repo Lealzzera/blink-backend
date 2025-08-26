@@ -75,6 +75,7 @@ CREATE TABLE patient
     phone_number VARCHAR(20)  NOT NULL,
     created_at   TIMESTAMP DEFAULT NOW(),
     clinic_id    INT          NOT NULL,
+    ai_answer    BOOLEAN   DEFAULT TRUE,
     FOREIGN KEY (clinic_id) REFERENCES clinic (id)
 );
 
@@ -119,16 +120,4 @@ CREATE TABLE sale
     FOREIGN KEY (appointment_id) REFERENCES appointment (id),
     FOREIGN KEY (patient_id) REFERENCES patient (id),
     FOREIGN KEY (registered_by_user_id) REFERENCES users (id)
-);
-
--- MESSAGE
-
-CREATE TABLE chat
-(
-    id           SERIAL PRIMARY KEY,
-    patient_id   INT,
-    clinic_id    INT,
-    ai_answer BOOLEAN DEFAULT TRUE,
-    FOREIGN KEY (patient_id) REFERENCES patient (id),
-    FOREIGN KEY (clinic_id) REFERENCES clinic (id)
 );

@@ -42,5 +42,8 @@ public class Patient {
     @ManyToOne
     @JoinColumn(name = "clinic_id")
     private Clinic clinic;
+
+    @Column(name = "ai_answer")
+    private Boolean aiAnswer = true;
 }
 

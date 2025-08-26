@@ -1,7 +1,5 @@
 DROP TABLE appointment CASCADE;
 
-DROP TABLE chat CASCADE;
-
 DROP TABLE clinic CASCADE;
 
 DROP TABLE clinic_availability CASCADE;

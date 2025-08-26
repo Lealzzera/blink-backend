@@ -26,7 +26,6 @@ import com.blink.backend.persistence.entity.appointment.Appointment;
 import com.blink.backend.persistence.entity.appointment.Patient;
 import com.blink.backend.persistence.entity.clinic.Clinic;
 import com.blink.backend.persistence.repository.AppointmentsRepository;
-import com.blink.backend.persistence.repository.ChatRepository;
 import com.blink.backend.persistence.repository.PatientRepository;
 import com.blink.backend.persistence.repository.clinic.ClinicRepositoryService;
 import lombok.RequiredArgsConstructor;
@@ -59,7 +58,8 @@ public class WahaService implements WhatsAppService {
     private final PatientRepository patientRepository;
     private final AppointmentsRepository appointmentsRepository;
     private final BlinkFeClient blinkFeClient;
-    private final ChatRepository chatRepository;
+    @Value("${default-ai-answer}")
+    private final Boolean defaultAiAnswer;
 
     @Override
     public WhatsAppStatusDto getWhatsAppStatusByClinicId(Integer clinicId) throws NotFoundException {
@@ -101,7 +101,7 @@ public class WahaService implements WhatsAppService {
         Clinic clinic = clinicRepository.findByWahaSession(session);
 
         sendReceivedMessageToBlinkFe(sender, message, clinic.getId());
-        if (!isAiResponseTurnedOn(optionalPatient, clinic.getId())) {
+        if (!isAiResponseTurnedOn(optionalPatient)) {
             log.info("Automatic response turned off for patient {}", sender);
             return;
         }
@@ -124,10 +124,7 @@ public class WahaService implements WhatsAppService {
                     .stream()
                     .map(chat -> {
                         Optional<Patient> optionalPatient = patientRepository.findByPhoneNumber(chat.getId());
-                        Boolean aiAnswer = optionalPatient
-                                .map(patient -> chatRepository
-                                        .findAiAnswerByPatientIdAndClinicId(patient.getId(), clinicId))
-                                .orElse(true);
+                        Boolean aiAnswer = optionalPatient.map(Patient::getAiAnswer).orElse(true);
                         String patientName = optionalPatient.map(Patient::getName).orElse(null);
 
                         return chat.toChatOverviewDto(aiAnswer, patientName);
@@ -140,11 +137,11 @@ public class WahaService implements WhatsAppService {
 
     }
 
-    public List<ChatHistoryDto> getChatHistory(Integer clinicId, String phoneNumber) throws NotFoundException, WhatsAppNotConnectedException {
+    public List<ChatHistoryDto> getChatHistory(Integer clinicId, String phoneNumber)
+            throws NotFoundException, WhatsAppNotConnectedException {
         Clinic clinic = clinicRepository.findById(clinicId);
         try {
             ResponseEntity<List<WahaChatHistory>> response = wahaClient.getMessages(clinic.getWahaSession(), phoneNumber/*, 10*/);
-
 
             if (response.getBody() == null) {
                 return List.of();
@@ -233,8 +230,7 @@ public class WahaService implements WhatsAppService {
         }
     }
 
-    private boolean isAiResponseTurnedOn(Optional<Patient> patient, Integer clinicId) {
-        return patient.isPresent() &&
-                chatRepository.findAiAnswerByPatientIdAndClinicId(patient.get().getId(), clinicId);
+    private boolean isAiResponseTurnedOn(Optional<Patient> patient) {
+        return (patient.isPresent() && patient.get().getAiAnswer()) || defaultAiAnswer;
     }
 }

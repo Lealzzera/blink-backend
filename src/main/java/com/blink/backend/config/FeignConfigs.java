@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 
 public class FeignConfigs {
     public static class WahaClientConfig {
-        @Value("${WAHA_API_KEY}")
+        @Value("${WAHA_API_KEY:}")
         private String wahaApiKey;
 
         @Bean

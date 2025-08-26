@@ -29,10 +29,12 @@ public class PatientController {
                 .build();
     }
 
-    @GetMapping("phone-number/{phone}")
-    public ResponseEntity<PatientDto> getPatientByPhone(@PathVariable String phone)
+    @GetMapping("{clinicId}/phone-number/{phone}")
+    public ResponseEntity<PatientDto> getPatientByPhone(
+            @PathVariable Integer clinicId,
+            @PathVariable String phone)
             throws NotFoundException {
-        return ResponseEntity.ok(patientService.findByPhoneNumber(phone));
+        return ResponseEntity.ok(patientService.findByClinicIdAndPhoneNumber(clinicId, phone));
     }
 
     @GetMapping("{id}")

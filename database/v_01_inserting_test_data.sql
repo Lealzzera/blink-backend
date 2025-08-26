@@ -32,8 +32,8 @@ VALUES (1, 'SEGUNDA', '08:00:00', '18:00:00', '12:00:00', '13:00:00', 1, TRUE),
        (1, 'DOMINGO', NULL, NULL, NULL, NULL, 1, FALSE);
 
 -- PATIENT
-INSERT INTO patient (name, phone_number, clinic_id)
-VALUES ('João do Brás', '11911112222', 1);
+INSERT INTO patient (name, phone_number, clinic_id, ai_answer)
+VALUES ('João do Brás', '11911112222', 1, true);
 
 -- SERVICE_TYPE
 INSERT INTO service_type (service_type)
@@ -47,7 +47,3 @@ VALUES (1, NOW() + interval '3 day', 1, 30, 1, 'Paciente prefere atendimento pel
 -- SALE
 INSERT INTO sale (patient_id, appointment_id, value, status, registered_by_user_id, registered_at, service_type_id)
 VALUES (1, 1, 200.00, 'PAGO', 1, NOW(), 1);
-
--- CHAT
-INSERT INTO chat (patient_id, clinic_id, ai_answer)
-VALUES (1, 1, TRUE);

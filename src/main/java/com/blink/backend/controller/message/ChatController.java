@@ -22,12 +22,11 @@ public class ChatController {
     private final ChatConfigurationService chatConfigurationService;
 
     @PutMapping("{clinicId}/ai-answer/{phoneNumber}")
-    public ResponseEntity<Void> toggleChatAiAnswer(
+    public ResponseEntity<Boolean> toggleChatAiAnswer(
             @PathVariable Integer clinicId,
             @PathVariable String phoneNumber)
             throws NotFoundException {
-        chatConfigurationService.toggleAiAnswerMode(clinicId, phoneNumber);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(chatConfigurationService.toggleAiAnswerMode(clinicId, phoneNumber));
     }
 
     @GetMapping("{clinicId}/overview")

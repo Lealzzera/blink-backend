@@ -16,13 +16,14 @@ public class PatientService {
     private final PatientRepository patientRepository;
     private final ClinicRepositoryService clinicRepository;
 
-    public PatientDto findByPhoneNumber(String patientNumber) throws NotFoundException {
-        return patientRepository.findByPhoneNumber(patientNumber)
+    public PatientDto findByClinicIdAndPhoneNumber(Integer clinicId, String patientNumber) throws NotFoundException {
+        return patientRepository.findByClinic_IdAndPhoneNumber(clinicId, patientNumber)
                 .map(PatientDto::fromEntity)
                 .orElseThrow(() -> new NotFoundException("Paciente"));
     }
 
-    public Integer createPatient(CreatePatientRequest patientRequest) throws NotFoundException {
+    public Integer createPatient(CreatePatientRequest patientRequest)
+            throws NotFoundException {
         Clinic clinic = clinicRepository.findById(patientRequest.getClinicId());
         Patient patient = patientRepository.findByPhoneNumber(patientRequest.getPhoneNumber())
                 .orElse(

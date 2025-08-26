@@ -2,12 +2,14 @@ package com.blink.backend.domain.service;
 
 
 import com.blink.backend.controller.dashboard.DashboardDTO;
+import com.blink.backend.persistence.entity.appointment.AppointmentStatus;
 import com.blink.backend.persistence.repository.DashboardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,8 +19,12 @@ public class DashboardService {
 
     public DashboardDTO getDashboardData(Integer clinicId, LocalDateTime startDate, LocalDateTime endDate) {
 
-        Long receivedMessagesCountTotal = dashboardRepository.countNovasMensagens(clinicId);
+        Long receivedMessagesCountTotal = dashboardRepository.countNovasMensagens(clinicId, startDate, endDate);
         Long appointmentsCountTotal = dashboardRepository.countAgendamentosRealizados(clinicId, startDate, endDate);
+        /*Long test = dashboardRepository.countAppointmentsForDashboard(
+                clinicId,
+                startDate, endDate,
+                List.of("AGENDADO", "CONFIRMADO"));*/
         Long showUpsCountTotal = dashboardRepository.countComparecimentos(clinicId, startDate, endDate);
         Long salesCountTotal = dashboardRepository.countVendas(clinicId, startDate, endDate);
         BigDecimal salesValueTotal = dashboardRepository.sumValorVendas(clinicId, startDate, endDate);
