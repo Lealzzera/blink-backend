@@ -40,14 +40,14 @@ public interface FeignWahaClient {
             headers = {"X-Api-Key=${waha-api-key}"})
     void sendMessage(SendWahaMessageRequest sendWahaMessageRequest);
 
-    @GetMapping("api/{session}/chats/{chatId}/messages?limit={limit}&offset={offset}")
+    @GetMapping("api/{session}/chats/{chatId}/messages")
     ResponseEntity<List<WahaChatHistory>> getMessages(
             @PathVariable String session,
             @PathVariable String chatId,
             @RequestParam Integer limit,
             @RequestParam Integer offset);
 
-    @GetMapping("/api/{session}/chats/overview?limit={limit}&offset={offset}")
+    @GetMapping("/api/{session}/chats/overview")
     ResponseEntity<List<WahaChatOverviewDto>> getOverview(
             @PathVariable String session,
             @RequestParam Integer limit,
