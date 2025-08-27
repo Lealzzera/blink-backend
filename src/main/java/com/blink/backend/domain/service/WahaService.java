@@ -60,6 +60,7 @@ public class WahaService implements WhatsAppService {
     private final BlinkFeClient blinkFeClient;
     @Value("${default-ai-answer}")
     private final Boolean defaultAiAnswer;
+    private final Integer limit = 20;
 
     @Override
     public WhatsAppStatusDto getWhatsAppStatusByClinicId(Integer clinicId) throws NotFoundException {
@@ -109,11 +110,12 @@ public class WahaService implements WhatsAppService {
 
     }
 
-    public List<ChatOverviewDto> getChatsOverview(Integer clinicId) throws NotFoundException, WhatsAppNotConnectedException {
+    public List<ChatOverviewDto> getChatsOverview(Integer clinicId, Integer page) throws NotFoundException, WhatsAppNotConnectedException {
         Clinic clinic = clinicRepository.findById(clinicId);
+        Integer offset = page * limit;
         try {
             log.info("calling-waha-chat-overview, clinicId={}", clinicId);
-            ResponseEntity<List<WahaChatOverviewDto>> response = wahaClient.getOverview(clinic.getWahaSession());
+            ResponseEntity<List<WahaChatOverviewDto>> response = wahaClient.getOverview(clinic.getWahaSession(), limit, offset);
             if (response.getBody() == null) {
                 log.info("null-overview-response, clinicId={}", clinicId);
                 return List.of();
@@ -137,11 +139,12 @@ public class WahaService implements WhatsAppService {
 
     }
 
-    public List<ChatHistoryDto> getChatHistory(Integer clinicId, String phoneNumber)
+    public List<ChatHistoryDto> getChatHistory(Integer clinicId, String phoneNumber, Integer page)
             throws NotFoundException, WhatsAppNotConnectedException {
         Clinic clinic = clinicRepository.findById(clinicId);
+        Integer offset = limit * page;
         try {
-            ResponseEntity<List<WahaChatHistory>> response = wahaClient.getMessages(clinic.getWahaSession(), phoneNumber/*, 10*/);
+            ResponseEntity<List<WahaChatHistory>> response = wahaClient.getMessages(clinic.getWahaSession(), phoneNumber, limit, offset);
 
             if (response.getBody() == null) {
                 return List.of();

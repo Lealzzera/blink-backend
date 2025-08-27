@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -31,17 +32,19 @@ public class ChatController {
 
     @GetMapping("{clinicId}/overview")
     public ResponseEntity<List<ChatOverviewDto>> getChatsOverview(
-            @PathVariable Integer clinicId)
+            @PathVariable Integer clinicId,
+            @RequestParam(required = false, defaultValue = "0") Integer page)
             throws NotFoundException, WhatsAppNotConnectedException {
-        return ResponseEntity.ok(chatConfigurationService.getChatOverView(clinicId));
+        return ResponseEntity.ok(chatConfigurationService.getChatOverView(clinicId, page));
     }
 
     @GetMapping("{clinicId}/overview/{phoneNumber}")
     public ResponseEntity<List<ChatHistoryDto>> getChatHistory(
             @PathVariable Integer clinicId,
-            @PathVariable String phoneNumber)
+            @PathVariable String phoneNumber,
+            @RequestParam(required = false, defaultValue = "0") Integer page)
             throws NotFoundException, WhatsAppNotConnectedException {
-        return ResponseEntity.ok(chatConfigurationService.getChatHistory(clinicId, phoneNumber));
+        return ResponseEntity.ok(chatConfigurationService.getChatHistory(clinicId, phoneNumber, page));
     }
 
 }

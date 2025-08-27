@@ -27,7 +27,7 @@ public interface DashboardRepository extends CrudRepository<Appointment, Integer
     @Query(value = "SELECT COUNT(*) " +
             "FROM blink_be_dev.appointment " +
             "WHERE clinic_id = :clinicId " +
-            "AND scheduled_time BETWEEN :startDate AND :endDate " +
+            "AND created_at BETWEEN :startDate AND :endDate " +
             "AND status IN (:appointmentStatus)",
             nativeQuery = true)
     Long countAppointmentsForDashboard(
@@ -40,7 +40,7 @@ public interface DashboardRepository extends CrudRepository<Appointment, Integer
             "FROM blink_be_dev.appointment " +
             "WHERE status IN ('AGENDADO', 'COMPARECEU') " +
             "AND clinic_id = :clinicId " +
-            "AND scheduled_time BETWEEN :startDate AND :endDate",
+            "AND created_at BETWEEN :startDate AND :endDate",
             nativeQuery = true)
     Long countAgendamentosRealizados(
             @Param("clinicId") Integer clinicId,
@@ -51,7 +51,7 @@ public interface DashboardRepository extends CrudRepository<Appointment, Integer
             "FROM blink_be_dev.appointment " +
             "WHERE status = 'COMPARECEU' " +
             "AND clinic_id = :clinicId " +
-            "AND scheduled_Time BETWEEN :startDate AND :endDate",
+            "AND created_at BETWEEN :startDate AND :endDate",
             nativeQuery = true)
     Long countComparecimentos(
             @Param("clinicId") Integer clinicId,

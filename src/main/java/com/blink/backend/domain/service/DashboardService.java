@@ -20,12 +20,10 @@ public class DashboardService {
     public DashboardDTO getDashboardData(Integer clinicId, LocalDateTime startDate, LocalDateTime endDate) {
 
         Long receivedMessagesCountTotal = dashboardRepository.countNovasMensagens(clinicId, startDate, endDate);
-        Long appointmentsCountTotal = dashboardRepository.countAgendamentosRealizados(clinicId, startDate, endDate);
-        /*Long test = dashboardRepository.countAppointmentsForDashboard(
-                clinicId,
-                startDate, endDate,
-                List.of("AGENDADO", "CONFIRMADO"));*/
-        Long showUpsCountTotal = dashboardRepository.countComparecimentos(clinicId, startDate, endDate);
+        Long appointmentsCountTotal = dashboardRepository.countAppointmentsForDashboard(clinicId, startDate, endDate,
+                List.of("AGENDADO", "CONFIRMADO"));
+        Long showUpsCountTotal = dashboardRepository.countAppointmentsForDashboard(clinicId, startDate, endDate,
+                List.of("COMPARECEU"));
         Long salesCountTotal = dashboardRepository.countVendas(clinicId, startDate, endDate);
         BigDecimal salesValueTotal = dashboardRepository.sumValorVendas(clinicId, startDate, endDate);
 

@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.TimeZone;
+import java.time.ZoneId;
 
 @Getter
 @Setter
@@ -27,11 +26,14 @@ public class WahaChatOverviewDto {
         if (id.contains("@g.us") || id.contains("status@")) {
             return null;
         }
+
         return ChatOverviewDto.builder()
                 .phoneNumber(id.replace("@c.us", ""))
                 .pictureUrl(picture)
                 .lastMessage(lastMessage.getMessage())
-                .sentAt(LocalDateTime.ofInstant(Instant.ofEpochMilli(lastMessage.getTimestamp()), TimeZone.getDefault().toZoneId()))
+                .sentAt(Instant.ofEpochSecond(lastMessage.getTimestamp())
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDateTime())
                 .fromMe(lastMessage.getFromMe())
                 .aiAnswer(aiAnswer)
                 .patientName(patientName)
