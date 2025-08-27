@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.TimeZone;
 
 @Getter
@@ -24,10 +25,13 @@ public class WahaChatHistory {
     private String ackName;
 
     public ChatHistoryDto toChatHistoryDto() {
+
         return ChatHistoryDto.builder()
                 .messageText(body)
                 .fromMe(fromMe)
-                .sentAt(LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), TimeZone.getDefault().toZoneId()))
+                .sentAt(Instant.ofEpochSecond(timestamp)
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDateTime())
                 .build();
     }
 }
