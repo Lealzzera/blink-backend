@@ -14,11 +14,11 @@ springboot-starter-actuator = { group = "org.springframework.boot", name = "spri
 springboot-starter-openapi = { group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-ui", version.ref = "spring-doc" }
 springboot-starter-security = { group = "org.springframework.boot", name = "spring-boot-starter-security", version.ref = "spring-boot" }
 springboot-starter-openfeign = { group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version.ref = "spring-cloud" }
+springboot-starter-websocket = { group = 'org.springframework.boot', name = 'spring-boot-starter-websocket', version.ref = "spring-boot" }
 postgresql = { group = "org.postgresql", name = "postgresql", version.ref = "postgresql" }
 lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }
-
 [plugins]
 
 
 [bundles]
-spring-starter = ["springboot-starter-web", "springboot-starter-jpa", "springboot-starter-openapi", "springboot-starter-openfeign", "springboot-starter-security", "springboot-starter-actuator"]
+spring-starter = ["springboot-starter-web", "springboot-starter-jpa", "springboot-starter-openapi", "springboot-starter-openfeign", "springboot-starter-security", "springboot-starter-actuator", "springboot-starter-websocket"]

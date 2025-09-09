@@ -1,8 +1,6 @@
 package com.blink.backend.persistence.repository;
 
 import com.blink.backend.persistence.entity.appointment.Appointment;
-import com.blink.backend.persistence.entity.appointment.AppointmentStatus;
-import com.blink.backend.persistence.entity.clinic.Clinic;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;

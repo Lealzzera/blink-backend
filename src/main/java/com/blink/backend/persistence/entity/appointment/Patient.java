@@ -43,6 +43,7 @@ public class Patient {
     @JoinColumn(name = "clinic_id")
     private Clinic clinic;
 
+    @Builder.Default
     @Column(name = "ai_answer")
     private Boolean aiAnswer = true;
 }

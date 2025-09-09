@@ -1,10 +1,10 @@
 package com.blink.backend.domain.integration.waha;
 
 import com.blink.backend.config.FeignConfigs;
-import com.blink.backend.domain.integration.waha.dto.WahaChatHistory;
-import com.blink.backend.domain.integration.waha.dto.WahaChatOverviewDto;
 import com.blink.backend.domain.integration.waha.dto.CreateWahaSessionRequest;
 import com.blink.backend.domain.integration.waha.dto.SendWahaMessageRequest;
+import com.blink.backend.domain.integration.waha.dto.WahaChatHistory;
+import com.blink.backend.domain.integration.waha.dto.WahaChatOverviewDto;
 import com.blink.backend.domain.integration.waha.dto.WahaSessionStatusResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;

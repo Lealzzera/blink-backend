@@ -20,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import static com.blink.backend.domain.model.auth.Authorities.AUTHENTICATED;
+import static com.blink.backend.domain.model.auth.Authorities.N8N_AUTHENTICATED;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -79,10 +80,10 @@ public class SecurityConfiguration {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .authorizeHttpRequests(req -> req
                         .requestMatchers(POST, "/api/v1/message/whats-app/receive-message").permitAll()
-                        .requestMatchers(GET, "/**").hasAnyAuthority(AUTHENTICATED.getAuthority())
-                        .requestMatchers(POST, "/**").hasAnyAuthority(AUTHENTICATED.getAuthority())
-                        .requestMatchers(PUT, "/**").hasAnyAuthority(AUTHENTICATED.getAuthority())
-                        .requestMatchers(DELETE, "/**").hasAnyAuthority(AUTHENTICATED.getAuthority())
+                        .requestMatchers(GET, "/**").hasAnyAuthority(AUTHENTICATED.getAuthority(), N8N_AUTHENTICATED.getAuthority())
+                        .requestMatchers(POST, "/**").hasAnyAuthority(AUTHENTICATED.getAuthority(), N8N_AUTHENTICATED.getAuthority())
+                        .requestMatchers(PUT, "/**").hasAnyAuthority(AUTHENTICATED.getAuthority(), N8N_AUTHENTICATED.getAuthority())
+                        .requestMatchers(DELETE, "/**").hasAnyAuthority(AUTHENTICATED.getAuthority(), N8N_AUTHENTICATED.getAuthority())
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
@@ -92,6 +93,18 @@ public class SecurityConfiguration {
                         //.addLogoutHandler(logoutHandler)
                         .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
                 )*/;
+        return http.build();
+    }
+
+    @Bean
+    @Order(3)
+    public SecurityFilterChain webSocketSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/wpp-socket/**")
+                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS));
         return http.build();
     }
 

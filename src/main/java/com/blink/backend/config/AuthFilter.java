@@ -2,12 +2,15 @@ package com.blink.backend.config;
 
 import com.blink.backend.domain.integration.supabase.SupabaseClient;
 import com.blink.backend.domain.integration.supabase.dto.SupabaseUserDetailsResponse;
+import com.blink.backend.domain.model.auth.Authorities;
 import com.blink.backend.domain.model.auth.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,29 +19,65 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
+@Log4j2
 @Component
 @RequiredArgsConstructor
 public class AuthFilter extends OncePerRequestFilter {
 
     private final SupabaseClient supabaseClient;
+    @Value("${n8n-auth-api-key}")
+    private final String n8nApiKeyValue;
+    @Value("${n8n-username}")
+    private final String n8nUsername;
+    @Value("${n8n-password}")
+    private final String n8nPassword;
 
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String path = request.getServletPath();
-        if (path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs") || path.startsWith("/swagger-resources")) {
-            filterChain.doFilter(request, response);
+        if (doApiKeyAuthentication(request, response, filterChain))
             return;
-        }
+        doSupabaseAuthentication(request, response, filterChain);
 
-        if (path.contains("/api/v1/auth")) {
-            filterChain.doFilter(request, response);
-            return;
+    }
+
+    private boolean doApiKeyAuthentication(
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain) throws ServletException, IOException {
+
+        final String apiKeyHeader = request.getHeader("X-Api-Key");
+        if (apiKeyHeader == null || !apiKeyHeader.equals(n8nApiKeyValue)) {
+            log.info("X-api-key header invalid. Trying supabase authentication");
+            return false;
         }
+        log.info("X-api-key header valid");
+        final User user = new User(n8nUsername, n8nPassword, List.of(Authorities.N8N_AUTHENTICATED));
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                user,
+                null,
+                user.getAuthorities()
+        );
+        if (user.getUsername() != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            log.info("X-api-key authentication valid");
+            authToken.setDetails(
+                    new WebAuthenticationDetailsSource().buildDetails(request)
+            );
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+        }
+        filterChain.doFilter(request, response);
+        return true;
+    }
+
+    private void doSupabaseAuthentication(
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {

@@ -4,6 +4,7 @@ import com.blink.backend.controller.appointment.dto.AppointmentDetailsDTO;
 import com.blink.backend.controller.appointment.dto.ClinicAvailabilityDTO;
 import com.blink.backend.controller.appointment.dto.CreateAppointmentDTO;
 import com.blink.backend.controller.appointment.dto.UpdateAppointmentStatusDTO;
+import com.blink.backend.controller.appointment.dto.UpdateAppointmentDTO;
 import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.domain.exception.appointment.AppointmentConflictException;
 import com.blink.backend.domain.service.ClinicAvailabilityService;
@@ -39,7 +40,18 @@ public class AppointmentController {
             @RequestParam(value = "hide_cancelled", required = false, defaultValue = "true") Boolean hideCancelled) {
         endDate = isNull(endDate) ? startDate.plusDays(7) : endDate;
 
-        return ResponseEntity.ok(clinicAvailabilityService.getClinicAvailability(startDate, endDate, hideCancelled));
+        return ResponseEntity.ok(clinicAvailabilityService.getClinicAvailability(1, startDate, endDate, hideCancelled));
+    }
+
+    @GetMapping("availability/{clinicId}")
+    public ResponseEntity<List<ClinicAvailabilityDTO>> getClinicAvailabilityByClinicId(
+            @PathVariable Integer clinicId,
+            @RequestParam("start_date") LocalDate startDate,
+            @RequestParam(value = "end_date", required = false) LocalDate endDate,
+            @RequestParam(value = "hide_cancelled", required = false, defaultValue = "true") Boolean hideCancelled) {
+        endDate = isNull(endDate) ? startDate.plusDays(7) : endDate;
+
+        return ResponseEntity.ok(clinicAvailabilityService.getClinicAvailability(clinicId, startDate, endDate, hideCancelled));
     }
 
     @PostMapping
@@ -51,10 +63,10 @@ public class AppointmentController {
         return ResponseEntity.created(URI.create(appointment.getId().toString())).build();
     }
 
-    @GetMapping("{id}/details")
+    @GetMapping("{appointmentId}/details")
     public ResponseEntity<AppointmentDetailsDTO> getAppointmentDetailsById(
-            @PathVariable Integer id) throws NotFoundException {
-        return ResponseEntity.ok(clinicAvailabilityService.getAppointmentDetailsById(id));
+            @PathVariable Integer appointmentId) throws NotFoundException {
+        return ResponseEntity.ok(clinicAvailabilityService.getAppointmentDetailsById(appointmentId));
     }
 
     @PutMapping("status")
@@ -65,7 +77,13 @@ public class AppointmentController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("{appointmentId}")
+    public ResponseEntity<Void> updateAppointment(@PathVariable Integer appointmentId, @RequestBody UpdateAppointmentDTO updateAppointmentDTO)
+            throws NotFoundException {
+        clinicAvailabilityService.updateAppointment(appointmentId, updateAppointmentDTO);
 
+        return ResponseEntity.noContent().build();
+    }
 
 
 }

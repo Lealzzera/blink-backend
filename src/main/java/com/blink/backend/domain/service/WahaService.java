@@ -7,7 +7,6 @@ import com.blink.backend.controller.message.dto.SendMessageRequest;
 import com.blink.backend.controller.message.dto.WhatsAppStatusDto;
 import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.domain.exception.message.WhatsAppNotConnectedException;
-import com.blink.backend.domain.integration.blink.fe.BlinkFeClient;
 import com.blink.backend.domain.integration.blink.fe.dto.ReceivedMessageBlinkFeRequest;
 import com.blink.backend.domain.integration.n8n.N8nClient;
 import com.blink.backend.domain.integration.n8n.dto.AppointmentsData;
@@ -24,15 +23,18 @@ import com.blink.backend.domain.integration.waha.dto.WahaSessionStatusResponse;
 import com.blink.backend.domain.integration.waha.dto.WahaWebhooks;
 import com.blink.backend.persistence.entity.appointment.Appointment;
 import com.blink.backend.persistence.entity.appointment.Patient;
+import com.blink.backend.persistence.entity.auth.UserClinic;
 import com.blink.backend.persistence.entity.clinic.Clinic;
 import com.blink.backend.persistence.repository.AppointmentsRepository;
 import com.blink.backend.persistence.repository.PatientRepository;
+import com.blink.backend.persistence.repository.auth.UserClinicRepository;
 import com.blink.backend.persistence.repository.clinic.ClinicRepositoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -51,16 +53,17 @@ import static java.util.Objects.isNull;
 public class WahaService implements WhatsAppService {
     private final FeignWahaClient wahaClient;
     private final ClinicRepositoryService clinicRepository;
+    private final UserClinicRepository userClinicRepository;
     @Value("${waha-webhook-url}")
     private final String wahaWebhookUrl;
     private final String WAHA_RECEIVE_MESSAGE_PATH = "/api/v1/message/whats-app/receive-message";
     private final N8nClient n8nClient;
     private final PatientRepository patientRepository;
     private final AppointmentsRepository appointmentsRepository;
-    private final BlinkFeClient blinkFeClient;
     @Value("${default-ai-answer}")
     private final Boolean defaultAiAnswer;
     private final Integer limit = 20;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Override
     public WhatsAppStatusDto getWhatsAppStatusByClinicId(Integer clinicId) throws NotFoundException {
@@ -101,7 +104,7 @@ public class WahaService implements WhatsAppService {
         Optional<Patient> optionalPatient = patientRepository.findByPhoneNumber(sender);
         Clinic clinic = clinicRepository.findByWahaSession(session);
 
-        sendReceivedMessageToBlinkFe(sender, message, clinic.getId());
+        sendReceivedMessageToBlinkFe(sender, message, clinic);
         if (!isAiResponseTurnedOn(optionalPatient)) {
             log.info("Automatic response turned off for patient {}", sender);
             return;
@@ -221,13 +224,33 @@ public class WahaService implements WhatsAppService {
                 .build());
     }
 
-    private void sendReceivedMessageToBlinkFe(String sender, String message, Integer clinicId) {
+    private void sendReceivedMessageToBlinkFe(String sender, String message, Clinic clinic) {
         try {
-            blinkFeClient.sendReceivedMessageToFrontEnd(ReceivedMessageBlinkFeRequest.builder()
+            List<UserClinic> userClinics = userClinicRepository.findAllByClinicId(clinic.getId());
+            List<String> userEmails = userClinics.stream()
+                    .map(userClinic -> userClinic.getUser().getEmail())
+                    .filter(Objects::nonNull)
+                    .toList();
+
+            if (userEmails.isEmpty()) {
+                log.warn("No users found for clinicId: {}. Cannot send websocket message.", clinic.getId());
+                return;
+            }
+
+            ReceivedMessageBlinkFeRequest payload = ReceivedMessageBlinkFeRequest.builder()
                     .sender(sender)
                     .message(message)
-                    .clinicId(clinicId)
-                    .build());
+                    .clinicId(clinic.getId())
+                    .build();
+
+            for (String email : userEmails) {
+                simpMessagingTemplate.convertAndSendToUser(
+                        email,
+                        "/notify/message-received",
+                        payload);
+                log.info("Sent message to user {} for clinic {}", email, clinic.getId());
+            }
+
         } catch (Exception e) {
             log.error("Message not sent to front end, message={}", e.getMessage());
         }

@@ -3,6 +3,7 @@ package com.blink.backend.domain.service;
 import com.blink.backend.controller.appointment.dto.AppointmentDetailsDTO;
 import com.blink.backend.controller.appointment.dto.ClinicAvailabilityDTO;
 import com.blink.backend.controller.appointment.dto.CreateAppointmentDTO;
+import com.blink.backend.controller.appointment.dto.UpdateAppointmentDTO;
 import com.blink.backend.controller.appointment.dto.UpdateAppointmentStatusDTO;
 import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.domain.exception.appointment.AppointmentConflictException;
@@ -52,23 +53,24 @@ public class ClinicAvailabilityService {
 
 
     public List<ClinicAvailabilityDTO> getClinicAvailability(
+            Integer clinicId,
             LocalDate startDate,
             LocalDate endDate,
             Boolean hideCancelled) {
 
         return startDate
                 .datesUntil(endDate.plusDays(1))
-                .map(date -> this.fromEntity(date, hideCancelled))
+                .map(date -> this.fromEntity(clinicId, date, hideCancelled))
                 .filter(Objects::nonNull)
                 .toList();
     }
 
-    private ClinicAvailabilityDTO fromEntity(LocalDate date, Boolean hideCancelled) {
+    private ClinicAvailabilityDTO fromEntity(Integer clinicId, LocalDate date, Boolean hideCancelled) {
         Optional<ClinicAvailabilityException> clinicAvailabilityException = clinicAvailabilityExceptionRepository
-                .findByExceptionDayAndClinicId(date, 1); //TODO mudar para receber clinic id
+                .findByExceptionDayAndClinicId(date, clinicId);
 
         ClinicAvailability clinicAvailability = clinicAvailabilityRepository
-                .findByWeekDayAndIsWorkingDayTrue(WeekDay.fromDate(date));
+                .findByWeekDayAndIsWorkingDayTrueAndClinicId(WeekDay.fromDate(date), clinicId);
         List<Appointment> appointments = appointmentsRepository
                 .findByScheduledTimeBetween(
                         date.atStartOfDay(),
@@ -84,7 +86,6 @@ public class ClinicAvailabilityService {
 
         if (clinicAvailabilityException.isEmpty()) {
             clinicAvailabilityDTO = ClinicAvailabilityDTO.fromEntity(date, clinicAvailability, appointments);
-
         } else {
             clinicAvailabilityDTO = ClinicAvailabilityDTO.fromException(date, clinicAvailabilityException.get(), appointments);
         }
@@ -175,6 +176,25 @@ public class ClinicAvailabilityService {
                 .orElseThrow(() -> new NotFoundException("Agendamento " + updateStatus.getAppointmentId()));
 
         appointment.setAppointmentStatus(AppointmentStatus.valueOf(updateStatus.getNewStatus().toUpperCase()));
+        appointmentsRepository.save(appointment);
+    }
+
+    public void updateAppointment(Integer appointmentId, UpdateAppointmentDTO updateAppointmentDTO) throws NotFoundException {
+        Appointment appointment = appointmentsRepository.findById(appointmentId)
+                .orElseThrow(() -> new NotFoundException("Agendamento " + appointmentId));
+
+        if (Objects.nonNull(updateAppointmentDTO.getNotes())) {
+            appointment.setNotes(updateAppointmentDTO.getNotes());
+        }
+
+        if (Objects.nonNull(updateAppointmentDTO.getScheduledTime())) {
+            appointment.setScheduledTime(updateAppointmentDTO.getScheduledTime());
+        }
+
+        if (Objects.nonNull(updateAppointmentDTO.getStatus())) {
+            appointment.setAppointmentStatus(updateAppointmentDTO.getStatus());
+        }
+
         appointmentsRepository.save(appointment);
     }
 

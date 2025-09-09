@@ -2,7 +2,8 @@
 CREATE TABLE users
 (
     id   SERIAL PRIMARY KEY,
-    name VARCHAR(150) NOT NULL
+    name VARCHAR(150) NOT NULL,
+    email VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE clinic
@@ -14,12 +15,13 @@ CREATE TABLE clinic
 
 CREATE TABLE user_clinic
 (
+    id        SERIAL PRIMARY KEY,
     user_id   INT NOT NULL,
     clinic_id INT NOT NULL,
     role      VARCHAR(150),
-    PRIMARY KEY (user_id, clinic_id),
     FOREIGN KEY (clinic_id) REFERENCES clinic (id),
-    FOREIGN KEY (user_id) REFERENCES users (id)
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    UNIQUE (user_id, clinic_id)
 );
 
 CREATE TABLE clinic_configuration

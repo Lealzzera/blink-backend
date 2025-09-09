@@ -27,6 +27,9 @@ public class Users {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "email")
+    private String email;
+
     @OneToMany(mappedBy = "user",
             cascade = CascadeType.PERSIST,
             fetch = FetchType.EAGER)

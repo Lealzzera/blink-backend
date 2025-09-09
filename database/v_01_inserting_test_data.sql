@@ -1,6 +1,6 @@
 -- USERS
-INSERT INTO users (name)
-VALUES ('João da Silva');
+INSERT INTO users (name, email)
+VALUES ('João da Silva', 'teste@teste.com');
 
 -- CLINIC
 INSERT INTO clinic (clinic_name, waha_session)
