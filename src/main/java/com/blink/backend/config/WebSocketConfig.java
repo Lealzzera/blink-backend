@@ -20,7 +20,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/wpp-socket/subscribe")
-                .setAllowedOrigins("http://localhost:3000") //TODO check correct origins
+                .setAllowedOrigins("https://blink-fe-dev:3000",
+                        "http://blink-fe-dev:3000",
+                        "https://fe.blinkdentalmarketing.com.br")
                 .withSockJS();
     }
 }
