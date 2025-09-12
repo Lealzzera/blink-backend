@@ -1,6 +1,7 @@
 package com.blink.backend.config;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -27,6 +28,7 @@ import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
+@Log4j2
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -38,19 +40,6 @@ public class SecurityConfiguration {
             "/actuator/**",
             "/error**"
     };
-
-    private static final String[] WHITE_LIST_URL = {
-            /*"/api/v1/auth/**",
-            "/v2/api-docs",
-            "/v3/api-docs",
-            "/v3/api-docs/**",
-            "/swagger-resources",
-            "/swagger-resources/**",
-            "/configuration/ui",
-            "/configuration/security",
-            "/swagger-ui/**",
-            "/webjars/**",
-            "/swagger-ui.html"*/};
 
     private final AuthFilter authFilter;
     private final PasswordEncoder passwordEncoder;

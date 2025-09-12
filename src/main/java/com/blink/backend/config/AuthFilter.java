@@ -53,10 +53,10 @@ public class AuthFilter extends OncePerRequestFilter {
 
         final String apiKeyHeader = request.getHeader("X-Api-Key");
         if (apiKeyHeader == null || !apiKeyHeader.equals(n8nApiKeyValue)) {
-            log.info("X-api-key header invalid. Trying supabase authentication");
+            log.debug("X-api-key header invalid. Trying supabase authentication");
             return false;
         }
-        log.info("X-api-key header valid");
+        log.debug("X-api-key header valid");
         final User user = new User(n8nUsername, n8nPassword, List.of(Authorities.N8N_AUTHENTICATED));
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                 user,
@@ -64,7 +64,7 @@ public class AuthFilter extends OncePerRequestFilter {
                 user.getAuthorities()
         );
         if (user.getUsername() != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            log.info("X-api-key authentication valid");
+            log.debug("X-api-key authentication valid");
             authToken.setDetails(
                     new WebAuthenticationDetailsSource().buildDetails(request)
             );
@@ -79,8 +79,9 @@ public class AuthFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
-
+        log.info("Trying supabase authentication");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            log.debug("Supabase authorization header invalid format");
             filterChain.doFilter(request, response);
             return;
         }
@@ -98,6 +99,7 @@ public class AuthFilter extends OncePerRequestFilter {
             );
             SecurityContextHolder.getContext().setAuthentication(authToken);
         }
+        log.info("Supabase authorization authentication valid");
         filterChain.doFilter(request, response);
     }
 }
