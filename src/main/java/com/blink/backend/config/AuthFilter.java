@@ -78,16 +78,29 @@ public class AuthFilter extends OncePerRequestFilter {
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
-        final String authHeader = request.getHeader("Authorization");
+
         log.info("Trying supabase authentication");
+        String authHeader = request.getHeader("Authorization");
+
+        // If header is not present, try to get it from query parameter (for WebSocket)
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            log.debug("Supabase authorization header invalid format");
+            final String authParam = request.getParameter("authorization");
+            if (authParam != null && authParam.startsWith("Bearer ")) {
+                authHeader = authParam;
+                log.debug("Authorization token found in query parameter.");
+            }
+        }
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            log.debug("Supabase authorization header or query parameter not found or invalid format");
             filterChain.doFilter(request, response);
             return;
         }
+
         final User user = Optional.ofNullable(supabaseClient.getUserInfo(authHeader))
                 .map(SupabaseUserDetailsResponse::toDomain)
                 .orElseThrow();
+
         if (user.getUsername() != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     user,
