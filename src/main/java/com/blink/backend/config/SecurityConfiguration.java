@@ -90,8 +90,8 @@ public class SecurityConfiguration {
     public SecurityFilterChain webSocketSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .securityMatcher("/wpp-socket/**")
-                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
-                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                ///.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS));
         return http.build();
