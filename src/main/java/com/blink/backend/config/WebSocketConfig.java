@@ -12,7 +12,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/notify");
+        registry.enableSimpleBroker("/notify", "/user");
         registry.setApplicationDestinationPrefixes("/wpp-socket");
         registry.setUserDestinationPrefix("/user");
     }
@@ -22,6 +22,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/wpp-socket/subscribe")
                 .setAllowedOrigins(
                         "http://localhost:3000",
+                        "ws://localhost:3000",
+                        "wss://localhost:3000",
                         "https://blink-fe-dev:3000",
                         "http://blink-fe-dev:3000",
                         "https://fe.blinkdentalmarketing.com.br")

@@ -26,6 +26,7 @@ import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.security.config.http.SessionCreationPolicy.IF_REQUIRED;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Log4j2
@@ -44,6 +45,7 @@ public class SecurityConfiguration {
     private final AuthFilter authFilter;
     private final PasswordEncoder passwordEncoder;
     private final CorsConfigurationSource corsConfigurationSource;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     //private final EndpointLoggingInterceptor endpointLoggingInterceptor;
 
     @Bean
@@ -75,6 +77,7 @@ public class SecurityConfiguration {
                         .requestMatchers(DELETE, "/**").hasAnyAuthority(AUTHENTICATED.getAuthority(), N8N_AUTHENTICATED.getAuthority())
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(customAuthenticationEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
                 /*.logout(logout -> logout
@@ -90,10 +93,12 @@ public class SecurityConfiguration {
     public SecurityFilterChain webSocketSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .securityMatcher("/wpp-socket/**")
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-                ///.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS));
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(customAuthenticationEntryPoint))
+                .sessionManagement(session -> session.sessionCreationPolicy(IF_REQUIRED));
         return http.build();
     }
 

@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -40,6 +41,7 @@ public class AuthFilter extends OncePerRequestFilter {
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
+        log.warn("AuthFilter is processing request: {}", request.getRequestURI());
         if (doApiKeyAuthentication(request, response, filterChain))
             return;
         doSupabaseAuthentication(request, response, filterChain);
@@ -84,7 +86,7 @@ public class AuthFilter extends OncePerRequestFilter {
 
         // If header is not present, try to get it from query parameter (for WebSocket)
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            final String authParam = request.getParameter("authorization");
+            final String authParam = request.getParameter("token");
             if (authParam != null && authParam.startsWith("Bearer ")) {
                 authHeader = authParam;
                 log.debug("Authorization token found in query parameter.");
@@ -93,13 +95,12 @@ public class AuthFilter extends OncePerRequestFilter {
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             log.debug("Supabase authorization header or query parameter not found or invalid format");
-            filterChain.doFilter(request, response);
-            return;
+            throw new BadCredentialsException("Supabase authorization header or query parameter not found or invalid format");
         }
 
         final User user = Optional.ofNullable(supabaseClient.getUserInfo(authHeader))
                 .map(SupabaseUserDetailsResponse::toDomain)
-                .orElseThrow();
+                .orElseThrow(() -> new BadCredentialsException("Supabase user not found or invalid token"));
 
         if (user.getUsername() != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
