@@ -245,7 +245,7 @@ public class WahaService implements WhatsAppService {
             }
 
             ReceivedMessageBlinkFeRequest payload = ReceivedMessageBlinkFeRequest.builder()
-                    .sender(sender)
+                    .phoneNumber(sender)
                     .message(message)
                     .clinicId(clinic.getId())
                     .build();

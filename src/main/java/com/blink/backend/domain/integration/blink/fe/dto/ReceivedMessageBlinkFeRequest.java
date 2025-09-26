@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class ReceivedMessageBlinkFeRequest {
-    private String sender;
+    private String phoneNumber;
     private String message;
     private Integer clinicId;
 }
