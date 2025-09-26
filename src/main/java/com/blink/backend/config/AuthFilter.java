@@ -35,6 +35,8 @@ public class AuthFilter extends OncePerRequestFilter {
     private final String n8nUsername;
     @Value("${n8n-password}")
     private final String n8nPassword;
+    @Value("${WAHA_API_KEY}")
+    private final String wahaApiKey;
 
     @Override
     protected void doFilterInternal(
@@ -54,7 +56,7 @@ public class AuthFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         final String apiKeyHeader = request.getHeader("X-Api-Key");
-        if (apiKeyHeader == null || !apiKeyHeader.equals(n8nApiKeyValue)) {
+        if (apiKeyHeader == null || (!apiKeyHeader.equals(n8nApiKeyValue) && !apiKeyHeader.equals(wahaApiKey))) {
             log.debug("X-api-key header invalid. Trying supabase authentication");
             return false;
         }

@@ -18,6 +18,7 @@ import com.blink.backend.domain.integration.waha.dto.SendWahaMessageRequest;
 import com.blink.backend.domain.integration.waha.dto.StoreConfig;
 import com.blink.backend.domain.integration.waha.dto.WahaChatHistory;
 import com.blink.backend.domain.integration.waha.dto.WahaChatOverviewDto;
+import com.blink.backend.domain.integration.waha.dto.WahaCustomHeaders;
 import com.blink.backend.domain.integration.waha.dto.WahaSessionConfig;
 import com.blink.backend.domain.integration.waha.dto.WahaSessionStatusResponse;
 import com.blink.backend.domain.integration.waha.dto.WahaWebhooks;
@@ -64,6 +65,8 @@ public class WahaService implements WhatsAppService {
     private final Boolean defaultAiAnswer;
     private final Integer limit = 20;
     private final SimpMessagingTemplate simpMessagingTemplate;
+    @Value("${WAHA_API_KEY}")
+    private final String wahaApiKey;
 
     @Override
     public WhatsAppStatusDto getWhatsAppStatusByClinicId(Integer clinicId) throws NotFoundException {
@@ -165,6 +168,10 @@ public class WahaService implements WhatsAppService {
         WahaWebhooks wahaWebhooks = WahaWebhooks.builder()
                 .url(wahaWebhookUrl.concat(WAHA_RECEIVE_MESSAGE_PATH))
                 .events(List.of(MESSAGE))
+                .customHeaders(List.of(WahaCustomHeaders.builder()
+                        .name("X-Api-Key")
+                        .value(wahaApiKey)
+                        .build()))
                 .build();
         NoWebConfig noWebConfig = NoWebConfig.builder()
                 .store(StoreConfig.builder()

@@ -70,7 +70,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers(POST, "/api/v1/message/whats-app/receive-message").permitAll()
+                        //.requestMatchers(POST, "/api/v1/message/whats-app/receive-message").permitAll()
                         .requestMatchers(GET, "/**").hasAnyAuthority(AUTHENTICATED.getAuthority(), N8N_AUTHENTICATED.getAuthority())
                         .requestMatchers(POST, "/**").hasAnyAuthority(AUTHENTICATED.getAuthority(), N8N_AUTHENTICATED.getAuthority())
                         .requestMatchers(PUT, "/**").hasAnyAuthority(AUTHENTICATED.getAuthority(), N8N_AUTHENTICATED.getAuthority())
