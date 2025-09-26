@@ -22,6 +22,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/wpp-socket/subscribe")
                 .setAllowedOrigins(
                         "http://localhost:3000",
+                        "https://localhost:3000",
                         "ws://localhost:3000",
                         "wss://localhost:3000",
                         "https://blink-fe-dev:3000",
