@@ -16,4 +16,8 @@ public class DashboardDTO {
     private Long showUpsCountTotal;
     private Long salesCountTotal;
     private BigDecimal salesValueTotal;
+    private BigDecimal appointmentRate;
+    private BigDecimal showUpRate;
+    private BigDecimal salesConversionRate;
+    private BigDecimal roi;
 }

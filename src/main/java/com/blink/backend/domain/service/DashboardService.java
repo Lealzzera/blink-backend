@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -32,6 +33,10 @@ public class DashboardService {
                 .showUpsCountTotal(showUpsCountTotal)
                 .salesCountTotal(salesCountTotal)
                 .salesValueTotal(salesValueTotal)
+                .appointmentRate(BigDecimal.valueOf((double)appointmentsCountTotal/receivedMessagesCountTotal))
+                .showUpRate(BigDecimal.valueOf((double)showUpsCountTotal/appointmentsCountTotal))
+                .salesConversionRate(BigDecimal.valueOf((double)salesCountTotal/showUpsCountTotal))
+                .roi(salesValueTotal.divide(BigDecimal.valueOf(showUpsCountTotal), RoundingMode.HALF_UP))
                 .build();
     }
 
