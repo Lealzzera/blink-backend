@@ -32,14 +32,17 @@ public class WhatsAppController {
     }
 
     @PostMapping("send-message")
-    public ResponseEntity<Void> sendMessage(@RequestBody SendMessageRequest sendMessageRequest)
-            throws NotFoundException, WhatsAppNotConnectedException {
+    public ResponseEntity<Void> sendMessage(
+            @RequestBody SendMessageRequest sendMessageRequest)
+            throws NotFoundException, WhatsAppNotConnectedException, InterruptedException {
         whatsAppService.sendMessage(sendMessageRequest);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("receive-message")
-    public ResponseEntity<Void> receiveMessage(@RequestBody MessageReceivedRequest message) throws NotFoundException {
+    public ResponseEntity<Void> receiveMessage(
+            @RequestBody MessageReceivedRequest message)
+            throws NotFoundException {
         whatsAppService.receiveMessage(message);
         return ResponseEntity.ok().build();
     }

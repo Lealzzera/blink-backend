@@ -16,7 +16,7 @@ public class ChatSocketController {
 
     @MessageMapping("/send-message")
     public void sendMessage(@Payload SendMessageRequest sendMessageRequest)
-            throws NotFoundException, WhatsAppNotConnectedException {
+            throws NotFoundException, WhatsAppNotConnectedException, InterruptedException {
         whatsAppService.sendMessage(sendMessageRequest);
     }
 }

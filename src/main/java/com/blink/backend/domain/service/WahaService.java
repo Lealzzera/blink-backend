@@ -36,9 +36,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -57,7 +60,6 @@ public class WahaService implements WhatsAppService {
     private final UsersRepository usersRepository;
     @Value("${waha-webhook-url}")
     private final String wahaWebhookUrl;
-    private final String WAHA_RECEIVE_MESSAGE_PATH = "/api/v1/message/whats-app/receive-message";
     private final N8nClient n8nClient;
     private final PatientRepository patientRepository;
     private final AppointmentsRepository appointmentsRepository;
@@ -85,13 +87,16 @@ public class WahaService implements WhatsAppService {
         return wahaClient.getWahaQrCode(clinic.getWahaSession());
     }
 
+    @Async
     @Override
-    public void sendMessage(SendMessageRequest sendMessageRequest) throws NotFoundException, WhatsAppNotConnectedException {
+    public void sendMessage(SendMessageRequest sendMessageRequest)
+            throws NotFoundException, WhatsAppNotConnectedException, InterruptedException {
         Clinic clinic = clinicRepository.findById(sendMessageRequest.getClinicId());
-
         if (getWhatsAppStatusByClinic(clinic).isNotConnected()) {
             throw new WhatsAppNotConnectedException();
         }
+        startTyping(); //TODO IMPLEMENT
+        Thread.sleep(Duration.of(sendMessageRequest.getWait(), ChronoUnit.SECONDS));
         wahaClient.sendMessage(SendWahaMessageRequest.builder()
                 .session(clinic.getWahaSession())
                 .phoneNumber(sendMessageRequest.getPhoneNumber().concat("@c.us"))
@@ -165,6 +170,7 @@ public class WahaService implements WhatsAppService {
     }
 
     private void restartWahaSession(String tokenizedName) {
+        final String WAHA_RECEIVE_MESSAGE_PATH = "/api/v1/message/whats-app/receive-message";
         WahaWebhooks wahaWebhooks = WahaWebhooks.builder()
                 .url(wahaWebhookUrl.concat(WAHA_RECEIVE_MESSAGE_PATH))
                 .events(List.of(MESSAGE))
@@ -265,5 +271,9 @@ public class WahaService implements WhatsAppService {
 
     private boolean isAiResponseTurnedOn(Optional<Patient> patient) {
         return (patient.isPresent() && patient.get().getAiAnswer()) || defaultAiAnswer;
+    }
+
+    private void startTyping(){
+
     }
 }

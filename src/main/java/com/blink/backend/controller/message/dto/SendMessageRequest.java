@@ -13,4 +13,5 @@ public class SendMessageRequest {
     private Integer clinicId;
     private String message;
     private String phoneNumber;
+    private Integer wait;
 }
