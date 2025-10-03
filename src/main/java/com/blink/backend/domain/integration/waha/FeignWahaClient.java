@@ -5,6 +5,7 @@ import com.blink.backend.domain.integration.waha.dto.CreateWahaSessionRequest;
 import com.blink.backend.domain.integration.waha.dto.SendWahaMessageRequest;
 import com.blink.backend.domain.integration.waha.dto.WahaChatHistory;
 import com.blink.backend.domain.integration.waha.dto.WahaChatOverviewDto;
+import com.blink.backend.domain.integration.waha.dto.WahaPresenceDto;
 import com.blink.backend.domain.integration.waha.dto.WahaSessionStatusResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -32,7 +33,7 @@ public interface FeignWahaClient {
     WahaSessionStatusResponse createWahaSession(CreateWahaSessionRequest createWahaSessionRequest);
 
     @DeleteMapping("api/sessions/{sessionName}")
-    void deleteWahaSession(@RequestParam String sessionName);
+    void deleteWahaSession(@PathVariable String sessionName);
 
     @PostMapping(value = "api/sendText",
             consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -52,4 +53,13 @@ public interface FeignWahaClient {
             @PathVariable String session,
             @RequestParam Integer limit,
             @RequestParam Integer offset);
+
+    @PostMapping("/api/sendSeen")
+    void sendSeen(WahaPresenceDto wahaPresenceDto);
+
+    @PostMapping("/api/startTyping")
+    void startTyping(WahaPresenceDto wahaPresenceDto);
+
+    @PostMapping("/api/stopTyping")
+    void stopTyping(WahaPresenceDto wahaPresenceDto);
 }

@@ -19,6 +19,7 @@ import com.blink.backend.domain.integration.waha.dto.StoreConfig;
 import com.blink.backend.domain.integration.waha.dto.WahaChatHistory;
 import com.blink.backend.domain.integration.waha.dto.WahaChatOverviewDto;
 import com.blink.backend.domain.integration.waha.dto.WahaCustomHeaders;
+import com.blink.backend.domain.integration.waha.dto.WahaPresenceDto;
 import com.blink.backend.domain.integration.waha.dto.WahaSessionConfig;
 import com.blink.backend.domain.integration.waha.dto.WahaSessionStatusResponse;
 import com.blink.backend.domain.integration.waha.dto.WahaWebhooks;
@@ -45,6 +46,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import static com.blink.backend.domain.integration.waha.dto.WahaWebhookEventTypes.MESSAGE;
@@ -95,13 +97,23 @@ public class WahaService implements WhatsAppService {
         if (getWhatsAppStatusByClinic(clinic).isNotConnected()) {
             throw new WhatsAppNotConnectedException();
         }
-        startTyping(); //TODO IMPLEMENT
         Thread.sleep(Duration.of(sendMessageRequest.getWait(), ChronoUnit.SECONDS));
+        String chatId = sendMessageRequest.getPhoneNumber().concat("@c.us");
+        long typingTime = 270L * sendMessageRequest.getMessage().length();
+        WahaPresenceDto presenceDto = WahaPresenceDto.builder()
+                .chatId(chatId)
+                .session(clinic.getWahaSession())
+                .build();
+        wahaClient.sendSeen(presenceDto);
+        Thread.sleep(typingTime);
+        wahaClient.startTyping(presenceDto);
+
         wahaClient.sendMessage(SendWahaMessageRequest.builder()
                 .session(clinic.getWahaSession())
-                .phoneNumber(sendMessageRequest.getPhoneNumber().concat("@c.us"))
+                .phoneNumber(chatId)
                 .text(sendMessageRequest.getMessage())
                 .build());
+        wahaClient.stopTyping(presenceDto);
     }
 
     @Override
@@ -271,9 +283,5 @@ public class WahaService implements WhatsAppService {
 
     private boolean isAiResponseTurnedOn(Optional<Patient> patient) {
         return (patient.isPresent() && patient.get().getAiAnswer()) || defaultAiAnswer;
-    }
-
-    private void startTyping(){
-
     }
 }
