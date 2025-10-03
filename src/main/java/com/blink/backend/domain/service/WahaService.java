@@ -129,7 +129,7 @@ public class WahaService implements WhatsAppService {
             log.info("Automatic response turned off for patient {}", sender);
             return;
         }
-        sendReceivedMessageToN8n(sender, message, optionalPatient);
+        sendReceivedMessageToN8n(sender, message, optionalPatient, clinic);
 
     }
 
@@ -230,7 +230,7 @@ public class WahaService implements WhatsAppService {
                 .build();
     }
 
-    private void sendReceivedMessageToN8n(String sender, String message, Optional<Patient> patient) {
+    private void sendReceivedMessageToN8n(String sender, String message, Optional<Patient> patient, Clinic clinic) {
 
         String patientName = "";
         List<Appointment> appointment = List.of();
@@ -246,6 +246,8 @@ public class WahaService implements WhatsAppService {
                 .message(message)
                 .senderName(patientName)
                 .appointmentsData(appointment.stream().map(AppointmentsData::fromAppointment).collect(Collectors.toList()))
+                .clinicName(clinic.getClinicName())
+                .clinicId(clinic.getId())
                 .build());
     }
 

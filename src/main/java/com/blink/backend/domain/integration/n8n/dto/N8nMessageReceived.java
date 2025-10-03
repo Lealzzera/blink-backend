@@ -12,5 +12,7 @@ public class N8nMessageReceived {
     private String sender;
     private String senderName;
     private List<AppointmentsData> appointmentsData;
+    private Integer clinicId;
+    private String clinicName;
 
 }
