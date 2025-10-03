@@ -99,7 +99,7 @@ public class WahaService implements WhatsAppService {
         }
         Thread.sleep(Duration.of(sendMessageRequest.getWait(), ChronoUnit.SECONDS));
         String chatId = sendMessageRequest.getPhoneNumber().concat("@c.us");
-        long typingTime = 270L * sendMessageRequest.getMessage().length();
+        long typingTime = 70L * sendMessageRequest.getMessage().length();
         WahaPresenceDto presenceDto = WahaPresenceDto.builder()
                 .chatId(chatId)
                 .session(clinic.getWahaSession())
