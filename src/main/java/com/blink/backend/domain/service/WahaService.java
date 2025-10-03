@@ -118,6 +118,9 @@ public class WahaService implements WhatsAppService {
                 .text(sendMessageRequest.getMessage())
                 .build());
         wahaClient.stopTyping(presenceDto);
+
+        //TODO
+        sendReceivedMessageToBlinkFe("119821147491", sendMessageRequest.getMessage(), clinic);
     }
 
     @Override
