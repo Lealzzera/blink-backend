@@ -104,7 +104,11 @@ public class WahaService implements WhatsAppService {
                 .chatId(chatId)
                 .session(clinic.getWahaSession())
                 .build();
-        wahaClient.sendSeen(presenceDto);
+        try {
+            wahaClient.sendSeen(presenceDto);
+        }catch (Exception e){
+            log.error("Seen not send deactivated, message={}", e.getMessage());
+        }
         Thread.sleep(typingTime);
         wahaClient.startTyping(presenceDto);
 
