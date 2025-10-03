@@ -1,8 +1,10 @@
 package com.blink.backend.persistence.entity.clinic;
 
 
+import com.blink.backend.persistence.entity.auth.Users;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -22,6 +24,9 @@ public class Clinic {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name="clinic_code")
+    private String clinicCode;
+
     @Column(name = "clinic_name")
     private String clinicName;
 
@@ -30,4 +35,7 @@ public class Clinic {
 
     @Column(name = "waha_session")
     private String wahaSession;
+
+    @OneToOne(mappedBy = "clinic")
+    private Users users;
 }

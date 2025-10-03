@@ -24,11 +24,11 @@ import com.blink.backend.domain.integration.waha.dto.WahaSessionStatusResponse;
 import com.blink.backend.domain.integration.waha.dto.WahaWebhooks;
 import com.blink.backend.persistence.entity.appointment.Appointment;
 import com.blink.backend.persistence.entity.appointment.Patient;
-import com.blink.backend.persistence.entity.auth.UserClinic;
+import com.blink.backend.persistence.entity.auth.Users;
 import com.blink.backend.persistence.entity.clinic.Clinic;
 import com.blink.backend.persistence.repository.AppointmentsRepository;
 import com.blink.backend.persistence.repository.PatientRepository;
-import com.blink.backend.persistence.repository.auth.UserClinicRepository;
+import com.blink.backend.persistence.repository.UsersRepository;
 import com.blink.backend.persistence.repository.clinic.ClinicRepositoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -54,7 +54,7 @@ import static java.util.Objects.isNull;
 public class WahaService implements WhatsAppService {
     private final FeignWahaClient wahaClient;
     private final ClinicRepositoryService clinicRepository;
-    private final UserClinicRepository userClinicRepository;
+    private final UsersRepository usersRepository;
     @Value("${waha-webhook-url}")
     private final String wahaWebhookUrl;
     private final String WAHA_RECEIVE_MESSAGE_PATH = "/api/v1/message/whats-app/receive-message";
@@ -233,9 +233,9 @@ public class WahaService implements WhatsAppService {
 
     private void sendReceivedMessageToBlinkFe(String sender, String message, Clinic clinic) {
         try {
-            List<UserClinic> userClinics = userClinicRepository.findAllByClinicId(clinic.getId());
-            List<String> userEmails = userClinics.stream()
-                    .map(userClinic -> userClinic.getUser().getEmail())
+            List<Users> users = usersRepository.findAllByClinicId(clinic.getId());
+            List<String> userEmails = users.stream()
+                    .map(Users::getEmail)
                     .filter(Objects::nonNull)
                     .toList();
 

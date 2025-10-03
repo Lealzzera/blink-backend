@@ -1,5 +1,6 @@
 package com.blink.backend.persistence.entity.auth;
 
+import com.blink.backend.persistence.entity.clinic.Clinic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -7,7 +8,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,8 +33,10 @@ public class Users {
     @Column(name = "email")
     private String email;
 
-    @OneToMany(mappedBy = "user",
-            cascade = CascadeType.PERSIST,
-            fetch = FetchType.EAGER)
-    private List<UserClinic> userClinics;
+    @OneToOne
+    @JoinColumn(name = "clinic_id")
+    private Clinic clinic;
+
+    @Column(name = "role")
+    private String role;
 }

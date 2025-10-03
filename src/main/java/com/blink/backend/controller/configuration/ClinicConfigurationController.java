@@ -6,6 +6,7 @@ import com.blink.backend.controller.configuration.dto.AvailabilityConfigurationD
 import com.blink.backend.domain.service.ClinicConfigurationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,6 +21,15 @@ import java.util.List;
 @RequestMapping("api/v1/configurations")
 public class ClinicConfigurationController {
     private final ClinicConfigurationService clinicConfigurationService;
+
+    @GetMapping("clinic-id")
+    public ResponseEntity<String> getClinicId() {
+        return ResponseEntity.ok(clinicConfigurationService
+                .getClinicId(SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName()));
+    }
 
     @PutMapping("availability")
     public ResponseEntity<Void> updateAvailabilityConfiguration(

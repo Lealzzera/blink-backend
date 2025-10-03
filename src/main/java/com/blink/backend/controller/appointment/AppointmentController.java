@@ -78,7 +78,9 @@ public class AppointmentController {
     }
 
     @PutMapping("{appointmentId}")
-    public ResponseEntity<Void> updateAppointment(@PathVariable Integer appointmentId, @RequestBody UpdateAppointmentDTO updateAppointmentDTO)
+    public ResponseEntity<Void> updateAppointment(
+            @PathVariable Integer appointmentId,
+            @RequestBody UpdateAppointmentDTO updateAppointmentDTO)
             throws NotFoundException {
         clinicAvailabilityService.updateAppointment(appointmentId, updateAppointmentDTO);
 
