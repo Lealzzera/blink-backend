@@ -9,4 +9,5 @@ public class ReceivedMessageBlinkFeRequest {
     private String phoneNumber;
     private String message;
     private Integer clinicId;
+    private Boolean fromMe;
 }

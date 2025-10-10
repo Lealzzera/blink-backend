@@ -31,6 +31,11 @@ public class WhatsAppController {
         return ResponseEntity.ok(whatsAppService.getWhatsAppStatusByClinicId(clinicId));
     }
 
+    @PostMapping("{clinicId}/disconnect")
+    public ResponseEntity<WhatsAppStatusDto> disconnect(@PathVariable Integer clinicId) throws NotFoundException {
+        return ResponseEntity.ok(whatsAppService.disconnectWhatsAppNumber(clinicId));
+    }
+
     @PostMapping("send-message")
     public ResponseEntity<Void> sendMessage(
             @RequestBody SendMessageRequest sendMessageRequest)

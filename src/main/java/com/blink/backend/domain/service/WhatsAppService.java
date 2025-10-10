@@ -14,4 +14,5 @@ public interface WhatsAppService {
     @Async
     void sendMessage(SendMessageRequest sendMessageRequest) throws NotFoundException, WhatsAppNotConnectedException, InterruptedException;
     void receiveMessage(MessageReceivedRequest message) throws NotFoundException;
+    WhatsAppStatusDto disconnectWhatsAppNumber(Integer clinicId) throws NotFoundException;
 }

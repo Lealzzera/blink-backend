@@ -62,4 +62,7 @@ public interface FeignWahaClient {
 
     @PostMapping("/api/stopTyping")
     void stopTyping(WahaPresenceDto wahaPresenceDto);
+
+    @PostMapping("/api/sessions/{session}/stop")
+    void logoutSession(@PathVariable String session);
 }

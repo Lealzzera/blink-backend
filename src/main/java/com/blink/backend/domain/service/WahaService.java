@@ -23,6 +23,7 @@ import com.blink.backend.domain.integration.waha.dto.WahaPresenceDto;
 import com.blink.backend.domain.integration.waha.dto.WahaSessionConfig;
 import com.blink.backend.domain.integration.waha.dto.WahaSessionStatusResponse;
 import com.blink.backend.domain.integration.waha.dto.WahaWebhooks;
+import com.blink.backend.domain.model.message.WhatsAppStatus;
 import com.blink.backend.persistence.entity.appointment.Appointment;
 import com.blink.backend.persistence.entity.appointment.Patient;
 import com.blink.backend.persistence.entity.auth.Users;
@@ -46,7 +47,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 import static com.blink.backend.domain.integration.waha.dto.WahaWebhookEventTypes.MESSAGE;
@@ -106,7 +106,7 @@ public class WahaService implements WhatsAppService {
                 .build();
         try {
             wahaClient.sendSeen(presenceDto);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("Seen not send deactivated, message={}", e.getMessage());
         }
         wahaClient.startTyping(presenceDto);
@@ -119,8 +119,10 @@ public class WahaService implements WhatsAppService {
                 .build());
         wahaClient.stopTyping(presenceDto);
 
-        //TODO
-        sendReceivedMessageToBlinkFe("119821147491", sendMessageRequest.getMessage(), clinic);
+        sendReceivedMessageToBlinkFe(sendMessageRequest.getPhoneNumber(),
+                sendMessageRequest.getMessage(),
+                clinic,
+                true);
     }
 
     @Override
@@ -131,7 +133,7 @@ public class WahaService implements WhatsAppService {
         Optional<Patient> optionalPatient = patientRepository.findByPhoneNumber(sender);
         Clinic clinic = clinicRepository.findByWahaSession(session);
 
-        sendReceivedMessageToBlinkFe(sender, message, clinic);
+        sendReceivedMessageToBlinkFe(sender, message, clinic, false);
         if (!isAiResponseTurnedOn(optionalPatient)) {
             log.info("Automatic response turned off for patient {}", sender);
             return;
@@ -140,7 +142,20 @@ public class WahaService implements WhatsAppService {
 
     }
 
-    public List<ChatOverviewDto> getChatsOverview(Integer clinicId, Integer page) throws NotFoundException, WhatsAppNotConnectedException {
+    @Override
+    public WhatsAppStatusDto disconnectWhatsAppNumber(Integer clinicId)
+            throws NotFoundException {
+        Clinic clinic = clinicRepository.findById(clinicId);
+        wahaClient.logoutSession(clinic.getWahaSession());
+        return WhatsAppStatusDto
+                .builder()
+                .status(WhatsAppStatus.DISCONNECTED)
+                .build();
+    }
+
+    public List<ChatOverviewDto> getChatsOverview(Integer clinicId, Integer page)
+            throws NotFoundException,
+            WhatsAppNotConnectedException {
         Clinic clinic = clinicRepository.findById(clinicId);
         Integer offset = page * limit;
         try {
@@ -247,18 +262,22 @@ public class WahaService implements WhatsAppService {
             appointment = appointmentsRepository
                     .findAllByPatientIdAndScheduledTimeAfter(patient.get().getId(), LocalDateTime.now().minusDays(7));
         }
+        try {
+            n8nClient.receiveMessage(N8nMessageReceived.builder()
+                    .sender(sender)
+                    .message(message)
+                    .senderName(patientName)
+                    .appointmentsData(appointment.stream().map(AppointmentsData::fromAppointment).collect(Collectors.toList()))
+                    .clinicName(clinic.getClinicName())
+                    .clinicId(clinic.getId())
+                    .build());
+        } catch (Exception e) {
+            log.error("N8n responded with an error, e={}", e.getMessage());
+        }
 
-        n8nClient.receiveMessage(N8nMessageReceived.builder()
-                .sender(sender)
-                .message(message)
-                .senderName(patientName)
-                .appointmentsData(appointment.stream().map(AppointmentsData::fromAppointment).collect(Collectors.toList()))
-                .clinicName(clinic.getClinicName())
-                .clinicId(clinic.getId())
-                .build());
     }
 
-    private void sendReceivedMessageToBlinkFe(String sender, String message, Clinic clinic) {
+    private void sendReceivedMessageToBlinkFe(String sender, String message, Clinic clinic, Boolean fromMe) {
         try {
             List<Users> users = usersRepository.findAllByClinicId(clinic.getId());
             List<String> userEmails = users.stream()
@@ -275,6 +294,7 @@ public class WahaService implements WhatsAppService {
                     .phoneNumber(sender)
                     .message(message)
                     .clinicId(clinic.getId())
+                    .fromMe(fromMe)
                     .build();
 
             for (String email : userEmails) {
