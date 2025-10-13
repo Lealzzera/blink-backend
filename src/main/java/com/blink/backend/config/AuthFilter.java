@@ -10,6 +10,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -18,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 import java.util.List;
@@ -37,16 +40,22 @@ public class AuthFilter extends OncePerRequestFilter {
     private final String n8nPassword;
     @Value("${WAHA_API_KEY}")
     private final String wahaApiKey;
+    @Qualifier("handlerExceptionResolver")
+    private final HandlerExceptionResolver resolver;
 
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
-        log.warn("AuthFilter is processing request: {}", request.getRequestURI());
-        if (doApiKeyAuthentication(request, response, filterChain))
-            return;
-        doSupabaseAuthentication(request, response, filterChain);
+        log.debug("AuthFilter is processing request: {}", request.getRequestURI());
+        try {
+            if (doApiKeyAuthentication(request, response, filterChain))
+                return;
+            doSupabaseAuthentication(request, response, filterChain);
+        } catch (Exception e) {
+            resolver.resolveException(request, response, null, e);
+        }
 
     }
 
@@ -97,12 +106,12 @@ public class AuthFilter extends OncePerRequestFilter {
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             log.debug("Supabase authorization header or query parameter not found or invalid format");
-            throw new BadCredentialsException("Supabase authorization header or query parameter not found or invalid format");
+            throw new BadCredentialsException("Authorization header or query parameter not found or invalid format");
         }
 
         final User user = Optional.ofNullable(supabaseClient.getUserInfo(authHeader))
                 .map(SupabaseUserDetailsResponse::toDomain)
-                .orElseThrow(() -> new BadCredentialsException("Supabase user not found or invalid token"));
+                .orElseThrow(() -> new BadCredentialsException("User not found or invalid token"));
 
         if (user.getUsername() != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
