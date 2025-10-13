@@ -11,10 +11,12 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static java.math.BigDecimal.valueOf;
+
 @Service
 @RequiredArgsConstructor
 public class DashboardService {
-
+    private static final Integer DASHBOARD_PRECISION = 4;
     private final DashboardRepository dashboardRepository;
 
     public DashboardDTO getDashboardData(Integer clinicId, LocalDateTime startDate, LocalDateTime endDate) {
@@ -27,16 +29,33 @@ public class DashboardService {
         Long salesCountTotal = dashboardRepository.countVendas(clinicId, startDate, endDate);
         BigDecimal salesValueTotal = dashboardRepository.sumValorVendas(clinicId, startDate, endDate);
 
+        BigDecimal appointmentRate = receivedMessagesCountTotal > 0 ?
+                valueOf(appointmentsCountTotal).divide(
+                        valueOf(receivedMessagesCountTotal), DASHBOARD_PRECISION, RoundingMode.HALF_UP)
+                : BigDecimal.ZERO;
+        BigDecimal showUpRate = appointmentsCountTotal > 0 ?
+                valueOf(showUpsCountTotal).divide(
+                        valueOf(appointmentsCountTotal), DASHBOARD_PRECISION, RoundingMode.HALF_UP)
+                : BigDecimal.ZERO;
+        BigDecimal salesConversionRate = showUpsCountTotal > 0 ?
+                valueOf(salesCountTotal).divide(
+                        valueOf(showUpsCountTotal), DASHBOARD_PRECISION, RoundingMode.HALF_UP)
+                : BigDecimal.ZERO;
+        BigDecimal roi = showUpsCountTotal > 0 ?
+                salesValueTotal.divide(
+                        valueOf(showUpsCountTotal), DASHBOARD_PRECISION, RoundingMode.HALF_UP)
+                : BigDecimal.ZERO;
+
         return DashboardDTO.builder()
                 .receivedMessagesCountTotal(receivedMessagesCountTotal)
                 .appointmentsCountTotal(appointmentsCountTotal)
                 .showUpsCountTotal(showUpsCountTotal)
                 .salesCountTotal(salesCountTotal)
                 .salesValueTotal(salesValueTotal)
-                .appointmentRate(BigDecimal.valueOf((double)appointmentsCountTotal/receivedMessagesCountTotal))
-                .showUpRate(BigDecimal.valueOf((double)showUpsCountTotal/appointmentsCountTotal))
-                .salesConversionRate(BigDecimal.valueOf((double)salesCountTotal/showUpsCountTotal))
-                .roi(salesValueTotal.divide(BigDecimal.valueOf(showUpsCountTotal), RoundingMode.HALF_UP))
+                .appointmentRate(appointmentRate)
+                .showUpRate(showUpRate)
+                .salesConversionRate(salesConversionRate)
+                .roi(roi)
                 .build();
     }
 
