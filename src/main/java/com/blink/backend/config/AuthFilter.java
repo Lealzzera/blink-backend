@@ -49,6 +49,11 @@ public class AuthFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
         log.debug("AuthFilter is processing request: {}", request.getRequestURI());
+        if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            filterChain.doFilter(request, response);
+            log.debug("User is authenticated");
+            return;
+        }
         try {
             if (doApiKeyAuthentication(request, response, filterChain))
                 return;
@@ -76,7 +81,7 @@ public class AuthFilter extends OncePerRequestFilter {
                 null,
                 user.getAuthorities()
         );
-        if (user.getUsername() != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (user.getUsername() != null) {
             log.debug("X-api-key authentication valid");
             authToken.setDetails(
                     new WebAuthenticationDetailsSource().buildDetails(request)
@@ -113,7 +118,7 @@ public class AuthFilter extends OncePerRequestFilter {
                 .map(SupabaseUserDetailsResponse::toDomain)
                 .orElseThrow(() -> new BadCredentialsException("User not found or invalid token"));
 
-        if (user.getUsername() != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (user.getUsername() != null) {
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     user,
                     null,
