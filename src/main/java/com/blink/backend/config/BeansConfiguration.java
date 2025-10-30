@@ -1,6 +1,6 @@
 package com.blink.backend.config;
 
-import com.blink.backend.domain.integration.supabase.SupabaseClient;
+import com.blink.backend.domain.integration.supabase.SupabaseClientService;
 import com.blink.backend.domain.integration.supabase.dto.SupabaseUserDetailsResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -26,15 +26,20 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BeansConfiguration {
 
-    private final SupabaseClient supabaseClient;
+    private final SupabaseClientService supabaseClient;
 
     @Bean
     @Qualifier("methodAuth")
     public UserDetailsService userDetailsService() {
-        return key -> Optional.ofNullable(supabaseClient.getUserInfo("Bearer " + key))
-                //.map(SupabaseUserDetailsResponse::getUser)
-                .map(SupabaseUserDetailsResponse::toDomain)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return key -> {
+            try {
+                return Optional.ofNullable(supabaseClient.getUserInfo("Bearer " + key))
+                        .map(SupabaseUserDetailsResponse::toDomain)
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            } catch (Exception e) {
+                throw new UsernameNotFoundException("User not found", e);
+            }
+        };
     }
 
     @Bean

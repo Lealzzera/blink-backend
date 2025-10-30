@@ -1,6 +1,7 @@
 package com.blink.backend.config;
 
-import com.blink.backend.domain.integration.supabase.SupabaseClient;
+import com.blink.backend.domain.exception.InvalidTokenException;
+import com.blink.backend.domain.integration.supabase.SupabaseClientService;
 import com.blink.backend.domain.integration.supabase.dto.SupabaseUserDetailsResponse;
 import com.blink.backend.domain.model.auth.Authorities;
 import com.blink.backend.domain.model.auth.User;
@@ -31,7 +32,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthFilter extends OncePerRequestFilter {
 
-    private final SupabaseClient supabaseClient;
+    private final SupabaseClientService supabaseClient;
     @Value("${n8n-auth-api-key}")
     private final String n8nApiKeyValue;
     @Value("${n8n-username}")
@@ -95,7 +96,7 @@ public class AuthFilter extends OncePerRequestFilter {
     private void doSupabaseAuthentication(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain) throws ServletException, IOException {
+            @NonNull FilterChain filterChain) throws ServletException, IOException, InvalidTokenException {
 
         log.info("Trying supabase authentication");
         String authHeader = request.getHeader("Authorization");
