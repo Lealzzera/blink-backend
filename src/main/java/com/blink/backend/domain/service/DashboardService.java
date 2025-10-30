@@ -2,6 +2,7 @@ package com.blink.backend.domain.service;
 
 
 import com.blink.backend.controller.dashboard.DashboardDTO;
+import com.blink.backend.persistence.entity.appointment.AppointmentStatus;
 import com.blink.backend.persistence.repository.DashboardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,9 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.blink.backend.persistence.entity.appointment.AppointmentStatus.AGENDADO;
+import static com.blink.backend.persistence.entity.appointment.AppointmentStatus.COMPARECEU;
+import static com.blink.backend.persistence.entity.appointment.AppointmentStatus.CONFIRMADO;
 import static java.math.BigDecimal.valueOf;
 
 @Service
@@ -23,9 +27,9 @@ public class DashboardService {
 
         Long receivedMessagesCountTotal = dashboardRepository.countNovasMensagens(clinicId, startDate, endDate);
         Long appointmentsCountTotal = dashboardRepository.countAppointmentsForDashboard(clinicId, startDate, endDate,
-                List.of("AGENDADO", "CONFIRMADO"));
+                List.of(AGENDADO, CONFIRMADO, COMPARECEU));
         Long showUpsCountTotal = dashboardRepository.countAppointmentsForDashboard(clinicId, startDate, endDate,
-                List.of("COMPARECEU"));
+                List.of(COMPARECEU));
         Long salesCountTotal = dashboardRepository.countVendas(clinicId, startDate, endDate);
         BigDecimal salesValueTotal = dashboardRepository.sumValorVendas(clinicId, startDate, endDate);
 
