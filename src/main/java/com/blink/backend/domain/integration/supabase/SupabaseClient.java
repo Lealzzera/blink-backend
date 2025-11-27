@@ -1,8 +1,7 @@
 package com.blink.backend.domain.integration.supabase;
 
-import com.blink.backend.domain.integration.supabase.dto.SupabaseUserDetailsResponse;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -12,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 interface SupabaseClient {
 
     @GetMapping(value = "/auth/v1/user",
-            headers = {
-                    "apikey=${supabase-api-key}"
-            })
-    SupabaseUserDetailsResponse getUserInfo(@RequestHeader("Authorization") String authorization);
+            headers = {"apikey=${supabase-api-key}"})
+    JsonNode getUserInfoByAuthToken(@RequestHeader("Authorization") String authorization);
 }

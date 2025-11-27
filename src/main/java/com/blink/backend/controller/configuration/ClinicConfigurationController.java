@@ -1,12 +1,13 @@
 package com.blink.backend.controller.configuration;
 
-
 import com.blink.backend.controller.configuration.dto.AppointmentConfigurationDTO;
 import com.blink.backend.controller.configuration.dto.AvailabilityConfigurationDTO;
+import com.blink.backend.domain.model.auth.AuthenticatedUser;
 import com.blink.backend.domain.service.ClinicConfigurationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,43 +19,35 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1/configurations")
+@RequestMapping("api/v1/configuration")
 public class ClinicConfigurationController {
-    private final ClinicConfigurationService clinicConfigurationService;
 
-    @GetMapping("clinic-id")
-    public ResponseEntity<String> getClinicId() {
-        return ResponseEntity.ok(clinicConfigurationService
-                .getClinicId(SecurityContextHolder
-                        .getContext()
-                        .getAuthentication()
-                        .getName()));
-    }
+    public final ClinicConfigurationService clinicConfigurationService;
 
     @PutMapping("availability")
-    public ResponseEntity<Void> updateAvailabilityConfiguration(
-            @RequestBody List<AvailabilityConfigurationDTO> updateAvailabilityConfiguration) {
+    public void updateAvailabilityConfiguration(
+            @AuthenticationPrincipal AuthenticatedUser user,
+            List<AvailabilityConfigurationDTO> updateAvailabilityConfiguration) {
         clinicConfigurationService.updateAvailabilityConfiguration(updateAvailabilityConfiguration);
-        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("appointments")
-    public ResponseEntity<Void> updateAppointmentConfiguration(
+    public void updateAppointmentsConfiguration(
+            @AuthenticationPrincipal AuthenticatedUser user,
             @RequestBody AppointmentConfigurationDTO appointmentConfiguration) {
         clinicConfigurationService.updateAppointmentConfiguration(appointmentConfiguration);
-        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("availability/{clinicId}")
+    @GetMapping("availability")
     public ResponseEntity<List<AvailabilityConfigurationDTO>> getAvailabilityConfiguration(
-            @PathVariable Integer clinicId) {
-        return ResponseEntity.ok(clinicConfigurationService.getAvailabilityConfiguration(clinicId));
+            @AuthenticationPrincipal AuthenticatedUser user) {
+        return ResponseEntity.ok(clinicConfigurationService.getAvailabilityConfiguration(user.getClinic().getId()));
     }
 
-    @GetMapping("appointments/{clinicId}")
-    public ResponseEntity<AppointmentConfigurationDTO> getAppointmentConfiguration(
-            @PathVariable Integer clinicId) {
-        return ResponseEntity.ok(clinicConfigurationService.getAppointmentConfiguration(clinicId));
+    @GetMapping("appointments")
+    public ResponseEntity<AppointmentConfigurationDTO> getAppointmentsConfiguration(
+            @AuthenticationPrincipal AuthenticatedUser user) {
+        return ResponseEntity.ok(clinicConfigurationService.getAppointmentConfiguration(user.getClinic().getId()));
     }
 
 }

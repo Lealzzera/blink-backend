@@ -1,7 +1,6 @@
 package com.blink.backend.config;
 
-import com.blink.backend.domain.integration.supabase.SupabaseClientService;
-import com.blink.backend.domain.integration.supabase.dto.SupabaseUserDetailsResponse;
+import com.blink.backend.domain.integration.supabase.SupabaseAuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import io.swagger.v3.core.jackson.ModelResolver;
@@ -20,22 +19,20 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
-import java.util.Optional;
 
 @Configuration
 @RequiredArgsConstructor
 public class BeansConfiguration {
 
-    private final SupabaseClientService supabaseClient;
+    private final SupabaseAuthService supabaseAuthService;
 
     @Bean
     @Qualifier("methodAuth")
     public UserDetailsService userDetailsService() {
         return key -> {
             try {
-                return Optional.ofNullable(supabaseClient.getUserInfo("Bearer " + key))
-                        .map(SupabaseUserDetailsResponse::toDomain)
-                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                String authHeader = "Bearer " + key;
+                return supabaseAuthService.getAuthenticatedUser(authHeader);
             } catch (Exception e) {
                 throw new UsernameNotFoundException("User not found", e);
             }

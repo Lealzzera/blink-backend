@@ -7,11 +7,11 @@ import com.blink.backend.persistence.entity.appointment.Appointment;
 import com.blink.backend.persistence.entity.appointment.Sale;
 import com.blink.backend.persistence.entity.appointment.SaleStatus;
 import com.blink.backend.persistence.entity.appointment.ServiceType;
-import com.blink.backend.persistence.entity.auth.Users;
+import com.blink.backend.persistence.entity.auth.UserEntity;
 import com.blink.backend.persistence.repository.AppointmentsRepository;
 import com.blink.backend.persistence.repository.SaleRepository;
 import com.blink.backend.persistence.repository.ServiceTypeRepository;
-import com.blink.backend.persistence.repository.UsersRepository;
+import com.blink.backend.persistence.repository.UserEntityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 public class SalesService {
 
     private final SaleRepository saleRepository;
-    private final UsersRepository usersRepository;
+    private final UserEntityRepository userEntityRepository;
     private final AppointmentsRepository appointmentsRepository;
     private final ServiceTypeRepository serviceTypeRepository;
 
@@ -40,7 +40,7 @@ public class SalesService {
         ServiceType serviceType = serviceTypeRepository.findById(saleDTO.getServiceType())
                 .orElseThrow(()-> new NotFoundException("Tipo de serviço"));
 
-        Users user = usersRepository.findById(saleDTO.getRegisteredByUser())
+        UserEntity user = userEntityRepository.findById(saleDTO.getRegisteredByUser())
                 .orElseThrow(() -> new NotFoundException("Usuário"));
 
         Sale sale = Sale.builder()

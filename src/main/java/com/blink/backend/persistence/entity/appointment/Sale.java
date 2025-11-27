@@ -1,6 +1,6 @@
 package com.blink.backend.persistence.entity.appointment;
 
-import com.blink.backend.persistence.entity.auth.Users;
+import com.blink.backend.persistence.entity.auth.UserEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -51,7 +51,7 @@ public class Sale {
 
     @ManyToOne
     @JoinColumn(name = "registered_by_user_id")
-    private Users registeredByUser;
+    private UserEntity registeredByUser;
 
     @Column(name = "registered_at")
     private LocalDateTime registeredAt;

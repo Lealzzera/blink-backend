@@ -4,12 +4,9 @@ import com.blink.backend.controller.configuration.dto.AppointmentConfigurationDT
 import com.blink.backend.controller.configuration.dto.AvailabilityConfigurationDTO;
 import com.blink.backend.persistence.entity.appointment.ClinicAvailability;
 import com.blink.backend.persistence.entity.appointment.WeekDay;
-import com.blink.backend.persistence.entity.auth.Users;
-import com.blink.backend.persistence.entity.clinic.Clinic;
 import com.blink.backend.persistence.entity.clinic.ClinicConfiguration;
 import com.blink.backend.persistence.repository.ClinicAvailabilityRepository;
 import com.blink.backend.persistence.repository.ClinicConfigurationRepository;
-import com.blink.backend.persistence.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,15 +17,6 @@ import java.util.List;
 public class ClinicConfigurationService {
     private final ClinicAvailabilityRepository clinicAvailabilityRepository;
     private final ClinicConfigurationRepository clinicConfigurationRepository;
-    private final UsersRepository usersRepository;
-
-    public String getClinicId(String userEmail) {
-        return usersRepository.findByEmail(userEmail)
-                .map(Users::getClinic)
-                .map(Clinic::getId)
-                .map(String::valueOf)
-                .orElseThrow();
-    }
 
     public List<AvailabilityConfigurationDTO> getAvailabilityConfiguration(Integer clinicId) {
         return clinicAvailabilityRepository

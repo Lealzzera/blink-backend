@@ -26,11 +26,11 @@ import com.blink.backend.domain.integration.waha.dto.WahaWebhooks;
 import com.blink.backend.domain.model.message.WhatsAppStatus;
 import com.blink.backend.persistence.entity.appointment.Appointment;
 import com.blink.backend.persistence.entity.appointment.Patient;
-import com.blink.backend.persistence.entity.auth.Users;
+import com.blink.backend.persistence.entity.auth.UserEntity;
 import com.blink.backend.persistence.entity.clinic.Clinic;
 import com.blink.backend.persistence.repository.AppointmentsRepository;
 import com.blink.backend.persistence.repository.PatientRepository;
-import com.blink.backend.persistence.repository.UsersRepository;
+import com.blink.backend.persistence.repository.UserEntityRepository;
 import com.blink.backend.persistence.repository.clinic.ClinicRepositoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -47,6 +47,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.blink.backend.domain.integration.waha.dto.WahaWebhookEventTypes.MESSAGE;
@@ -59,7 +60,7 @@ import static java.util.Objects.isNull;
 public class WahaService implements WhatsAppService {
     private final FeignWahaClient wahaClient;
     private final ClinicRepositoryService clinicRepository;
-    private final UsersRepository usersRepository;
+    private final UserEntityRepository userEntityRepository;
     @Value("${waha-webhook-url}")
     private final String wahaWebhookUrl;
     private final N8nClient n8nClient;
@@ -279,13 +280,14 @@ public class WahaService implements WhatsAppService {
 
     private void sendReceivedMessageToBlinkFe(String sender, String message, Clinic clinic, Boolean fromMe) {
         try {
-            List<Users> users = usersRepository.findAllByClinicId(clinic.getId());
-            List<String> userEmails = users.stream()
-                    .map(Users::getEmail)
+            List<UserEntity> users = userEntityRepository.findAllByClinicId(clinic.getId());
+            List<String> userIds = users.stream()
+                    .map(UserEntity::getUserId)
+                    .map(UUID::toString)
                     .filter(Objects::nonNull)
                     .toList();
 
-            if (userEmails.isEmpty()) {
+            if (userIds.isEmpty()) {
                 log.warn("No users found for clinicId: {}. Cannot send websocket message.", clinic.getId());
                 return;
             }
@@ -297,12 +299,12 @@ public class WahaService implements WhatsAppService {
                     .fromMe(fromMe)
                     .build();
 
-            for (String email : userEmails) {
+            for (String userId : userIds) {
                 simpMessagingTemplate.convertAndSendToUser(
-                        email,
+                        userId,
                         "/notify/message-received",
                         payload);
-                log.info("Sent message to user {} for clinic {}", email, clinic.getId());
+                log.info("Sent message to user {} for clinic {}", userId, clinic.getId());
             }
 
         } catch (Exception e) {

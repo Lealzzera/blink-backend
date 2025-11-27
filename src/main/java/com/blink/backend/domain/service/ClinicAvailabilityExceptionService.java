@@ -53,7 +53,7 @@ public class ClinicAvailabilityExceptionService {
                 .toList();
     }
 
-    public void deleteClinicAvailabilityException(Integer id) throws NotFoundException {
+    public void deleteClinicAvailabilityExceptionById(Integer id) throws NotFoundException {
         try {
             clinicAvailabilityExceptionRepository.deleteById(id);
         } catch (OptimisticLockingFailureException ex) {

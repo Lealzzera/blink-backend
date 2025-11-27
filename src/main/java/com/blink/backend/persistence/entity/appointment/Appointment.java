@@ -1,6 +1,6 @@
 package com.blink.backend.persistence.entity.appointment;
 
-import com.blink.backend.persistence.entity.auth.Users;
+import com.blink.backend.persistence.entity.auth.UserEntity;
 import com.blink.backend.persistence.entity.clinic.Clinic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -64,7 +64,7 @@ public class Appointment {
 
     @ManyToOne
     @JoinColumn(name = "attended_by_user_id")
-    private Users attendedByUser;
+    private UserEntity attendedByUser;
 
     @Column(name = "attended_at")
     private LocalDateTime attendedAt;

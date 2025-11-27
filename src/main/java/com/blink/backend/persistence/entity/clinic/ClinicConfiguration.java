@@ -1,7 +1,7 @@
 package com.blink.backend.persistence.entity.clinic;
 
 
-import com.blink.backend.persistence.entity.auth.Users;
+import com.blink.backend.persistence.entity.auth.UserEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -41,7 +41,7 @@ public class ClinicConfiguration {
 
     @OneToOne
     @JoinColumn(name = "updated_by_user_id")
-    private Users updatedByUserId;
+    private UserEntity updatedByUserId;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
