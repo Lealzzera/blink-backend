@@ -68,7 +68,6 @@ public class WahaService implements WhatsAppService {
     private final AppointmentsRepository appointmentsRepository;
     @Value("${default-ai-answer}")
     private final Boolean defaultAiAnswer;
-    private final Integer limit = 20;
     private final SimpMessagingTemplate simpMessagingTemplate;
     @Value("${WAHA_API_KEY}")
     private final String wahaApiKey;
@@ -155,14 +154,14 @@ public class WahaService implements WhatsAppService {
                 .build();
     }
 
-    public List<ChatOverviewDto> getChatsOverview(Integer clinicId, Integer page)
+    public List<ChatOverviewDto> getChatsOverview(Integer clinicId, Integer page, Integer pageSize)
             throws NotFoundException,
             WhatsAppNotConnectedException {
         Clinic clinic = clinicRepository.findById(clinicId);
-        Integer offset = page * limit;
+        Integer offset = page * pageSize;
         try {
             log.info("calling-waha-chat-overview, clinicId={}", clinicId);
-            ResponseEntity<List<WahaChatOverviewDto>> response = wahaClient.getOverview(clinic.getWahaSession(), limit, offset);
+            ResponseEntity<List<WahaChatOverviewDto>> response = wahaClient.getOverview(clinic.getWahaSession(), pageSize, offset);
             if (response.getBody() == null) {
                 log.info("null-overview-response, clinicId={}", clinicId);
                 return List.of();
@@ -186,12 +185,12 @@ public class WahaService implements WhatsAppService {
 
     }
 
-    public List<ChatHistoryDto> getChatHistory(Integer clinicId, String phoneNumber, Integer page)
+    public List<ChatHistoryDto> getChatHistory(Integer clinicId, String phoneNumber, Integer page, Integer pageSize)
             throws NotFoundException, WhatsAppNotConnectedException {
         Clinic clinic = clinicRepository.findById(clinicId);
-        Integer offset = limit * page;
+        Integer offset = pageSize * page;
         try {
-            ResponseEntity<List<WahaChatHistory>> response = wahaClient.getMessages(clinic.getWahaSession(), phoneNumber, limit, offset);
+            ResponseEntity<List<WahaChatHistory>> response = wahaClient.getMessages(clinic.getWahaSession(), phoneNumber, pageSize, offset);
 
             if (response.getBody() == null) {
                 return List.of();

@@ -6,6 +6,7 @@ import com.blink.backend.controller.message.dto.WhatsAppStatusDto;
 import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.domain.exception.message.WhatsAppNotConnectedException;
 import com.blink.backend.domain.service.WhatsAppService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Chat")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/message/whats-app")

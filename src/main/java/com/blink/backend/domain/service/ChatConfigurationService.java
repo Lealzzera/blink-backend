@@ -27,16 +27,16 @@ public class ChatConfigurationService {
         return patient.getAiAnswer();
     }
 
-    public List<ChatOverviewDto> getChatOverView(Integer clinicId, Integer page)
+    public List<ChatOverviewDto> getChatOverView(Integer clinicId, Integer page, Integer pageSize)
             throws NotFoundException, WhatsAppNotConnectedException {
         log.info("init-get-chat-overview, clinicId={}", clinicId);
-        List<ChatOverviewDto> response = wahaService.getChatsOverview(clinicId, page);
+        List<ChatOverviewDto> response = wahaService.getChatsOverview(clinicId, page, pageSize);
         log.info("end-get-chat-overview, clinicId={}", clinicId);
         return response;
     }
 
-    public List<ChatHistoryDto> getChatHistory(Integer clinicId, String phoneNumber, Integer page)
+    public List<ChatHistoryDto> getChatHistory(Integer clinicId, String phoneNumber, Integer page, Integer pageSize)
             throws NotFoundException, WhatsAppNotConnectedException {
-        return wahaService.getChatHistory(clinicId, phoneNumber, page);
+        return wahaService.getChatHistory(clinicId, phoneNumber, page, pageSize);
     }
 }

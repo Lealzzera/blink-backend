@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import io.swagger.v3.core.jackson.ModelResolver;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
+import jakarta.servlet.ServletContext;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,9 +32,11 @@ public class BeansConfiguration {
     private final SupabaseAuthService supabaseAuthService;
 
     @Bean
-    public OpenApiCustomizer globalSecurityCustomizer() {
+    public OpenApiCustomizer globalSecurityCustomizer(ServletContext servletContext) {
+        Server server = new Server().url(servletContext.getContextPath());
         return openApi -> {
             openApi
+                    .servers(List.of(server))
                     .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                     .getComponents()
                     .addSecuritySchemes("bearerAuth",
