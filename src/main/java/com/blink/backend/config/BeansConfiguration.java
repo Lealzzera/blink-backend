@@ -4,7 +4,10 @@ import com.blink.backend.domain.integration.supabase.SupabaseAuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import io.swagger.v3.core.jackson.ModelResolver;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +28,21 @@ import java.util.List;
 public class BeansConfiguration {
 
     private final SupabaseAuthService supabaseAuthService;
+
+    @Bean
+    public OpenApiCustomizer globalSecurityCustomizer() {
+        return openApi -> {
+            openApi
+                    .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
+                    .getComponents()
+                    .addSecuritySchemes("bearerAuth",
+                            new SecurityScheme()
+                                    .type(SecurityScheme.Type.HTTP)
+                                    .scheme("bearer")
+                                    .bearerFormat("JWT")
+                    );
+        };
+    }
 
     @Bean
     @Qualifier("methodAuth")
