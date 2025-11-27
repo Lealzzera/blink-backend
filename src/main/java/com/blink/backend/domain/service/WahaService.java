@@ -87,6 +87,7 @@ public class WahaService implements WhatsAppService {
             restartWahaSession(clinic.getWahaSession());
         }
 
+        log.info("getting-qr-code for clinic {}", clinicId);
         return wahaClient.getWahaQrCode(clinic.getWahaSession());
     }
 
@@ -220,7 +221,7 @@ public class WahaService implements WhatsAppService {
                         .fullSync(false)
                         .build())
                 .build();
-
+        log.info("restarting-waha-session, tokenizedName={}", tokenizedName);
         wahaClient.deleteWahaSession(tokenizedName);
         wahaClient.createWahaSession(CreateWahaSessionRequest.builder()
                 .name(tokenizedName)
@@ -230,6 +231,7 @@ public class WahaService implements WhatsAppService {
                         .noweb(noWebConfig)
                         .build())
                 .build());
+        log.info("waha-session-restarted, tokenizedName={}", tokenizedName);
     }
 
     private WhatsAppStatusDto getWhatsAppStatusByClinic(Clinic clinic) {
