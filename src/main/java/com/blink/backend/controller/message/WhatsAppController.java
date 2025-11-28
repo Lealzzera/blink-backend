@@ -30,9 +30,9 @@ public class WhatsAppController {
         return ResponseEntity.ok(whatsAppService.getWhatsAppQrCodeByClinic(user.getClinic().getId()));
     }
 
-    @GetMapping("{clinicId}/status")
-    public ResponseEntity<WhatsAppStatusDto> getWhatsAppStatus(@PathVariable Integer clinicId) throws NotFoundException {
-        return ResponseEntity.ok(whatsAppService.getWhatsAppStatusByClinicId(clinicId));
+    @GetMapping("status")
+    public ResponseEntity<WhatsAppStatusDto> getWhatsAppStatus(@AuthenticationPrincipal AuthenticatedUser user) throws NotFoundException {
+        return ResponseEntity.ok(whatsAppService.getWhatsAppStatusByClinicId(user.getClinic().getId()));
     }
 
     @PostMapping("{clinicId}/disconnect")
