@@ -24,6 +24,11 @@ public class ClinicConfigurationController {
 
     public final ClinicConfigurationService clinicConfigurationService;
 
+    @GetMapping("clinic-id")
+    public ResponseEntity<Integer> getClinicId(@AuthenticationPrincipal AuthenticatedUser user) {
+        return ResponseEntity.ok(user.getClinic().getId());
+    }
+
     @PutMapping("availability")
     public void updateAvailabilityConfiguration(
             @AuthenticationPrincipal AuthenticatedUser user,

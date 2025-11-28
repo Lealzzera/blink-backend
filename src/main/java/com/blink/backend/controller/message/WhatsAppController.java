@@ -5,10 +5,12 @@ import com.blink.backend.controller.message.dto.SendMessageRequest;
 import com.blink.backend.controller.message.dto.WhatsAppStatusDto;
 import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.domain.exception.message.WhatsAppNotConnectedException;
+import com.blink.backend.domain.model.auth.AuthenticatedUser;
 import com.blink.backend.domain.service.WhatsAppService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,9 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class WhatsAppController {
     private final WhatsAppService whatsAppService;
 
-    @GetMapping("{clinicId}/qr-code")
-    public ResponseEntity<byte[]> getWahaQrCode(@PathVariable Integer clinicId) throws NotFoundException {
-        return ResponseEntity.ok(whatsAppService.getWhatsAppQrCodeByClinic(clinicId));
+    @GetMapping("qr-code")
+    public ResponseEntity<byte[]> getWahaQrCode(@AuthenticationPrincipal AuthenticatedUser user) throws NotFoundException {
+        return ResponseEntity.ok(whatsAppService.getWhatsAppQrCodeByClinic(user.getClinic().getId()));
     }
 
     @GetMapping("{clinicId}/status")
