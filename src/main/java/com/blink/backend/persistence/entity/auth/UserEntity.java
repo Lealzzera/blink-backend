@@ -41,6 +41,6 @@ public class UserEntity {
     private String role;
 
     public AuthenticatedUser toAuthUser() {
-        return new AuthenticatedUser(name, List.of(Authorities.valueOf(role.toUpperCase())), clinic);
+        return new AuthenticatedUser(name, userId.toString(), List.of(Authorities.valueOf(role.toUpperCase())), clinic);
     }
 }

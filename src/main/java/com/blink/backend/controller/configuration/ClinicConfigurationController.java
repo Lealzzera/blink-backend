@@ -5,6 +5,7 @@ import com.blink.backend.controller.configuration.dto.AvailabilityConfigurationD
 import com.blink.backend.domain.model.auth.AuthenticatedUser;
 import com.blink.backend.domain.service.ClinicConfigurationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Log4j2
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/configuration")
@@ -26,13 +28,14 @@ public class ClinicConfigurationController {
 
     @GetMapping("clinic-id")
     public ResponseEntity<Integer> getClinicId(@AuthenticationPrincipal AuthenticatedUser user) {
+        log.info("getClinicId user={}", user.getUserId());
         return ResponseEntity.ok(user.getClinic().getId());
     }
 
     @PutMapping("availability")
     public void updateAvailabilityConfiguration(
             @AuthenticationPrincipal AuthenticatedUser user,
-            List<AvailabilityConfigurationDTO> updateAvailabilityConfiguration) {
+            @RequestBody List<AvailabilityConfigurationDTO> updateAvailabilityConfiguration) {
         clinicConfigurationService.updateAvailabilityConfiguration(updateAvailabilityConfiguration);
     }
 

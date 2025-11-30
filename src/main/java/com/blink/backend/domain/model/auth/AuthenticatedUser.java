@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class AuthenticatedUser implements UserDetails {
     private final String username;
+    private final String userId;
     private final List<Authorities> authorities;
     private final Clinic clinic;
     private static AuthenticatedUser n8nUser;
@@ -23,7 +24,7 @@ public class AuthenticatedUser implements UserDetails {
 
     public static AuthenticatedUser getN8nAuthenticatedUser() {
         if (n8nUser == null) {
-            n8nUser = new AuthenticatedUser("n8n", List.of(Authorities.N8N_AUTHENTICATED), null);
+            n8nUser = new AuthenticatedUser("n8n", null, List.of(Authorities.N8N_AUTHENTICATED), null);
         }
         return n8nUser;
     }

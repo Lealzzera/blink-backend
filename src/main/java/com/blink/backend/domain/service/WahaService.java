@@ -236,8 +236,14 @@ public class WahaService implements WhatsAppService {
     private WhatsAppStatusDto getWhatsAppStatusByClinic(Clinic clinic) {
         ResponseEntity<WahaSessionStatusResponse> response = wahaClient.getWahaSessionStatus(clinic.getWahaSession());
         if (HttpStatus.NOT_FOUND.equals(response.getStatusCode()) ||
-                isNull(response.getBody()) ||
-                response.getBody().getStatus().isShutdown()) {
+                isNull(response.getBody())) {
+            log.info("null-status-response, clinicId={}", clinic.getId());
+            return WhatsAppStatusDto.builder()
+                    .status(SHUTDOWN)
+                    .build();
+        }
+        if (response.getBody().getStatus().isShutdown()) {
+            log.info("whats-app-shutdown, clinicId={}", clinic.getId());
             return WhatsAppStatusDto.builder()
                     .status(SHUTDOWN)
                     .build();
@@ -248,6 +254,7 @@ public class WahaService implements WhatsAppService {
         if (responseBody.getStatus().isConnected()) {
             phoneNumber = responseBody.getMe().getPhoneNumber();
         }
+        log.info("whats-app-status-response, clinicId={}, status={}", clinic.getId(), responseBody.getStatus());
         return WhatsAppStatusDto.builder()
                 .status(responseBody.getStatus().getConnectionStatus())
                 .connectedPhoneNumber(phoneNumber)
