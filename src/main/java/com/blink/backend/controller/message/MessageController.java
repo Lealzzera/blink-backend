@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Tag(name = "Chat")
+@Tag(name = "Whats app chat", description = "Novas apis de chat do whats-app")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/chat/whats-app")
@@ -45,16 +46,17 @@ public class MessageController {
         return ResponseEntity.ok(whatsAppService.getWhatsAppStatusByClinicId(user.getClinic().getId()));
     }
 
-    @PostMapping("{clinicId}/disconnect")
-    public ResponseEntity<WhatsAppStatusDto> disconnect(@PathVariable Integer clinicId) throws NotFoundException {
-        return ResponseEntity.ok(whatsAppService.disconnectWhatsAppNumber(clinicId));
+    @DeleteMapping("disconnect")
+    public ResponseEntity<WhatsAppStatusDto> disconnect(@AuthenticationPrincipal AuthenticatedUser user) throws NotFoundException {
+        return ResponseEntity.ok(whatsAppService.disconnectWhatsAppNumber(user.getClinic().getId()));
     }
 
     @PostMapping("send-message")
     public ResponseEntity<Void> sendMessage(
+            @AuthenticationPrincipal AuthenticatedUser user,
             @RequestBody SendMessageRequest sendMessageRequest)
-            throws NotFoundException, WhatsAppNotConnectedException, InterruptedException {
-        whatsAppService.sendMessage(sendMessageRequest);
+            throws WhatsAppNotConnectedException, InterruptedException {
+        whatsAppService.sendMessage(user.getClinic(), sendMessageRequest);
         return ResponseEntity.ok().build();
     }
 
@@ -66,31 +68,31 @@ public class MessageController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("{clinicId}/ai-answer/{phoneNumber}")
+    @PutMapping("ai-answer/{phoneNumber}")
     public ResponseEntity<Boolean> toggleChatAiAnswer(
-            @PathVariable Integer clinicId,
+            @AuthenticationPrincipal AuthenticatedUser user,
             @PathVariable String phoneNumber)
             throws NotFoundException {
-        return ResponseEntity.ok(chatConfigurationService.toggleAiAnswerMode(clinicId, phoneNumber));
+        return ResponseEntity.ok(chatConfigurationService.toggleAiAnswerMode(user.getClinic().getId(), phoneNumber));
     }
 
-    @GetMapping("{clinicId}/overview")
+    @GetMapping("overview")
     @Operation(summary = "Retorna a lista de conversas mais recentes do whats-app")
     public ResponseEntity<List<ChatOverviewDto>> getChatsOverview(
-            @PathVariable Integer clinicId,
+            @AuthenticationPrincipal AuthenticatedUser user,
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "20") Integer pageSize)
-            throws NotFoundException, WhatsAppNotConnectedException {
-        return ResponseEntity.ok(chatConfigurationService.getChatOverView(clinicId, page, pageSize));
+            throws WhatsAppNotConnectedException {
+        return ResponseEntity.ok(chatConfigurationService.getChatOverView(user.getClinic(), page, pageSize));
     }
 
-    @GetMapping("{clinicId}/overview/{phoneNumber}")
+    @GetMapping("overview/{phoneNumber}")
     public ResponseEntity<List<ChatHistoryDto>> getChatHistory(
-            @PathVariable Integer clinicId,
+            @AuthenticationPrincipal AuthenticatedUser user,
             @PathVariable String phoneNumber,
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "20") Integer pageSize)
-            throws NotFoundException, WhatsAppNotConnectedException {
-        return ResponseEntity.ok(chatConfigurationService.getChatHistory(clinicId, phoneNumber, page, pageSize));
+            throws WhatsAppNotConnectedException {
+        return ResponseEntity.ok(chatConfigurationService.getChatHistory(user.getClinic(), phoneNumber, page, pageSize));
     }
 }

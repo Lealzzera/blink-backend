@@ -1,5 +1,6 @@
 package com.blink.backend.domain.integration.waha.dto;
 
+import com.blink.backend.controller.message.dto.AckStatus;
 import com.blink.backend.controller.message.dto.ChatHistoryDto;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -30,6 +31,7 @@ public class WahaChatHistory {
                 .sentAt(Instant.ofEpochSecond(timestamp)
                         .atZone(ZoneId.systemDefault())
                         .toLocalDateTime())
+                .ack(AckStatus.valueOf(ackName))
                 .build();
     }
 }

@@ -90,11 +90,16 @@ public class WahaService implements WhatsAppService {
         return wahaClient.getWahaQrCode(clinic.getWahaSession());
     }
 
-    @Async
-    @Override
     public void sendMessage(SendMessageRequest sendMessageRequest)
             throws NotFoundException, WhatsAppNotConnectedException, InterruptedException {
         Clinic clinic = clinicRepository.findById(sendMessageRequest.getClinicId());
+        sendMessage(clinic, sendMessageRequest);
+    }
+
+    @Async
+    @Override
+    public void sendMessage(Clinic clinic, SendMessageRequest sendMessageRequest)
+            throws WhatsAppNotConnectedException, InterruptedException {
         if (getWhatsAppStatusByClinic(clinic).isNotConnected()) {
             throw new WhatsAppNotConnectedException();
         }
@@ -128,7 +133,7 @@ public class WahaService implements WhatsAppService {
 
     @Override
     public void receiveMessage(MessageReceivedRequest messageReceivedRequest) throws NotFoundException {
-        String sender = messageReceivedRequest.getPayload().getFrom().replace("@c.us", ""); // a pessoa que mandou a mensagem
+        String sender = messageReceivedRequest.getPayload().getFrom();
         String message = messageReceivedRequest.getPayload().getMessage();
         String session = messageReceivedRequest.getSession();
         Optional<Patient> optionalPatient = patientRepository.findByPhoneNumber(sender);
@@ -154,20 +159,18 @@ public class WahaService implements WhatsAppService {
                 .build();
     }
 
-    public List<ChatOverviewDto> getChatsOverview(Integer clinicId, Integer page, Integer pageSize)
-            throws NotFoundException,
-            WhatsAppNotConnectedException {
-        Clinic clinic = clinicRepository.findById(clinicId);
+    public List<ChatOverviewDto> getChatsOverview(Clinic clinic, Integer page, Integer pageSize)
+            throws WhatsAppNotConnectedException {
         Integer offset = page * pageSize;
         try {
-            log.info("calling-waha-chat-overview, clinicId={}", clinicId);
+            log.info("calling-waha-chat-overview, clinicId={}", clinic.getId());
             ResponseEntity<List<WahaChatOverviewDto>> response = wahaClient.getOverview(clinic.getWahaSession(), pageSize, offset);
             if (response.getBody() == null) {
-                log.info("null-overview-response, clinicId={}", clinicId);
+                log.info("null-overview-response, clinicId={}", clinic.getId());
                 return List.of();
             }
 
-            log.info("extracting-waha-chat-overview, clinicId={}", clinicId);
+            log.info("extracting-waha-chat-overview, clinicId={}", clinic.getId());
             return response.getBody()
                     .stream()
                     .map(chat -> {
@@ -185,9 +188,8 @@ public class WahaService implements WhatsAppService {
 
     }
 
-    public List<ChatHistoryDto> getChatHistory(Integer clinicId, String phoneNumber, Integer page, Integer pageSize)
-            throws NotFoundException, WhatsAppNotConnectedException {
-        Clinic clinic = clinicRepository.findById(clinicId);
+    public List<ChatHistoryDto> getChatHistory(Clinic clinic, String phoneNumber, Integer page, Integer pageSize)
+            throws WhatsAppNotConnectedException {
         Integer offset = pageSize * page;
         try {
             ResponseEntity<List<WahaChatHistory>> response = wahaClient.getMessages(clinic.getWahaSession(), phoneNumber, pageSize, offset);

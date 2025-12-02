@@ -18,4 +18,5 @@ public class ChatOverviewDto {
     private LocalDateTime sentAt;
     private Boolean fromMe;
     private Boolean aiAnswer;
+    private AckStatus messageStatus;
 }

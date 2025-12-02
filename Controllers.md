@@ -15,9 +15,9 @@ CLINIC ID VEM DO TOKEN
 |  PUT   |                                                   | /configuration/availability/atypical/{id} |         |
 | DELETE | /configurations/availability/exception/{id}       | /configuration/availability/atypical/{id} | X       |
 |        |                                                   |                                           |         |
-|  POST  | /message/whats-app/{clinicId}/qr-code             | /configuration/chat/auth                  |         |
-| DELETE | /message/whats-app/{clinicId}/disconnect          | /configuration/chat/auth                  |         |
-|  GET   | /message/whats-app/{clinicId}/status              | /configuration/chat/status                |         |
+|  GET   | /message/whats-app/{clinicId}/qr-code             | /chat/whats-app/qr-code                   | X       |
+| DELETE | /message/whats-app/{clinicId}/disconnect          | /chat/whats-app/disconnect                | X       |
+|  GET   | /message/whats-app/{clinicId}/status              | /chat/whats-app/status                    | X       |
 |        |                                                   |                                           |         |
 | POST*  |                                                   | /chat/whats-app/send-message              |         |<-- para o FE migrar para WS                          
 | POST*  |                                                   | /chat/whats-app/web-hook/message-received |         |<-- *usados pelo N8N ou WAHA                          

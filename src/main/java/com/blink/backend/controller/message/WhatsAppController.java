@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "Chat")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/message/whats-app")
+@Tag(name = "Old-chat", description = "Apis desatualizadas de chat")
 public class WhatsAppController {
     private final WhatsAppService whatsAppService;
 
@@ -56,3 +56,4 @@ public class WhatsAppController {
         return ResponseEntity.ok().build();
     }
 }
+

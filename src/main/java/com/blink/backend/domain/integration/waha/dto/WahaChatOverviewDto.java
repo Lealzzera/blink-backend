@@ -22,8 +22,9 @@ public class WahaChatOverviewDto {
     private String name;
     private OverviewLastMessageDto lastMessage;
 
+
     public ChatOverviewDto toChatOverviewDto(Boolean aiAnswer, String patientName) {
-        if (id.contains("@g.us") || id.contains("status@")) {
+        if (!id.contains("@c.us")) {
             return null;
         }
 
@@ -38,6 +39,7 @@ public class WahaChatOverviewDto {
                 .aiAnswer(aiAnswer)
                 .patientName(patientName)
                 .whatsAppName(name)
+                .messageStatus(lastMessage.getAckName())
                 .build();
     }
 }

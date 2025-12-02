@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@Tag(name = "Chat", description = "Apis de chat do blink")
 @RequiredArgsConstructor
 @RequestMapping("api/v1/chat")
+@Tag(name = "Old-chat", description = "Apis desatualizadas de chat")
 public class ChatController {
     private final ChatConfigurationService chatConfigurationService;
 

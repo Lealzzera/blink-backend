@@ -5,7 +5,9 @@ import com.blink.backend.controller.message.dto.ChatOverviewDto;
 import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.domain.exception.message.WhatsAppNotConnectedException;
 import com.blink.backend.persistence.entity.appointment.Patient;
+import com.blink.backend.persistence.entity.clinic.Clinic;
 import com.blink.backend.persistence.repository.PatientRepository;
+import com.blink.backend.persistence.repository.clinic.ClinicRepositoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import java.util.List;
 public class ChatConfigurationService {
     private final PatientRepository patientRepository;
     private final WahaService wahaService;
+    private final ClinicRepositoryService clinicRepository;
 
     public Boolean toggleAiAnswerMode(Integer clinicId, String phoneNumber) throws NotFoundException {
         Patient patient = patientRepository.findByClinic_IdAndPhoneNumber(clinicId, phoneNumber)
@@ -27,16 +30,30 @@ public class ChatConfigurationService {
         return patient.getAiAnswer();
     }
 
+    @Deprecated
     public List<ChatOverviewDto> getChatOverView(Integer clinicId, Integer page, Integer pageSize)
             throws NotFoundException, WhatsAppNotConnectedException {
-        log.info("init-get-chat-overview, clinicId={}", clinicId);
-        List<ChatOverviewDto> response = wahaService.getChatsOverview(clinicId, page, pageSize);
-        log.info("end-get-chat-overview, clinicId={}", clinicId);
+        Clinic clinic = clinicRepository.findById(clinicId);
+        return getChatOverView(clinic, page, pageSize);
+    }
+
+    public List<ChatOverviewDto> getChatOverView(Clinic clinic, Integer page, Integer pageSize)
+            throws WhatsAppNotConnectedException {
+        log.info("init-get-chat-overview, clinicId={}", clinic.getId());
+        List<ChatOverviewDto> response = wahaService.getChatsOverview(clinic, page, pageSize);
+        log.info("end-get-chat-overview, clinicId={}", clinic.getId());
         return response;
     }
 
+    @Deprecated
     public List<ChatHistoryDto> getChatHistory(Integer clinicId, String phoneNumber, Integer page, Integer pageSize)
             throws NotFoundException, WhatsAppNotConnectedException {
-        return wahaService.getChatHistory(clinicId, phoneNumber, page, pageSize);
+        Clinic clinic = clinicRepository.findById(clinicId);
+        return getChatHistory(clinic, phoneNumber, page, pageSize);
+    }
+
+    public List<ChatHistoryDto> getChatHistory(Clinic clinic, String phoneNumber, Integer page, Integer pageSize)
+            throws WhatsAppNotConnectedException {
+        return wahaService.getChatHistory(clinic, phoneNumber, page, pageSize);
     }
 }

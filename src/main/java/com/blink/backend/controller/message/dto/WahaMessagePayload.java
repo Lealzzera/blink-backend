@@ -1,6 +1,8 @@
 package com.blink.backend.controller.message.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +17,15 @@ import lombok.ToString;
 public class WahaMessagePayload {
     @JsonProperty("body")
     private String message;
-    private String from;
+    @JsonProperty("_data")
+    @Getter(AccessLevel.NONE)
+    private JsonNode from;
     private String to;
+
+    public String getFrom() {
+        String remoteJid = from.at("/key/remoteJid").toString();
+        String remoteJidAlt = from.at("/key/remoteJidAlt").toString();
+        String from = remoteJid.contains("@s.whatsapp.net") ? remoteJid : remoteJidAlt;
+        return from.substring(0, from.lastIndexOf('@'));
+    }
 }

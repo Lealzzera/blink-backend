@@ -1,5 +1,6 @@
 package com.blink.backend.domain.integration.waha.dto;
 
+import com.blink.backend.controller.message.dto.AckStatus;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -18,5 +19,5 @@ public class OverviewLastMessageDto {
     @JsonProperty("body")
     private String message;
     private Boolean fromMe;
-    private Integer ack;
+    private AckStatus ackName;
 }
