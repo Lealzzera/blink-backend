@@ -23,9 +23,9 @@ public class WahaMessagePayload {
     private String to;
 
     public String getFrom() {
-        String remoteJid = from.at("/key/remoteJid").toString();
-        String remoteJidAlt = from.at("/key/remoteJidAlt").toString();
+        String remoteJid = from.at("/Info/Sender").toString();
+        String remoteJidAlt = from.at("/Info/SenderAlt").toString();
         String from = remoteJid.contains("@s.whatsapp.net") ? remoteJid : remoteJidAlt;
-        return from.substring(0, from.lastIndexOf('@'));
+        return from.substring(0, from.lastIndexOf(':')).replace("\"", "");
     }
 }

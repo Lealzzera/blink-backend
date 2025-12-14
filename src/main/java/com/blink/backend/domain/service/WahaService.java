@@ -181,7 +181,7 @@ public class WahaService implements WhatsAppService {
                         return chat.toChatOverviewDto(aiAnswer, patientName);
                     })
                     .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
+                    .toList();
         } catch (Exception e) {
             throw new WhatsAppNotConnectedException();
         }
