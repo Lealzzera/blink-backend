@@ -4,7 +4,7 @@ import com.blink.backend.controller.patient.dto.CreatePatientRequest;
 import com.blink.backend.controller.patient.dto.PatientDto;
 import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.persistence.entity.appointment.Patient;
-import com.blink.backend.persistence.entity.clinic.Clinic;
+import com.blink.backend.persistence.entity.clinic.ClinicEntity;
 import com.blink.backend.persistence.repository.PatientRepository;
 import com.blink.backend.persistence.repository.clinic.ClinicRepositoryService;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class PatientService {
 
     public Integer createPatient(CreatePatientRequest patientRequest)
             throws NotFoundException {
-        Clinic clinic = clinicRepository.findById(patientRequest.getClinicId());
+        ClinicEntity clinic = clinicRepository.findById(patientRequest.getClinicId());
         Patient patient = patientRepository.findByPhoneNumber(patientRequest.getPhoneNumber())
                 .orElse(
                         Patient.builder()

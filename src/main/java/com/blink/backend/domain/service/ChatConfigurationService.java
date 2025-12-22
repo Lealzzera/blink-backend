@@ -5,7 +5,7 @@ import com.blink.backend.controller.message.dto.ChatOverviewDto;
 import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.domain.exception.message.WhatsAppNotConnectedException;
 import com.blink.backend.persistence.entity.appointment.Patient;
-import com.blink.backend.persistence.entity.clinic.Clinic;
+import com.blink.backend.persistence.entity.clinic.ClinicEntity;
 import com.blink.backend.persistence.repository.PatientRepository;
 import com.blink.backend.persistence.repository.clinic.ClinicRepositoryService;
 import lombok.RequiredArgsConstructor;
@@ -33,11 +33,11 @@ public class ChatConfigurationService {
     @Deprecated
     public List<ChatOverviewDto> getChatOverView(Integer clinicId, Integer page, Integer pageSize)
             throws NotFoundException, WhatsAppNotConnectedException {
-        Clinic clinic = clinicRepository.findById(clinicId);
+        ClinicEntity clinic = clinicRepository.findById(clinicId);
         return getChatOverView(clinic, page, pageSize);
     }
 
-    public List<ChatOverviewDto> getChatOverView(Clinic clinic, Integer page, Integer pageSize)
+    public List<ChatOverviewDto> getChatOverView(ClinicEntity clinic, Integer page, Integer pageSize)
             throws WhatsAppNotConnectedException {
         log.info("init-get-chat-overview, clinicId={}", clinic.getId());
         List<ChatOverviewDto> response = wahaService.getChatsOverview(clinic, page, pageSize);
@@ -48,11 +48,11 @@ public class ChatConfigurationService {
     @Deprecated
     public List<ChatHistoryDto> getChatHistory(Integer clinicId, String phoneNumber, Integer page, Integer pageSize)
             throws NotFoundException, WhatsAppNotConnectedException {
-        Clinic clinic = clinicRepository.findById(clinicId);
+        ClinicEntity clinic = clinicRepository.findById(clinicId);
         return getChatHistory(clinic, phoneNumber, page, pageSize);
     }
 
-    public List<ChatHistoryDto> getChatHistory(Clinic clinic, String phoneNumber, Integer page, Integer pageSize)
+    public List<ChatHistoryDto> getChatHistory(ClinicEntity clinic, String phoneNumber, Integer page, Integer pageSize)
             throws WhatsAppNotConnectedException {
         return wahaService.getChatHistory(clinic, phoneNumber, page, pageSize);
     }

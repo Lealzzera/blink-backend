@@ -13,6 +13,8 @@ public interface ClinicAvailabilityExceptionRepository extends JpaRepository<Cli
 
     Optional<ClinicAvailabilityException> findByExceptionDayAndClinicId(LocalDate exceptionDay, Integer clinicId);
 
+    Optional<ClinicAvailabilityException> findByExceptionDayAndClinicCode(LocalDate exceptionDay, String clinicCode);
+
     List<ClinicAvailabilityException> findByClinicIdAndExceptionDayAfterOrderByExceptionDayDesc(Integer clinicId, LocalDate date);
 
 }

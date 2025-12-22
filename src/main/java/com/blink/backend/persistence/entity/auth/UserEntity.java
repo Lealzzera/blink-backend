@@ -2,7 +2,7 @@ package com.blink.backend.persistence.entity.auth;
 
 import com.blink.backend.domain.model.auth.AuthenticatedUser;
 import com.blink.backend.domain.model.auth.Authorities;
-import com.blink.backend.persistence.entity.clinic.Clinic;
+import com.blink.backend.persistence.entity.clinic.ClinicEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -35,7 +35,7 @@ public class UserEntity {
 
     @OneToOne
     @JoinColumn(name = "clinic_id")
-    private Clinic clinic;
+    private ClinicEntity clinic;
 
     @Column(name = "role")
     private String role;

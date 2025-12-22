@@ -1,6 +1,6 @@
 package com.blink.backend.persistence.entity.appointment;
 
-import com.blink.backend.persistence.entity.clinic.Clinic;
+import com.blink.backend.persistence.entity.clinic.ClinicEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -41,7 +41,7 @@ public class Patient {
 
     @ManyToOne
     @JoinColumn(name = "clinic_id")
-    private Clinic clinic;
+    private ClinicEntity clinic;
 
     @Builder.Default
     @Column(name = "ai_answer")

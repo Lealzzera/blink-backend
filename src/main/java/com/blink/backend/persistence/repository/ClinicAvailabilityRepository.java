@@ -11,7 +11,13 @@ import java.util.Optional;
 @Repository
 public interface ClinicAvailabilityRepository extends JpaRepository<ClinicAvailability, Integer> {
     ClinicAvailability findByWeekDayAndIsWorkingDayTrueAndClinicId(WeekDay weekDay, Integer clinicId);
+
+    ClinicAvailability findByWeekDayAndIsWorkingDayTrueAndClinicCode(WeekDay weekDay, String clinicCode);
+
     Optional<ClinicAvailability> findByClinicIdAndWeekDayAndIsWorkingDayTrue(Integer id, WeekDay weekDay);
+    Optional<ClinicAvailability> findByClinicCodeAndWeekDayAndIsWorkingDayTrue(String code, WeekDay weekDay);
+
     ClinicAvailability findByClinicIdAndWeekDay(Integer id, WeekDay weekDay);
+
     List<ClinicAvailability> findByClinicId(Integer clinicId);
 }

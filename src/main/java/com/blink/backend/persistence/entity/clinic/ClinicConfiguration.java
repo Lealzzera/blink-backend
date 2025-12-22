@@ -28,7 +28,7 @@ public class ClinicConfiguration {
 
     @OneToOne
     @JoinColumn(name = "clinic_id")
-    private Clinic clinic;
+    private ClinicEntity clinic;
 
     @Column(name = "whats_number")
     private String whatsNumber;

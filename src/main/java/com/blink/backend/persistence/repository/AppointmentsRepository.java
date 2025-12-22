@@ -7,11 +7,14 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AppointmentsRepository extends JpaRepository<Appointment, Integer> {
     List<Appointment> findByScheduledTimeBetween(LocalDateTime startDate, LocalDateTime endDate);
+
     Integer countByScheduledTimeBetweenAndAppointmentStatusNot(LocalDateTime scheduledTime, LocalDateTime scheduledEnd, AppointmentStatus appointmentStatus);
+
     List<Appointment> findAllByPatientIdAndScheduledTimeAfter(Integer patientId, LocalDateTime localDateTime);
 
 }

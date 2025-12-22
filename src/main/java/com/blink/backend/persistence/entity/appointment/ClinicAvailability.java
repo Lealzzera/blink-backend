@@ -2,7 +2,7 @@ package com.blink.backend.persistence.entity.appointment;
 
 
 import com.blink.backend.persistence.entity.auth.UserEntity;
-import com.blink.backend.persistence.entity.clinic.Clinic;
+import com.blink.backend.persistence.entity.clinic.ClinicEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -32,7 +32,7 @@ public class ClinicAvailability {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "clinic_id")
-    private Clinic clinic;
+    private ClinicEntity clinic;
 
     @Column(name = "week_day")
     @Enumerated(EnumType.STRING)

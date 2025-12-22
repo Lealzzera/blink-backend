@@ -1,6 +1,6 @@
 package com.blink.backend.domain.model.auth;
 
-import com.blink.backend.persistence.entity.clinic.Clinic;
+import com.blink.backend.persistence.entity.clinic.ClinicEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +15,7 @@ public class AuthenticatedUser implements UserDetails {
     private final String username;
     private final String userId;
     private final List<Authorities> authorities;
-    private final Clinic clinic;
+    private final ClinicEntity clinic;
     private static AuthenticatedUser n8nUser;
 
     public String getPassword() {

@@ -33,16 +33,6 @@ public class AppointmentController {
 
     private final ClinicAvailabilityService clinicAvailabilityService;
 
-    @GetMapping("availability")
-    public ResponseEntity<List<ClinicAvailabilityDTO>> getClinicAvailability(
-            @RequestParam("start_date") LocalDate startDate,
-            @RequestParam(value = "end_date", required = false) LocalDate endDate,
-            @RequestParam(value = "hide_cancelled", required = false, defaultValue = "true") Boolean hideCancelled) {
-        endDate = isNull(endDate) ? startDate.plusDays(7) : endDate;
-
-        return ResponseEntity.ok(clinicAvailabilityService.getClinicAvailability(1, startDate, endDate, hideCancelled));
-    }
-
     @GetMapping("availability/{clinicId}")
     public ResponseEntity<List<ClinicAvailabilityDTO>> getClinicAvailabilityByClinicId(
             @PathVariable Integer clinicId,
@@ -54,6 +44,7 @@ public class AppointmentController {
         return ResponseEntity.ok(clinicAvailabilityService.getClinicAvailability(clinicId, startDate, endDate, hideCancelled));
     }
 
+    @Deprecated(forRemoval = true)
     @PostMapping
     public ResponseEntity<Void> createAppointment(
             @RequestBody CreateAppointmentDTO createAppointmentDTO)
@@ -69,14 +60,6 @@ public class AppointmentController {
         return ResponseEntity.ok(clinicAvailabilityService.getAppointmentDetailsById(appointmentId));
     }
 
-    @PutMapping("status")
-    public ResponseEntity<Void> updateAppointmentStatus(@RequestBody UpdateAppointmentStatusDTO updateStatus)
-            throws NotFoundException {
-        clinicAvailabilityService.updateAppointmentStatus(updateStatus);
-
-        return ResponseEntity.noContent().build();
-    }
-
     @PutMapping("{appointmentId}")
     public ResponseEntity<Void> updateAppointment(
             @PathVariable Integer appointmentId,
@@ -86,6 +69,5 @@ public class AppointmentController {
 
         return ResponseEntity.noContent().build();
     }
-
 
 }

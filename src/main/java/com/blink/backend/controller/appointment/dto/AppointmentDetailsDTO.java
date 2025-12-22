@@ -20,7 +20,6 @@ public class AppointmentDetailsDTO {
     private Integer clinicId;
     private Integer duration;
     private String appointmentStatus;
-    private String serviceType;
     private String notes;
     private UserDTO attendedByUser;
     private LocalDateTime attendedAt;
@@ -44,11 +43,10 @@ public class AppointmentDetailsDTO {
                 .scheduledTime(appointment.getScheduledTime())
                 .duration(appointment.getDuration())
                 .appointmentStatus(appointment.getAppointmentStatus().name())
-                .serviceType(appointment.getServiceType().getServiceType())
                 .notes(appointment.getNotes())
                 .attendedByUser(userDTO)
                 .clinicId(appointment.getClinic().getId())
-                .sales(appointment.getSales().stream().map(SaleDTO::fromEntity).collect(Collectors.toList()))
+                .sales(appointment.getSales().stream().map(SaleDTO::fromEntity).toList())
                 .build();
     }
 }

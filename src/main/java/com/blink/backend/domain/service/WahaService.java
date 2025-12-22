@@ -27,7 +27,7 @@ import com.blink.backend.domain.model.message.WhatsAppStatus;
 import com.blink.backend.persistence.entity.appointment.Appointment;
 import com.blink.backend.persistence.entity.appointment.Patient;
 import com.blink.backend.persistence.entity.auth.UserEntity;
-import com.blink.backend.persistence.entity.clinic.Clinic;
+import com.blink.backend.persistence.entity.clinic.ClinicEntity;
 import com.blink.backend.persistence.repository.AppointmentsRepository;
 import com.blink.backend.persistence.repository.PatientRepository;
 import com.blink.backend.persistence.repository.UserEntityRepository;
@@ -74,13 +74,13 @@ public class WahaService implements WhatsAppService {
 
     @Override
     public WhatsAppStatusDto getWhatsAppStatusByClinicId(Integer clinicId) throws NotFoundException {
-        Clinic clinic = clinicRepository.findById(clinicId);
+        ClinicEntity clinic = clinicRepository.findById(clinicId);
         return getWhatsAppStatusByClinic(clinic);
     }
 
     @Override
     public byte[] getWhatsAppQrCodeByClinic(Integer clinicId) throws NotFoundException {
-        Clinic clinic = clinicRepository.findById(clinicId);
+        ClinicEntity clinic = clinicRepository.findById(clinicId);
 
         if (getWhatsAppStatusByClinic(clinic).isShutdown()) {
             restartWahaSession(clinic.getWahaSession());
@@ -92,13 +92,13 @@ public class WahaService implements WhatsAppService {
 
     public void sendMessage(SendMessageRequest sendMessageRequest)
             throws NotFoundException, WhatsAppNotConnectedException, InterruptedException {
-        Clinic clinic = clinicRepository.findById(sendMessageRequest.getClinicId());
+        ClinicEntity clinic = clinicRepository.findById(sendMessageRequest.getClinicId());
         sendMessage(clinic, sendMessageRequest);
     }
 
     @Async
     @Override
-    public void sendMessage(Clinic clinic, SendMessageRequest sendMessageRequest)
+    public void sendMessage(ClinicEntity clinic, SendMessageRequest sendMessageRequest)
             throws WhatsAppNotConnectedException, InterruptedException {
         if (getWhatsAppStatusByClinic(clinic).isNotConnected()) {
             throw new WhatsAppNotConnectedException();
@@ -137,7 +137,7 @@ public class WahaService implements WhatsAppService {
         String message = messageReceivedRequest.getPayload().getMessage();
         String session = messageReceivedRequest.getSession();
         Optional<Patient> optionalPatient = patientRepository.findByPhoneNumber(sender);
-        Clinic clinic = clinicRepository.findByWahaSession(session);
+        ClinicEntity clinic = clinicRepository.findByWahaSession(session);
 
         sendReceivedMessageToBlinkFe(sender, message, clinic, false);
         if (!isAiResponseTurnedOn(optionalPatient)) {
@@ -151,7 +151,7 @@ public class WahaService implements WhatsAppService {
     @Override
     public WhatsAppStatusDto disconnectWhatsAppNumber(Integer clinicId)
             throws NotFoundException {
-        Clinic clinic = clinicRepository.findById(clinicId);
+        ClinicEntity clinic = clinicRepository.findById(clinicId);
         wahaClient.logoutSession(clinic.getWahaSession());
         return WhatsAppStatusDto
                 .builder()
@@ -159,7 +159,7 @@ public class WahaService implements WhatsAppService {
                 .build();
     }
 
-    public List<ChatOverviewDto> getChatsOverview(Clinic clinic, Integer page, Integer pageSize)
+    public List<ChatOverviewDto> getChatsOverview(ClinicEntity clinic, Integer page, Integer pageSize)
             throws WhatsAppNotConnectedException {
         Integer offset = page * pageSize;
         try {
@@ -188,7 +188,7 @@ public class WahaService implements WhatsAppService {
 
     }
 
-    public List<ChatHistoryDto> getChatHistory(Clinic clinic, String phoneNumber, Integer page, Integer pageSize)
+    public List<ChatHistoryDto> getChatHistory(ClinicEntity clinic, String phoneNumber, Integer page, Integer pageSize)
             throws WhatsAppNotConnectedException {
         Integer offset = pageSize * page;
         try {
@@ -235,7 +235,7 @@ public class WahaService implements WhatsAppService {
         log.info("waha-session-restarted, tokenizedName={}", tokenizedName);
     }
 
-    private WhatsAppStatusDto getWhatsAppStatusByClinic(Clinic clinic) {
+    private WhatsAppStatusDto getWhatsAppStatusByClinic(ClinicEntity clinic) {
         ResponseEntity<WahaSessionStatusResponse> response = wahaClient.getWahaSessionStatus(clinic.getWahaSession());
         if (HttpStatus.NOT_FOUND.equals(response.getStatusCode()) ||
                 isNull(response.getBody())) {
@@ -263,7 +263,7 @@ public class WahaService implements WhatsAppService {
                 .build();
     }
 
-    private void sendReceivedMessageToN8n(String sender, String message, Optional<Patient> patient, Clinic clinic) {
+    private void sendReceivedMessageToN8n(String sender, String message, Optional<Patient> patient, ClinicEntity clinic) {
 
         String patientName = "";
         List<Appointment> appointment = List.of();
@@ -288,7 +288,7 @@ public class WahaService implements WhatsAppService {
 
     }
 
-    private void sendReceivedMessageToBlinkFe(String sender, String message, Clinic clinic, Boolean fromMe) {
+    private void sendReceivedMessageToBlinkFe(String sender, String message, ClinicEntity clinic, Boolean fromMe) {
         try {
             List<UserEntity> users = userEntityRepository.findAllByClinicId(clinic.getId());
             List<String> userIds = users.stream()

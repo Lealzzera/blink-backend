@@ -15,7 +15,7 @@ import com.blink.backend.persistence.entity.appointment.ClinicAvailabilityExcept
 import com.blink.backend.persistence.entity.appointment.Patient;
 import com.blink.backend.persistence.entity.appointment.ServiceType;
 import com.blink.backend.persistence.entity.appointment.WeekDay;
-import com.blink.backend.persistence.entity.clinic.Clinic;
+import com.blink.backend.persistence.entity.clinic.ClinicEntity;
 import com.blink.backend.persistence.entity.clinic.ClinicConfiguration;
 import com.blink.backend.persistence.repository.AppointmentsRepository;
 import com.blink.backend.persistence.repository.ClinicAvailabilityExceptionRepository;
@@ -144,17 +144,13 @@ public class ClinicAvailabilityService {
         Patient patient = patientRepository
                 .findByPhoneNumber(appointmentRequest.getPatientNumber().trim())
                 .orElseThrow(() -> new NotFoundException("Paciente"));
-        Clinic clinic = clinicRepository
+        ClinicEntity clinic = clinicRepository
                 .findById(appointmentRequest.getClinicId());
-        ServiceType serviceType = serviceTypeRepository
-                .findById(appointmentRequest.getServiceTypeId())
-                .orElseThrow(() -> new NotFoundException("Tipo de serviço"));
 
         Appointment appointment = Appointment.builder()
                 .patient(patient)
                 .scheduledTime(appointmentRequest.getScheduledTime())
                 .clinic(clinic)
-                .serviceType(serviceType)
                 .duration(appointmentDuration)
                 .appointmentStatus(AGENDADO)
                 .notes(appointmentRequest.getNotes())

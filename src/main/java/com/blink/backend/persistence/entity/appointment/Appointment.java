@@ -1,7 +1,7 @@
 package com.blink.backend.persistence.entity.appointment;
 
 import com.blink.backend.persistence.entity.auth.UserEntity;
-import com.blink.backend.persistence.entity.clinic.Clinic;
+import com.blink.backend.persistence.entity.clinic.ClinicEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,6 +23,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Setter
 @Getter
@@ -46,7 +47,7 @@ public class Appointment {
 
     @ManyToOne
     @JoinColumn(name = "clinic_id")
-    private Clinic clinic;
+    private ClinicEntity clinic;
 
     @Column(name = "duration")
     private Integer duration;
@@ -54,10 +55,6 @@ public class Appointment {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private AppointmentStatus appointmentStatus;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "service_type_id")
-    private ServiceType serviceType;
 
     @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
@@ -72,13 +69,13 @@ public class Appointment {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at" )
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "appointment", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private List<Sale> sales;
 
-    public boolean isNotCancelled(){
+    public boolean isNotCancelled() {
         return !AppointmentStatus.CANCELADO.equals(appointmentStatus);
     }
 

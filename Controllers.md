@@ -25,11 +25,11 @@ CLINIC ID VEM DO TOKEN
 |  GET   |                                                   | /chat/whats-app/{phoneNumber}/messages    |         |
 |  PUT   |                                                   | /chat/whats-app/{phoneNumber}/ai-answer   |         |
 |        |                                                   |                                           |         |
-|  PUT   |                                                   | /appointments/{appointmentId}             |         |
-|  PUT   |                                                   | /appointments/status                      |         |
-|  POST  |                                                   | /appointments                             |         |
-|  GET   |                                                   | /appointments/{appointmentId}/details     |         |
-|  GET   |                                                   | /appointments/availability/{clinicId}     |         |
+|  POST  | /appointments                                     | /appointments                             |         |
+|  GET   | /appointments/availability/{clinicId}             | /appointments/availability/{clinicId}     |         |
+|  GET   | /appointments/{appointmentId}/details             | --                                        |         |
+|  PUT   | /appointments/{appointmentId}                     | /appointments/{appointmentId}             |         |
+|  PUT   | /appointments/status                              | --                                        |         |
 |        |                                                   |                                           |         |
 |  PUT   |                                                   | /sales/status                             |         |
 |  POST  |                                                   | /sales                                    |         |

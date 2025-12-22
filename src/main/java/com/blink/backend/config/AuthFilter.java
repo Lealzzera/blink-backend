@@ -3,8 +3,6 @@ package com.blink.backend.config;
 import com.blink.backend.domain.exception.InvalidTokenException;
 import com.blink.backend.domain.integration.supabase.SupabaseAuthService;
 import com.blink.backend.domain.model.auth.AuthenticatedUser;
-import com.blink.backend.domain.model.auth.Authorities;
-import com.blink.backend.persistence.entity.clinic.Clinic;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,13 +15,11 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
-import java.util.List;
 
 @Log4j2
 @Component
