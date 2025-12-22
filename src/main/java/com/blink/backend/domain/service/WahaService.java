@@ -264,7 +264,7 @@ public class WahaService implements WhatsAppService {
     }
 
     private void sendReceivedMessageToN8n(String sender, String message, Optional<PatientEntity> patient, ClinicEntity clinic) {
-
+        log.info("Sending message to N8n, clinicId={}, phoneNumber={}", clinic.getId(), sender);
         String patientName = "";
         List<AppointmentEntity> appointment = List.of();
 

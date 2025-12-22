@@ -8,7 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Getter
 @Setter
 @ToString
@@ -26,6 +28,7 @@ public class WahaMessagePayload {
         String remoteJid = from.at("/Info/Sender").toString();
         String remoteJidAlt = from.at("/Info/SenderAlt").toString();
         String from = remoteJid.contains("@s.whatsapp.net") ? remoteJid : remoteJidAlt;
+        log.info("from={}", from);
         return from.substring(0, from.lastIndexOf('@')).replace("\"", "");
     }
 }
