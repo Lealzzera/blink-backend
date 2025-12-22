@@ -1,8 +1,11 @@
 package com.blink.backend.domain.service
 
+import com.blink.backend.controller.appointment.dto.AvailabilityDTO
 import com.blink.backend.controller.appointment.dto.ClinicAvailabilityDTO
 import com.blink.backend.domain.model.Appointment
+import com.blink.backend.domain.model.Availability
 import com.blink.backend.domain.model.Clinic
+import com.blink.backend.domain.model.WorkdayAvailability
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -19,5 +22,5 @@ interface AppointmentsService {
         startDate: LocalDate,
         endDate: LocalDate,
         hideCancelled: Boolean
-    ): List<ClinicAvailabilityDTO>
+    ): List<WorkdayAvailability>
 }

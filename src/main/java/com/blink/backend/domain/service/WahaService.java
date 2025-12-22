@@ -24,8 +24,8 @@ import com.blink.backend.domain.integration.waha.dto.WahaSessionConfig;
 import com.blink.backend.domain.integration.waha.dto.WahaSessionStatusResponse;
 import com.blink.backend.domain.integration.waha.dto.WahaWebhooks;
 import com.blink.backend.domain.model.message.WhatsAppStatus;
-import com.blink.backend.persistence.entity.appointment.Appointment;
-import com.blink.backend.persistence.entity.appointment.Patient;
+import com.blink.backend.persistence.entity.appointment.AppointmentEntity;
+import com.blink.backend.persistence.entity.appointment.PatientEntity;
 import com.blink.backend.persistence.entity.auth.UserEntity;
 import com.blink.backend.persistence.entity.clinic.ClinicEntity;
 import com.blink.backend.persistence.repository.AppointmentsRepository;
@@ -136,7 +136,7 @@ public class WahaService implements WhatsAppService {
         String sender = messageReceivedRequest.getPayload().getFrom();
         String message = messageReceivedRequest.getPayload().getMessage();
         String session = messageReceivedRequest.getSession();
-        Optional<Patient> optionalPatient = patientRepository.findByPhoneNumber(sender);
+        Optional<PatientEntity> optionalPatient = patientRepository.findByPhoneNumber(sender);
         ClinicEntity clinic = clinicRepository.findByWahaSession(session);
 
         sendReceivedMessageToBlinkFe(sender, message, clinic, false);
@@ -174,9 +174,9 @@ public class WahaService implements WhatsAppService {
             return response.getBody()
                     .stream()
                     .map(chat -> {
-                        Optional<Patient> optionalPatient = patientRepository.findByPhoneNumber(chat.getId());
-                        Boolean aiAnswer = optionalPatient.map(Patient::getAiAnswer).orElse(true);
-                        String patientName = optionalPatient.map(Patient::getName).orElse(null);
+                        Optional<PatientEntity> optionalPatient = patientRepository.findByPhoneNumber(chat.getId());
+                        Boolean aiAnswer = optionalPatient.map(PatientEntity::getAiAnswer).orElse(true);
+                        String patientName = optionalPatient.map(PatientEntity::getName).orElse(null);
 
                         return chat.toChatOverviewDto(aiAnswer, patientName);
                     })
@@ -263,10 +263,10 @@ public class WahaService implements WhatsAppService {
                 .build();
     }
 
-    private void sendReceivedMessageToN8n(String sender, String message, Optional<Patient> patient, ClinicEntity clinic) {
+    private void sendReceivedMessageToN8n(String sender, String message, Optional<PatientEntity> patient, ClinicEntity clinic) {
 
         String patientName = "";
-        List<Appointment> appointment = List.of();
+        List<AppointmentEntity> appointment = List.of();
 
         if (patient.isPresent()) {
             patientName = patient.get().getName();
@@ -322,7 +322,7 @@ public class WahaService implements WhatsAppService {
         }
     }
 
-    private boolean isAiResponseTurnedOn(Optional<Patient> patient) {
+    private boolean isAiResponseTurnedOn(Optional<PatientEntity> patient) {
         return (patient.isPresent() && patient.get().getAiAnswer()) || defaultAiAnswer;
     }
 }

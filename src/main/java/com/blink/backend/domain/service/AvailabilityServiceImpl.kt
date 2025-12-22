@@ -4,12 +4,14 @@ import com.blink.backend.domain.exception.appointment.AppointmentConflictExcepti
 import com.blink.backend.domain.exception.appointment.AppointmentConflictException.AppointmentConflitReason
 import com.blink.backend.domain.model.Availability
 import com.blink.backend.domain.model.Clinic
+import com.blink.backend.domain.model.WorkdayAvailability
 import com.blink.backend.persistence.entity.appointment.AppointmentStatus
 import com.blink.backend.persistence.entity.appointment.WeekDay
 import com.blink.backend.persistence.repository.AppointmentsRepository
 import com.blink.backend.persistence.repository.ClinicAvailabilityRepository
 import com.blink.backend.persistence.service.AtypicalWorkdayDatabaseService
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Service
@@ -17,6 +19,7 @@ class AvailabilityServiceImpl(
     private val atypicalWorkdayDatabaseService: AtypicalWorkdayDatabaseService,
     private val clinicAvailabilityDatabaseService: ClinicAvailabilityRepository,
     private val appointmentsRepository: AppointmentsRepository,
+    private val clinicAtypicalWorkdayDatabaseService: AtypicalWorkdayDatabaseService
 ) : AvailabilityService {
     override fun validateAppointmentTimeWithWorkdayShift(
         startDateTime: LocalDateTime,
@@ -76,5 +79,43 @@ class AvailabilityServiceImpl(
         if (countAppointments >= maximumAppointments) {
             throw AppointmentConflictException(AppointmentConflitReason.OVERLAP)
         }
+    }
+
+    override fun getAvailabilityForDate(
+        clinic: Clinic,
+        date: LocalDate
+    ): WorkdayAvailability {
+        val clinicAvailabilityException = clinicAtypicalWorkdayDatabaseService
+            .findByDayAndClinic(date, clinic)
+
+        return clinicAvailabilityException?.let {
+            WorkdayAvailability(
+                isWorkDay = it.isWorkingDay,
+                date = date,
+                openTime = it.openTime,
+                closeTime = it.closeTime,
+                breakStartTime = it.lunchStartTime,
+                breakEndTime = it.lunchEndTime,
+            )
+        } ?: run {
+            clinicAvailabilityDatabaseService
+                .findByWeekDayAndIsWorkingDayTrueAndClinicCode(WeekDay.fromDate(date), clinic.code)?.let {
+                    WorkdayAvailability(
+                        isWorkDay = it.isWorkingDay,
+                        date = date,
+                        openTime = it.openTime,
+                        closeTime = it.closeTime,
+                        breakStartTime = it.lunchStartTime,
+                        breakEndTime = it.lunchEndTime,
+                    )
+                } ?: run {
+                WorkdayAvailability(
+                    isWorkDay = false,
+                    date = date
+                )
+            }
+
+        }
+
     }
 }

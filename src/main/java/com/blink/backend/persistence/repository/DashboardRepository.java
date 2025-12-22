@@ -1,6 +1,6 @@
 package com.blink.backend.persistence.repository;
 
-import com.blink.backend.persistence.entity.appointment.Appointment;
+import com.blink.backend.persistence.entity.appointment.AppointmentEntity;
 import com.blink.backend.persistence.entity.appointment.AppointmentStatus;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface DashboardRepository extends CrudRepository<Appointment, Integer> {
+public interface DashboardRepository extends CrudRepository<AppointmentEntity, Integer> {
 
     @Query("SELECT COUNT(p) " +
-            "FROM Patient p " +
+            "FROM PatientEntity p " +
             "WHERE p.clinic.id = :clinicId " +
             "AND p.createdAt BETWEEN :startDate AND :endDate")
     Long countNovasMensagens(
@@ -23,7 +23,7 @@ public interface DashboardRepository extends CrudRepository<Appointment, Integer
             @Param("endDate") LocalDateTime endDate);
 
     @Query("SELECT COUNT(a) " +
-            "FROM Appointment a " +
+            "FROM AppointmentEntity a " +
             "WHERE a.clinic.id = :clinicId " +
             "AND a.createdAt BETWEEN :startDate AND :endDate " +
             "AND a.appointmentStatus IN :appointmentStatus")

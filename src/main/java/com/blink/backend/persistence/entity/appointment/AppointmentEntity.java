@@ -1,5 +1,6 @@
 package com.blink.backend.persistence.entity.appointment;
 
+import com.blink.backend.domain.model.Appointment;
 import com.blink.backend.persistence.entity.auth.UserEntity;
 import com.blink.backend.persistence.entity.clinic.ClinicEntity;
 import jakarta.persistence.CascadeType;
@@ -23,7 +24,6 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Setter
 @Getter
@@ -32,7 +32,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "appointment")
-public class Appointment {
+public class AppointmentEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,7 +40,7 @@ public class Appointment {
 
     @ManyToOne
     @JoinColumn(name = "patient_id")
-    private Patient patient;
+    private PatientEntity patient;
 
     @Column(name = "scheduled_time")
     private LocalDateTime scheduledTime;
@@ -79,4 +79,14 @@ public class Appointment {
         return !AppointmentStatus.CANCELADO.equals(appointmentStatus);
     }
 
+    public Appointment toDomain() {
+        return new Appointment(
+                patient.toDomain(),
+                clinic.toDomain(),
+                scheduledTime,
+                notes,
+                appointmentStatus,
+                duration,
+                scheduledTime.plusMinutes(duration));
+    }
 }

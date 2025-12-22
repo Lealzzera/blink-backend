@@ -20,7 +20,6 @@ public class UpdateAppointmentDTO {
         return new Appointment(
                 null,
                 null,
-                null,
                 scheduledTime,
                 notes,
                 status,

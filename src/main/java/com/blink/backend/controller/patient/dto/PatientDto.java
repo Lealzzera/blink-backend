@@ -1,6 +1,6 @@
 package com.blink.backend.controller.patient.dto;
 
-import com.blink.backend.persistence.entity.appointment.Patient;
+import com.blink.backend.persistence.entity.appointment.PatientEntity;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,7 +11,7 @@ public class PatientDto {
     private String phoneNumber;
     private String clinicName;
 
-    public static PatientDto fromEntity(Patient patient) {
+    public static PatientDto fromEntity(PatientEntity patient) {
         return PatientDto.builder()
                 .name(patient.getName())
                 .phoneNumber(patient.getPhoneNumber())

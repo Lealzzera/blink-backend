@@ -3,7 +3,7 @@ package com.blink.backend.domain.service;
 import com.blink.backend.controller.appointment.dto.SaleDTO;
 import com.blink.backend.controller.appointment.dto.UpdateSaleStatusDTO;
 import com.blink.backend.domain.exception.NotFoundException;
-import com.blink.backend.persistence.entity.appointment.Appointment;
+import com.blink.backend.persistence.entity.appointment.AppointmentEntity;
 import com.blink.backend.persistence.entity.appointment.Sale;
 import com.blink.backend.persistence.entity.appointment.SaleStatus;
 import com.blink.backend.persistence.entity.appointment.ServiceType;
@@ -34,7 +34,7 @@ public class SalesService {
 
     public SaleDTO createSale(SaleDTO saleDTO) throws NotFoundException {
 
-        Appointment appointment = appointmentsRepository.findById(saleDTO.getAppointmentId())
+        AppointmentEntity appointment = appointmentsRepository.findById(saleDTO.getAppointmentId())
                 .orElseThrow(() -> new NotFoundException("Agendamento " + saleDTO.getAppointmentId()));
 
         ServiceType serviceType = serviceTypeRepository.findById(saleDTO.getServiceType())

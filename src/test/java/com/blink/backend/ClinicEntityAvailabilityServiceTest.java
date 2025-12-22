@@ -3,7 +3,7 @@ package com.blink.backend;
 import com.blink.backend.controller.appointment.dto.UpdateAppointmentStatusDTO;
 import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.domain.service.ClinicAvailabilityService;
-import com.blink.backend.persistence.entity.appointment.Appointment;
+import com.blink.backend.persistence.entity.appointment.AppointmentEntity;
 import com.blink.backend.persistence.repository.AppointmentsRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -42,7 +42,7 @@ public class ClinicEntityAvailabilityServiceTest {
     @DisplayName("Sucesso de atualizar o status do agendamento")
     void updateAppointmentStatusSuccess() throws NotFoundException {
         UpdateAppointmentStatusDTO dto = MockObjects.getUpdateAppointmentStatus(1, "AGENDADO");
-        Appointment appointment = MockObjects.getAppointment();
+        AppointmentEntity appointment = MockObjects.getAppointment();
         when(appointmentsRepository.findById(eq(dto.getAppointmentId())))
                 .thenReturn(Optional.of(appointment));
 

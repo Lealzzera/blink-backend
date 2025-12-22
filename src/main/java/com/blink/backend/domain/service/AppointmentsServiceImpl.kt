@@ -4,6 +4,8 @@ import com.blink.backend.controller.appointment.dto.ClinicAvailabilityDTO
 import com.blink.backend.domain.exception.NotFoundException
 import com.blink.backend.domain.model.Appointment
 import com.blink.backend.domain.model.Clinic
+import com.blink.backend.domain.model.WorkdayAvailability
+import com.blink.backend.persistence.entity.appointment.AppointmentEntity
 import com.blink.backend.persistence.entity.appointment.ClinicAvailability
 import com.blink.backend.persistence.entity.appointment.ClinicAvailabilityException
 import com.blink.backend.persistence.entity.appointment.WeekDay
@@ -13,7 +15,6 @@ import com.blink.backend.persistence.repository.ClinicAvailabilityRepository
 import com.blink.backend.persistence.service.AppointmentsDatabaseService
 import org.springframework.stereotype.Service
 import java.time.LocalDate
-import java.util.Objects
 import java.util.Optional
 
 @Service
@@ -67,22 +68,24 @@ class AppointmentsServiceImpl(
         startDate: LocalDate,
         endDate: LocalDate,
         hideCancelled: Boolean
-    ): List<ClinicAvailabilityDTO> {
+    ): List<WorkdayAvailability> {
         return startDate
             .datesUntil(endDate.plusDays(1))
-            .map<ClinicAvailabilityDTO?> { date: LocalDate -> this.fromEntity(clinic.code, date, hideCancelled) }
-            .filter { obj: ClinicAvailabilityDTO? -> Objects.nonNull(obj) }
+            .map { getAvailabilityForDate(clinic, date = it, hideCancelled = hideCancelled) }
             .toList()
-            .filterNotNull()
+        /*.map<ClinicAvailabilityDTO?> { date: LocalDate -> this.fromEntity(clinic.code, date, hideCancelled) }
+        .filter { obj: ClinicAvailabilityDTO? -> Objects.nonNull(obj) }
+        .toList()
+        .filterNotNull()*/
     }
 
-    private fun fromEntity(clinicCode: String, date: LocalDate, hideCancelled: Boolean): ClinicAvailabilityDTO? {
-        val clinicAvailabilityException: Optional<ClinicAvailabilityException?> = clinicAvailabilityExceptionRepository
-            .findByExceptionDayAndClinicCode(date, clinicCode)
+    private fun getAvailabilityForDate(clinic: Clinic, date: LocalDate, hideCancelled: Boolean): WorkdayAvailability {
+        val availability = availabilityService.getAvailabilityForDate(clinic = clinic, date = date)
+        if (!availability.isWorkDay) {
+            return availability
+        }
 
-        val clinicAvailability: ClinicAvailability? = clinicAvailabilityRepository
-            .findByWeekDayAndIsWorkingDayTrueAndClinicCode(WeekDay.fromDate(date), clinicCode)
-        var appointments: MutableList<com.blink.backend.persistence.entity.appointment.Appointment?> =
+        var appointments: MutableList<AppointmentEntity> =
             appointmentsRepository
                 .findByScheduledTimeBetween(
                     date.atStartOfDay(),
@@ -91,7 +94,29 @@ class AppointmentsServiceImpl(
 
         if (hideCancelled) {
             appointments = appointments.stream()
-                .filter { obj: com.blink.backend.persistence.entity.appointment.Appointment? -> obj!!.isNotCancelled }
+                .filter { obj: AppointmentEntity? -> obj!!.isNotCancelled }
+                .toList()
+        }
+
+        return availability.copy(appointments = appointments.stream().map { it.toDomain() }.toList())
+    }
+
+    private fun fromEntity(clinicCode: String, date: LocalDate, hideCancelled: Boolean): ClinicAvailabilityDTO? {
+        val clinicAvailabilityException: Optional<ClinicAvailabilityException?> = clinicAvailabilityExceptionRepository
+            .findByExceptionDayAndClinicCode(date, clinicCode)
+
+        val clinicAvailability: ClinicAvailability? = clinicAvailabilityRepository
+            .findByWeekDayAndIsWorkingDayTrueAndClinicCode(WeekDay.fromDate(date), clinicCode)
+        var appointments: MutableList<AppointmentEntity?> =
+            appointmentsRepository
+                .findByScheduledTimeBetween(
+                    date.atStartOfDay(),
+                    date.plusDays(1).atStartOfDay()
+                )
+
+        if (hideCancelled) {
+            appointments = appointments.stream()
+                .filter { obj: AppointmentEntity? -> obj!!.isNotCancelled }
                 .toList()
         }
 

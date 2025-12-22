@@ -1,5 +1,6 @@
 package com.blink.backend.persistence.entity.appointment;
 
+import com.blink.backend.domain.model.Patient;
 import com.blink.backend.persistence.entity.clinic.ClinicEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,7 +25,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "patient")
-public class Patient {
+public class PatientEntity {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,5 +47,9 @@ public class Patient {
     @Builder.Default
     @Column(name = "ai_answer")
     private Boolean aiAnswer = true;
+
+    public Patient toDomain() {
+        return new Patient(phoneNumber, name);
+    }
 }
 

@@ -3,12 +3,11 @@ package com.blink.backend.controller.appointment;
 import com.blink.backend.controller.appointment.dto.AppointmentDetailsDTO;
 import com.blink.backend.controller.appointment.dto.ClinicAvailabilityDTO;
 import com.blink.backend.controller.appointment.dto.CreateAppointmentDTO;
-import com.blink.backend.controller.appointment.dto.UpdateAppointmentStatusDTO;
 import com.blink.backend.controller.appointment.dto.UpdateAppointmentDTO;
 import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.domain.exception.appointment.AppointmentConflictException;
 import com.blink.backend.domain.service.ClinicAvailabilityService;
-import com.blink.backend.persistence.entity.appointment.Appointment;
+import com.blink.backend.persistence.entity.appointment.AppointmentEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +25,7 @@ import java.util.List;
 
 import static java.util.Objects.isNull;
 
+@Deprecated(forRemoval = true)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/appointments")
@@ -44,12 +44,11 @@ public class AppointmentController {
         return ResponseEntity.ok(clinicAvailabilityService.getClinicAvailability(clinicId, startDate, endDate, hideCancelled));
     }
 
-    @Deprecated(forRemoval = true)
     @PostMapping
     public ResponseEntity<Void> createAppointment(
             @RequestBody CreateAppointmentDTO createAppointmentDTO)
             throws NotFoundException, AppointmentConflictException {
-        Appointment appointment = clinicAvailabilityService.saveAppointment(createAppointmentDTO);
+        AppointmentEntity appointment = clinicAvailabilityService.saveAppointment(createAppointmentDTO);
 
         return ResponseEntity.created(URI.create(appointment.getId().toString())).build();
     }

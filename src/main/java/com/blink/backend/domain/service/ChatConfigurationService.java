@@ -4,7 +4,7 @@ import com.blink.backend.controller.message.dto.ChatHistoryDto;
 import com.blink.backend.controller.message.dto.ChatOverviewDto;
 import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.domain.exception.message.WhatsAppNotConnectedException;
-import com.blink.backend.persistence.entity.appointment.Patient;
+import com.blink.backend.persistence.entity.appointment.PatientEntity;
 import com.blink.backend.persistence.entity.clinic.ClinicEntity;
 import com.blink.backend.persistence.repository.PatientRepository;
 import com.blink.backend.persistence.repository.clinic.ClinicRepositoryService;
@@ -23,7 +23,7 @@ public class ChatConfigurationService {
     private final ClinicRepositoryService clinicRepository;
 
     public Boolean toggleAiAnswerMode(Integer clinicId, String phoneNumber) throws NotFoundException {
-        Patient patient = patientRepository.findByClinic_IdAndPhoneNumber(clinicId, phoneNumber)
+        PatientEntity patient = patientRepository.findByClinic_IdAndPhoneNumber(clinicId, phoneNumber)
                 .orElseThrow(() -> new NotFoundException("Paciente"));
         patient.setAiAnswer(patient.getAiAnswer());
         patientRepository.save(patient);

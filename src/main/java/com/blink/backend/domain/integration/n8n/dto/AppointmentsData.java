@@ -1,6 +1,6 @@
 package com.blink.backend.domain.integration.n8n.dto;
 
-import com.blink.backend.persistence.entity.appointment.Appointment;
+import com.blink.backend.persistence.entity.appointment.AppointmentEntity;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,7 +14,7 @@ public class AppointmentsData {
     String appointmentStatus;
     Integer appointmentDuration;
 
-    public static AppointmentsData fromAppointment (Appointment appointment){
+    public static AppointmentsData fromAppointment (AppointmentEntity appointment){
 
         return AppointmentsData.builder()
                 .scheduledTime(appointment.getScheduledTime())

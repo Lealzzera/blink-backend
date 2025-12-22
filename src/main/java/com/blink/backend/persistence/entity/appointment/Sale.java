@@ -36,11 +36,11 @@ public class Sale {
 
     @ManyToOne
     @JoinColumn(name = "patient_id")
-    private Patient patient;
+    private PatientEntity patient;
 
     @ManyToOne
     @JoinColumn(name = "appointment_id")
-    private Appointment appointment;
+    private AppointmentEntity appointment;
 
     @Column(name = "value", precision = 10, scale = 2)
     private BigDecimal value;

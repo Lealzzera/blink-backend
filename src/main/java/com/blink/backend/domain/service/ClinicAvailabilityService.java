@@ -8,12 +8,11 @@ import com.blink.backend.controller.appointment.dto.UpdateAppointmentStatusDTO;
 import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.domain.exception.appointment.AppointmentConflictException;
 import com.blink.backend.domain.model.Availability;
-import com.blink.backend.persistence.entity.appointment.Appointment;
+import com.blink.backend.persistence.entity.appointment.AppointmentEntity;
 import com.blink.backend.persistence.entity.appointment.AppointmentStatus;
 import com.blink.backend.persistence.entity.appointment.ClinicAvailability;
 import com.blink.backend.persistence.entity.appointment.ClinicAvailabilityException;
-import com.blink.backend.persistence.entity.appointment.Patient;
-import com.blink.backend.persistence.entity.appointment.ServiceType;
+import com.blink.backend.persistence.entity.appointment.PatientEntity;
 import com.blink.backend.persistence.entity.appointment.WeekDay;
 import com.blink.backend.persistence.entity.clinic.ClinicEntity;
 import com.blink.backend.persistence.entity.clinic.ClinicConfiguration;
@@ -71,14 +70,14 @@ public class ClinicAvailabilityService {
 
         ClinicAvailability clinicAvailability = clinicAvailabilityRepository
                 .findByWeekDayAndIsWorkingDayTrueAndClinicId(WeekDay.fromDate(date), clinicId);
-        List<Appointment> appointments = appointmentsRepository
+        List<AppointmentEntity> appointments = appointmentsRepository
                 .findByScheduledTimeBetween(
                         date.atStartOfDay(),
                         date.plusDays(1).atStartOfDay());
 
         if (hideCancelled) {
             appointments = appointments.stream()
-                    .filter(Appointment::isNotCancelled)
+                    .filter(AppointmentEntity::isNotCancelled)
                     .toList();
         }
 
@@ -95,7 +94,7 @@ public class ClinicAvailabilityService {
     }
 
 
-    public Appointment saveAppointment(CreateAppointmentDTO appointmentRequest)
+    public AppointmentEntity saveAppointment(CreateAppointmentDTO appointmentRequest)
             throws NotFoundException, AppointmentConflictException {
 
         ClinicConfiguration clinicConfiguration = clinicConfigurationRepository
@@ -141,13 +140,13 @@ public class ClinicAvailabilityService {
             throw new AppointmentConflictException(DURING_BREAK);
         }
 
-        Patient patient = patientRepository
+        PatientEntity patient = patientRepository
                 .findByPhoneNumber(appointmentRequest.getPatientNumber().trim())
                 .orElseThrow(() -> new NotFoundException("Paciente"));
         ClinicEntity clinic = clinicRepository
                 .findById(appointmentRequest.getClinicId());
 
-        Appointment appointment = Appointment.builder()
+        AppointmentEntity appointment = AppointmentEntity.builder()
                 .patient(patient)
                 .scheduledTime(appointmentRequest.getScheduledTime())
                 .clinic(clinic)
@@ -168,7 +167,7 @@ public class ClinicAvailabilityService {
     }
 
     public void updateAppointmentStatus(UpdateAppointmentStatusDTO updateStatus) throws NotFoundException {
-        Appointment appointment = appointmentsRepository.findById(updateStatus.getAppointmentId())
+        AppointmentEntity appointment = appointmentsRepository.findById(updateStatus.getAppointmentId())
                 .orElseThrow(() -> new NotFoundException("Agendamento " + updateStatus.getAppointmentId()));
 
         appointment.setAppointmentStatus(AppointmentStatus.valueOf(updateStatus.getNewStatus().toUpperCase()));
@@ -176,7 +175,7 @@ public class ClinicAvailabilityService {
     }
 
     public void updateAppointment(Integer appointmentId, UpdateAppointmentDTO updateAppointmentDTO) throws NotFoundException {
-        Appointment appointment = appointmentsRepository.findById(appointmentId)
+        AppointmentEntity appointment = appointmentsRepository.findById(appointmentId)
                 .orElseThrow(() -> new NotFoundException("Agendamento " + appointmentId));
 
         if (Objects.nonNull(updateAppointmentDTO.getNotes())) {

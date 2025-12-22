@@ -3,7 +3,7 @@ package com.blink.backend.domain.service;
 import com.blink.backend.controller.patient.dto.CreatePatientRequest;
 import com.blink.backend.controller.patient.dto.PatientDto;
 import com.blink.backend.domain.exception.NotFoundException;
-import com.blink.backend.persistence.entity.appointment.Patient;
+import com.blink.backend.persistence.entity.appointment.PatientEntity;
 import com.blink.backend.persistence.entity.clinic.ClinicEntity;
 import com.blink.backend.persistence.repository.PatientRepository;
 import com.blink.backend.persistence.repository.clinic.ClinicRepositoryService;
@@ -25,9 +25,9 @@ public class PatientService {
     public Integer createPatient(CreatePatientRequest patientRequest)
             throws NotFoundException {
         ClinicEntity clinic = clinicRepository.findById(patientRequest.getClinicId());
-        Patient patient = patientRepository.findByPhoneNumber(patientRequest.getPhoneNumber())
+        PatientEntity patient = patientRepository.findByPhoneNumber(patientRequest.getPhoneNumber())
                 .orElse(
-                        Patient.builder()
+                        PatientEntity.builder()
                                 .clinic(clinic)
                                 .phoneNumber(patientRequest.getPhoneNumber())
                                 .name(patientRequest.getName())

@@ -1,7 +1,10 @@
 package com.blink.backend.domain.service
 
+import com.blink.backend.domain.model.Availability
 import com.blink.backend.domain.model.Clinic
+import com.blink.backend.domain.model.WorkdayAvailability
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Service
@@ -19,4 +22,5 @@ interface AvailabilityService {
         maximumAppointments: Int
     )
 
+    fun getAvailabilityForDate(clinic: Clinic, date: LocalDate): WorkdayAvailability
 }

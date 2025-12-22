@@ -1,6 +1,6 @@
 package com.blink.backend.controller.appointment.dto;
 
-import com.blink.backend.persistence.entity.appointment.Appointment;
+import com.blink.backend.persistence.entity.appointment.AppointmentEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,7 +23,7 @@ public class AppointmentDTO {
     private String status;
     private List<SaleDTO> sales;
 
-    public static AppointmentDTO fromEntity(Appointment appointment) {
+    public static AppointmentDTO fromEntity(AppointmentEntity appointment) {
         return AppointmentDTO.builder()
                 .id(appointment.getId())
                 .name(appointment.getPatient().getName())

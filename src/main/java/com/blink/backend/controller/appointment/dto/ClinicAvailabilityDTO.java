@@ -1,6 +1,6 @@
 package com.blink.backend.controller.appointment.dto;
 
-import com.blink.backend.persistence.entity.appointment.Appointment;
+import com.blink.backend.persistence.entity.appointment.AppointmentEntity;
 import com.blink.backend.persistence.entity.appointment.ClinicAvailability;
 import com.blink.backend.persistence.entity.appointment.ClinicAvailabilityException;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -31,7 +31,7 @@ public class ClinicAvailabilityDTO {
     public static ClinicAvailabilityDTO fromEntity(
             LocalDate day,
             ClinicAvailability clinicAvailability,
-            List<Appointment> appointments) {
+            List<AppointmentEntity> appointments) {
         if(isNull(clinicAvailability)){
             return null;
         }
@@ -50,7 +50,7 @@ public class ClinicAvailabilityDTO {
     public static ClinicAvailabilityDTO fromException(
             LocalDate day,
             ClinicAvailabilityException clinicAvailabilityException,
-            List<Appointment> appointments) {
+            List<AppointmentEntity> appointments) {
         if(!clinicAvailabilityException.getIsWorkingDay()){
             return null;
         }

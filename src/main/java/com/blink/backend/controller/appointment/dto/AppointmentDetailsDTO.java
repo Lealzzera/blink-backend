@@ -1,6 +1,6 @@
 package com.blink.backend.controller.appointment.dto;
 
-import com.blink.backend.persistence.entity.appointment.Appointment;
+import com.blink.backend.persistence.entity.appointment.AppointmentEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,7 +8,6 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -25,7 +24,7 @@ public class AppointmentDetailsDTO {
     private LocalDateTime attendedAt;
     private List<SaleDTO> sales;
 
-    public static AppointmentDetailsDTO fromEntity(Appointment appointment) {
+    public static AppointmentDetailsDTO fromEntity(AppointmentEntity appointment) {
         PatientDTO patientDTO = PatientDTO.builder()
                 .name(appointment.getPatient().getName())
                 .phoneNumber(appointment.getPatient().getPhoneNumber())

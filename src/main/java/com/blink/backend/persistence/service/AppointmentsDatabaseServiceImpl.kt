@@ -2,7 +2,9 @@ package com.blink.backend.persistence.service
 
 import com.blink.backend.domain.model.Appointment
 import com.blink.backend.domain.model.Clinic
+import com.blink.backend.persistence.entity.appointment.AppointmentEntity
 import com.blink.backend.persistence.entity.appointment.AppointmentStatus
+import com.blink.backend.persistence.entity.appointment.PatientEntity
 import com.blink.backend.persistence.entity.clinic.ClinicConfiguration
 import com.blink.backend.persistence.repository.AppointmentsRepository
 import com.blink.backend.persistence.repository.ClinicConfigurationRepository
@@ -32,7 +34,7 @@ class AppointmentsDatabaseServiceImpl(
             .orElseGet {
                 log.info("saving patient ${appointment.patient.phoneNumber} for clinic ${clinicEntity.code}")
                 patientRepository.save(
-                    com.blink.backend.persistence.entity.appointment.Patient.builder()
+                    PatientEntity.builder()
                         .phoneNumber(appointment.patient.phoneNumber.trim())
                         .name(appointment.patient.name.trim())
                         .createdAt(LocalDateTime.now())
@@ -43,7 +45,7 @@ class AppointmentsDatabaseServiceImpl(
             }
 
 
-        val appointment = com.blink.backend.persistence.entity.appointment.Appointment.builder()
+        val appointment = AppointmentEntity.builder()
             .patient(patient)
             .scheduledTime(appointment.scheduledTime)
             .clinic(clinicEntity)

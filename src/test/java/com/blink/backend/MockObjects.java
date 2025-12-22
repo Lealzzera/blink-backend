@@ -1,7 +1,7 @@
 package com.blink.backend;
 
 import com.blink.backend.controller.appointment.dto.UpdateAppointmentStatusDTO;
-import com.blink.backend.persistence.entity.appointment.Appointment;
+import com.blink.backend.persistence.entity.appointment.AppointmentEntity;
 
 public class MockObjects {
 
@@ -12,7 +12,7 @@ public class MockObjects {
         return object;
     }
 
-    public static Appointment getAppointment(){
-        return new Appointment();
+    public static AppointmentEntity getAppointment(){
+        return new AppointmentEntity();
     }
 }
