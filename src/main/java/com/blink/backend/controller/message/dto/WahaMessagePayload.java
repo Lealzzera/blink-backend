@@ -26,6 +26,6 @@ public class WahaMessagePayload {
         String remoteJid = from.at("/Info/Sender").toString();
         String remoteJidAlt = from.at("/Info/SenderAlt").toString();
         String from = remoteJid.contains("@s.whatsapp.net") ? remoteJid : remoteJidAlt;
-        return from.substring(0, from.lastIndexOf(':')).replace("\"", "");
+        return from.substring(0, from.lastIndexOf('@')).replace("\"", "");
     }
 }
