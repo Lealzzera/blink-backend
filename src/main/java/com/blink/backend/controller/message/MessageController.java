@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Deprecated(forRemoval = true)
 @Tag(name = "Whats app chat", description = "Novas apis de chat do whats-app")
 @RestController
 @RequiredArgsConstructor

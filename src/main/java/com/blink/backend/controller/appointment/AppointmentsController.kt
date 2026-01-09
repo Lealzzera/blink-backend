@@ -3,20 +3,21 @@ package com.blink.backend.controller.appointment
 import com.blink.backend.controller.appointment.dto.AvailabilityDTO
 import com.blink.backend.controller.appointment.dto.AvailabilityDTO.Companion.fromDomain
 import com.blink.backend.controller.appointment.dto.CreateAppointmentsDTO
+import com.blink.backend.controller.appointment.dto.UpdateAppointmentDTO
 import com.blink.backend.domain.model.auth.AuthenticatedUser
 import com.blink.backend.domain.service.AppointmentsService
-import lombok.RequiredArgsConstructor
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import java.net.URI
 import java.time.LocalDate
+import java.util.logging.Logger
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("api/v2/appointments")
 class AppointmentsController(
-    private val appointmentsService: AppointmentsService
+    private val appointmentsService: AppointmentsService,
+    private val logger: Logger = Logger.getLogger(AppointmentsController::class.java.name)
 ) {
 
     @PostMapping
@@ -32,17 +33,20 @@ class AppointmentsController(
     @GetMapping("availability")
     fun getClinicAvailabilityByClinicId(
         @AuthenticationPrincipal user: AuthenticatedUser,
-        @RequestParam("start_date") startDate: LocalDate,
+        @RequestParam("start_date", required = false) startDate: LocalDate?,
         @RequestParam(value = "end_date", required = false) endDate: LocalDate?,
         @RequestParam(value = "hide_cancelled", required = false, defaultValue = "true") hideCancelled: Boolean?
     ): ResponseEntity<List<AvailabilityDTO>> {
-        val endDate = endDate ?: startDate.plusDays(7)
-
+        val startDate: LocalDate = startDate ?: run {
+            logger.info { "stage=setting-default-start-date" }
+            LocalDate.now()
+        }
+        val endDate: LocalDate = endDate ?: startDate.plusDays(7)
         return ResponseEntity.ok(
             appointmentsService.getScheduledAppointmentsOnDateRange(
                 user.clinic.toDomain(),
                 startDate,
-                endDate!!,
+                endDate,
                 hideCancelled!!
             )
                 .stream()
@@ -51,13 +55,17 @@ class AppointmentsController(
         )
     }
 
-    /*@PutMapping("{appointmentId}")
-    @Throws(NotFoundException::class)
+    @PatchMapping("{appointmentId}")
     fun updateAppointment(
-        @PathVariable appointmentId: String,
+        @AuthenticationPrincipal user: AuthenticatedUser,
+        @PathVariable appointmentId: Int,
         @RequestBody updateAppointmentDTO: UpdateAppointmentDTO
-    ): ResponseEntity<Void?> {
-        appointmentsService.updateAppointment(appointmentId, updateAppointmentDTO.toDomain())
-        return ResponseEntity.noContent().build<Void?>()
-    }*/
+    ): ResponseEntity<Unit> {
+        appointmentsService.updateAppointment(
+            clinic = user.clinic.toDomain(),
+            appointmentId = appointmentId,
+            appointment = updateAppointmentDTO.toDomain()
+        )
+        return ResponseEntity.ok().build()
+    }
 }

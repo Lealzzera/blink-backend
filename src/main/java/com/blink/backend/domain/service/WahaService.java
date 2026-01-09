@@ -73,12 +73,7 @@ public class WahaService implements WhatsAppService {
     private final String wahaApiKey;
 
     @Override
-    public WhatsAppStatusDto getWhatsAppStatusByClinicId(Integer clinicId) throws NotFoundException {
-        ClinicEntity clinic = clinicRepository.findById(clinicId);
-        return getWhatsAppStatusByClinic(clinic);
-    }
-
-    @Override
+    //ok
     public byte[] getWhatsAppQrCodeByClinic(Integer clinicId) throws NotFoundException {
         ClinicEntity clinic = clinicRepository.findById(clinicId);
 
@@ -90,6 +85,81 @@ public class WahaService implements WhatsAppService {
         return wahaClient.getWahaQrCode(clinic.getWahaSession());
     }
 
+    @Override
+    public WhatsAppStatusDto disconnectWhatsAppNumber(Integer clinicId)
+            throws NotFoundException {
+        ClinicEntity clinic = clinicRepository.findById(clinicId);
+        wahaClient.logoutSession(clinic.getWahaSession());
+        return WhatsAppStatusDto
+                .builder()
+                .status(WhatsAppStatus.DISCONNECTED)
+                .build();
+    }
+
+    @Override
+    public WhatsAppStatusDto getWhatsAppStatusByClinicId(Integer clinicId) throws NotFoundException {
+        ClinicEntity clinic = clinicRepository.findById(clinicId);
+        return getWhatsAppStatusByClinic(clinic);
+    }
+
+    private WhatsAppStatusDto getWhatsAppStatusByClinic(ClinicEntity clinic) {
+        ResponseEntity<WahaSessionStatusResponse> response = wahaClient.getWahaSessionStatus(clinic.getWahaSession());
+        if (HttpStatus.NOT_FOUND.equals(response.getStatusCode()) ||
+                isNull(response.getBody())) {
+            log.info("null-status-response, clinicId={}", clinic.getId());
+            return WhatsAppStatusDto.builder()
+                    .status(SHUTDOWN)
+                    .build();
+        }
+        if (response.getBody().getStatus().isShutdown()) {
+            log.info("whats-app-shutdown, clinicId={}", clinic.getId());
+            return WhatsAppStatusDto.builder()
+                    .status(SHUTDOWN)
+                    .build();
+        }
+
+        WahaSessionStatusResponse responseBody = response.getBody();
+        String phoneNumber = null;
+        if (responseBody.getStatus().isConnected()) {
+            phoneNumber = responseBody.getMe().getPhoneNumber();
+        }
+        log.info("whats-app-status-response, clinicId={}, status={}", clinic.getId(), responseBody.getStatus());
+        return WhatsAppStatusDto.builder()
+                .status(responseBody.getStatus().getConnectionStatus())
+                .connectedPhoneNumber(phoneNumber)
+                .build();
+    }
+
+    private void restartWahaSession(String tokenizedName) {
+        final String WAHA_RECEIVE_MESSAGE_PATH = "/api/v1/message/whats-app/receive-message";
+        WahaWebhooks wahaWebhooks = WahaWebhooks.builder()
+                .url(wahaWebhookUrl.concat(WAHA_RECEIVE_MESSAGE_PATH))
+                .events(List.of(MESSAGE))
+                .customHeaders(List.of(WahaCustomHeaders.builder()
+                        .name("X-Api-Key")
+                        .value(wahaApiKey)
+                        .build()))
+                .build();
+        NoWebConfig noWebConfig = NoWebConfig.builder()
+                .store(StoreConfig.builder()
+                        .enabled(true)
+                        .fullSync(false)
+                        .build())
+                .build();
+        log.info("restarting-waha-session, tokenizedName={}", tokenizedName);
+        wahaClient.deleteWahaSession(tokenizedName);
+        wahaClient.createWahaSession(CreateWahaSessionRequest.builder()
+                .name(tokenizedName)
+                .start(true)
+                .config(WahaSessionConfig.builder()
+                        .webhooks(List.of(wahaWebhooks))
+                        .noweb(noWebConfig)
+                        .build())
+                .build());
+        log.info("waha-session-restarted, tokenizedName={}", tokenizedName);
+    }
+
+    //=================================== CHAT ========================================
     public void sendMessage(SendMessageRequest sendMessageRequest)
             throws NotFoundException, WhatsAppNotConnectedException, InterruptedException {
         ClinicEntity clinic = clinicRepository.findById(sendMessageRequest.getClinicId());
@@ -148,17 +218,6 @@ public class WahaService implements WhatsAppService {
 
     }
 
-    @Override
-    public WhatsAppStatusDto disconnectWhatsAppNumber(Integer clinicId)
-            throws NotFoundException {
-        ClinicEntity clinic = clinicRepository.findById(clinicId);
-        wahaClient.logoutSession(clinic.getWahaSession());
-        return WhatsAppStatusDto
-                .builder()
-                .status(WhatsAppStatus.DISCONNECTED)
-                .build();
-    }
-
     public List<ChatOverviewDto> getChatsOverview(ClinicEntity clinic, Integer page, Integer pageSize)
             throws WhatsAppNotConnectedException {
         Integer offset = page * pageSize;
@@ -206,63 +265,6 @@ public class WahaService implements WhatsAppService {
         }
     }
 
-    private void restartWahaSession(String tokenizedName) {
-        final String WAHA_RECEIVE_MESSAGE_PATH = "/api/v1/message/whats-app/receive-message";
-        WahaWebhooks wahaWebhooks = WahaWebhooks.builder()
-                .url(wahaWebhookUrl.concat(WAHA_RECEIVE_MESSAGE_PATH))
-                .events(List.of(MESSAGE))
-                .customHeaders(List.of(WahaCustomHeaders.builder()
-                        .name("X-Api-Key")
-                        .value(wahaApiKey)
-                        .build()))
-                .build();
-        NoWebConfig noWebConfig = NoWebConfig.builder()
-                .store(StoreConfig.builder()
-                        .enabled(true)
-                        .fullSync(false)
-                        .build())
-                .build();
-        log.info("restarting-waha-session, tokenizedName={}", tokenizedName);
-        wahaClient.deleteWahaSession(tokenizedName);
-        wahaClient.createWahaSession(CreateWahaSessionRequest.builder()
-                .name(tokenizedName)
-                .start(true)
-                .config(WahaSessionConfig.builder()
-                        .webhooks(List.of(wahaWebhooks))
-                        .noweb(noWebConfig)
-                        .build())
-                .build());
-        log.info("waha-session-restarted, tokenizedName={}", tokenizedName);
-    }
-
-    private WhatsAppStatusDto getWhatsAppStatusByClinic(ClinicEntity clinic) {
-        ResponseEntity<WahaSessionStatusResponse> response = wahaClient.getWahaSessionStatus(clinic.getWahaSession());
-        if (HttpStatus.NOT_FOUND.equals(response.getStatusCode()) ||
-                isNull(response.getBody())) {
-            log.info("null-status-response, clinicId={}", clinic.getId());
-            return WhatsAppStatusDto.builder()
-                    .status(SHUTDOWN)
-                    .build();
-        }
-        if (response.getBody().getStatus().isShutdown()) {
-            log.info("whats-app-shutdown, clinicId={}", clinic.getId());
-            return WhatsAppStatusDto.builder()
-                    .status(SHUTDOWN)
-                    .build();
-        }
-
-        WahaSessionStatusResponse responseBody = response.getBody();
-        String phoneNumber = null;
-        if (responseBody.getStatus().isConnected()) {
-            phoneNumber = responseBody.getMe().getPhoneNumber();
-        }
-        log.info("whats-app-status-response, clinicId={}, status={}", clinic.getId(), responseBody.getStatus());
-        return WhatsAppStatusDto.builder()
-                .status(responseBody.getStatus().getConnectionStatus())
-                .connectedPhoneNumber(phoneNumber)
-                .build();
-    }
-
     private void sendReceivedMessageToN8n(String sender, String message, Optional<PatientEntity> patient, ClinicEntity clinic) {
         log.info("Sending message to N8n, clinicId={}, phoneNumber={}", clinic.getId(), sender);
         String patientName = "";
@@ -278,7 +280,7 @@ public class WahaService implements WhatsAppService {
                     .sender(sender)
                     .message(message)
                     .senderName(patientName)
-                    .appointmentsData(appointment.stream().map(AppointmentsData::fromAppointment).collect(Collectors.toList()))
+                    .appointmentsData(appointment.stream().map(AppointmentsData::fromAppointment).toList())
                     .clinicName(clinic.getClinicName())
                     .clinicId(clinic.getId())
                     .build());

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Deprecated(forRemoval = true)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/chat")

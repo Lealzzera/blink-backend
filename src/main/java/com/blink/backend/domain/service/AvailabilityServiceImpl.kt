@@ -1,7 +1,7 @@
 package com.blink.backend.domain.service
 
 import com.blink.backend.domain.exception.appointment.AppointmentConflictException
-import com.blink.backend.domain.exception.appointment.AppointmentConflictException.AppointmentConflitReason
+import com.blink.backend.domain.exception.appointment.AppointmentConflictException.AppointmentConflictReason
 import com.blink.backend.domain.model.Availability
 import com.blink.backend.domain.model.Clinic
 import com.blink.backend.domain.model.WorkdayAvailability
@@ -28,7 +28,7 @@ class AvailabilityServiceImpl(
     ) {
         val exception = atypicalWorkdayDatabaseService.findByDayAndClinic(
             scheduledDay = startDateTime.toLocalDate(),
-            clinic = clinic,
+            clinicCode = clinic.code,
         )
         val availability = exception?.let {
             Availability.fromClinicAvailabilityException(it)
@@ -38,19 +38,19 @@ class AvailabilityServiceImpl(
                     clinic.code,
                     WeekDay.fromDate(startDateTime.toLocalDate())
                 )
-                .orElseThrow { AppointmentConflictException(AppointmentConflitReason.OUTSIDE_WORK_DAY) }
+                .orElseThrow { AppointmentConflictException(AppointmentConflictReason.OUTSIDE_WORK_DAY) }
             Availability.fromClinicAvailability(clinicAvailability)
         }
 
         //checks
         if (!availability.isWorkingDay) {
-            throw AppointmentConflictException(AppointmentConflitReason.OUTSIDE_WORK_DAY)
+            throw AppointmentConflictException(AppointmentConflictReason.OUTSIDE_WORK_DAY)
         }
 
         if (startDateTime.toLocalTime().isBefore(availability.openTime) ||
             endDateTime.toLocalTime().isAfter(availability.closeTime)
         ) {
-            throw AppointmentConflictException(AppointmentConflitReason.OUTSIDE_WORK_HOURS)
+            throw AppointmentConflictException(AppointmentConflictReason.OUTSIDE_WORK_HOURS)
         }
 
         if ((availability.lunchStartTime?.isBefore(endDateTime.toLocalTime()) == true &&
@@ -58,7 +58,7 @@ class AvailabilityServiceImpl(
             (availability.lunchStartTime?.isBefore(startDateTime.toLocalTime()) == true &&
                     availability.lunchEndTime?.isAfter(startDateTime.toLocalTime()) == true)
         ) {
-            throw AppointmentConflictException(AppointmentConflitReason.DURING_BREAK)
+            throw AppointmentConflictException(AppointmentConflictReason.DURING_BREAK)
         }
     }
 
@@ -68,16 +68,15 @@ class AvailabilityServiceImpl(
         clinic: Clinic,
         maximumAppointments: Int
     ) {
-
         val countAppointments = appointmentsRepository
-            .countByScheduledTimeBetweenAndAppointmentStatusNot(
+            .countByClinicCodeAndScheduledTimeBetweenAndAppointmentStatusNot(
+                clinic.code,
                 startDateTime,
                 endDateTime,
                 AppointmentStatus.CANCELADO
             )
-
         if (countAppointments >= maximumAppointments) {
-            throw AppointmentConflictException(AppointmentConflitReason.OVERLAP)
+            throw AppointmentConflictException(AppointmentConflictReason.OVERLAP)
         }
     }
 
@@ -86,7 +85,7 @@ class AvailabilityServiceImpl(
         date: LocalDate
     ): WorkdayAvailability {
         val clinicAvailabilityException = clinicAtypicalWorkdayDatabaseService
-            .findByDayAndClinic(date, clinic)
+            .findByDayAndClinic(date, clinic.code)
 
         return clinicAvailabilityException?.let {
             WorkdayAvailability(

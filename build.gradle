@@ -29,6 +29,7 @@ dependencies {
     testImplementation libs.springboot.starter.test
     implementation "org.jetbrains.kotlin:kotlin-reflect"
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation("org.apache.httpcomponents.client5:httpclient5")
 }
 
 tasks.named('test') {

@@ -32,10 +32,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.blink.backend.domain.exception.appointment.AppointmentConflictException.AppointmentConflitReason.DURING_BREAK;
-import static com.blink.backend.domain.exception.appointment.AppointmentConflictException.AppointmentConflitReason.OUTSIDE_WORK_DAY;
-import static com.blink.backend.domain.exception.appointment.AppointmentConflictException.AppointmentConflitReason.OUTSIDE_WORK_HOURS;
-import static com.blink.backend.domain.exception.appointment.AppointmentConflictException.AppointmentConflitReason.OVERLAP;
+import static com.blink.backend.domain.exception.appointment.AppointmentConflictException.AppointmentConflictReason.DURING_BREAK;
+import static com.blink.backend.domain.exception.appointment.AppointmentConflictException.AppointmentConflictReason.OUTSIDE_WORK_DAY;
+import static com.blink.backend.domain.exception.appointment.AppointmentConflictException.AppointmentConflictReason.OUTSIDE_WORK_HOURS;
+import static com.blink.backend.domain.exception.appointment.AppointmentConflictException.AppointmentConflictReason.OVERLAP;
 import static com.blink.backend.persistence.entity.appointment.AppointmentStatus.AGENDADO;
 import static java.util.Objects.isNull;
 

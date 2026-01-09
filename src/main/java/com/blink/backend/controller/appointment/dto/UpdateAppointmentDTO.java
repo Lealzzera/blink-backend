@@ -1,6 +1,6 @@
 package com.blink.backend.controller.appointment.dto;
 
-import com.blink.backend.domain.model.Appointment;
+import com.blink.backend.domain.model.AppointmentUpdate;
 import com.blink.backend.persistence.entity.appointment.AppointmentStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
@@ -16,15 +16,11 @@ public class UpdateAppointmentDTO {
     private LocalDateTime scheduledTime;
     private AppointmentStatus status;
 
-    public Appointment toDomain() {
-        return new Appointment(
-                null,
-                null,
-                scheduledTime,
+    public AppointmentUpdate toDomain() {
+        return new AppointmentUpdate(
                 notes,
-                status,
-                null,
-                null
+                scheduledTime,
+                status
         );
     }
 }

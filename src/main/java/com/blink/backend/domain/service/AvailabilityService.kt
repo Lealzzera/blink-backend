@@ -1,6 +1,5 @@
 package com.blink.backend.domain.service
 
-import com.blink.backend.domain.model.Availability
 import com.blink.backend.domain.model.Clinic
 import com.blink.backend.domain.model.WorkdayAvailability
 import org.springframework.stereotype.Service

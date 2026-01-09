@@ -1,27 +1,20 @@
 package com.blink.backend.domain.service
 
-import com.blink.backend.controller.appointment.dto.ClinicAvailabilityDTO
 import com.blink.backend.domain.exception.NotFoundException
+import com.blink.backend.domain.exception.appointment.AppointmentConflictException
 import com.blink.backend.domain.model.Appointment
+import com.blink.backend.domain.model.AppointmentUpdate
 import com.blink.backend.domain.model.Clinic
 import com.blink.backend.domain.model.WorkdayAvailability
 import com.blink.backend.persistence.entity.appointment.AppointmentEntity
-import com.blink.backend.persistence.entity.appointment.ClinicAvailability
-import com.blink.backend.persistence.entity.appointment.ClinicAvailabilityException
-import com.blink.backend.persistence.entity.appointment.WeekDay
 import com.blink.backend.persistence.repository.AppointmentsRepository
-import com.blink.backend.persistence.repository.ClinicAvailabilityExceptionRepository
-import com.blink.backend.persistence.repository.ClinicAvailabilityRepository
 import com.blink.backend.persistence.service.AppointmentsDatabaseService
 import org.springframework.stereotype.Service
 import java.time.LocalDate
-import java.util.Optional
 
 @Service
 class AppointmentsServiceImpl(
-    val clinicAvailabilityRepository: ClinicAvailabilityRepository,
     val appointmentsRepository: AppointmentsRepository,
-    val clinicAvailabilityExceptionRepository: ClinicAvailabilityExceptionRepository,
     val availabilityService: AvailabilityService,
     val appointmentsDatabaseService: AppointmentsDatabaseService
 ) : AppointmentsService {
@@ -49,18 +42,42 @@ class AppointmentsServiceImpl(
     }
 
     override fun updateAppointment(
-        id: Int,
-        appointment: Appointment
+        clinic: Clinic,
+        appointmentId: Int,
+        appointment: AppointmentUpdate
     ): Appointment {
-        val appointmentEntity = appointmentsRepository.findById(id)
-            .orElseThrow({ NotFoundException("Agendamento $id") })
+        val appointmentsConfiguration = appointmentsDatabaseService.getAppointmentsConfiguration(clinic)
+        val appointmentEntity = appointmentsRepository.findById(appointmentId)
+            .orElseThrow { NotFoundException("Agendamento $appointmentId") }
+
+        if (appointmentEntity.clinic.code != clinic.code) {
+            throw AppointmentConflictException(
+                "Agendamento $appointmentId não pertence a clinica ${clinic.code}"
+            )
+        }
 
         appointment.notes?.let { appointmentEntity.notes = it }
-        appointment.scheduledTime?.let { appointmentEntity.scheduledTime = it }
+        appointment.scheduledTime?.let {
+            val scheduledTimeEnd = appointment.scheduledTime
+                .plusMinutes(appointmentsConfiguration.appointmentDuration.toLong())
+
+            availabilityService.validateAppointmentTimeWithWorkdayShift(
+                startDateTime = it,
+                endDateTime = scheduledTimeEnd,
+                clinic = clinic,
+            )
+            availabilityService.validateAppointmentTimeAvailability(
+                startDateTime = appointment.scheduledTime,
+                endDateTime = scheduledTimeEnd,
+                clinic = clinic,
+                maximumAppointments = appointmentsConfiguration.maximumOverbookingAppointments
+            )
+            appointmentEntity.scheduledTime = it
+            appointmentEntity.duration = appointmentsConfiguration.appointmentDuration
+        }
         appointment.status?.let { appointmentEntity.appointmentStatus = it }
 
-        appointmentsRepository.save(appointmentEntity)
-        return appointment
+        return appointmentsRepository.save(appointmentEntity).toDomain()
     }
 
     override fun getScheduledAppointmentsOnDateRange(
@@ -73,10 +90,6 @@ class AppointmentsServiceImpl(
             .datesUntil(endDate.plusDays(1))
             .map { getAvailabilityForDate(clinic, date = it, hideCancelled = hideCancelled) }
             .toList()
-        /*.map<ClinicAvailabilityDTO?> { date: LocalDate -> this.fromEntity(clinic.code, date, hideCancelled) }
-        .filter { obj: ClinicAvailabilityDTO? -> Objects.nonNull(obj) }
-        .toList()
-        .filterNotNull()*/
     }
 
     private fun getAvailabilityForDate(clinic: Clinic, date: LocalDate, hideCancelled: Boolean): WorkdayAvailability {
@@ -99,36 +112,5 @@ class AppointmentsServiceImpl(
         }
 
         return availability.copy(appointments = appointments.stream().map { it.toDomain() }.toList())
-    }
-
-    private fun fromEntity(clinicCode: String, date: LocalDate, hideCancelled: Boolean): ClinicAvailabilityDTO? {
-        val clinicAvailabilityException: Optional<ClinicAvailabilityException?> = clinicAvailabilityExceptionRepository
-            .findByExceptionDayAndClinicCode(date, clinicCode)
-
-        val clinicAvailability: ClinicAvailability? = clinicAvailabilityRepository
-            .findByWeekDayAndIsWorkingDayTrueAndClinicCode(WeekDay.fromDate(date), clinicCode)
-        var appointments: MutableList<AppointmentEntity?> =
-            appointmentsRepository
-                .findByScheduledTimeBetween(
-                    date.atStartOfDay(),
-                    date.plusDays(1).atStartOfDay()
-                )
-
-        if (hideCancelled) {
-            appointments = appointments.stream()
-                .filter { obj: AppointmentEntity? -> obj!!.isNotCancelled }
-                .toList()
-        }
-
-        val clinicAvailabilityDTO: ClinicAvailabilityDTO?
-
-        if (clinicAvailabilityException.isEmpty()) {
-            clinicAvailabilityDTO = ClinicAvailabilityDTO.fromEntity(date, clinicAvailability, appointments)
-        } else {
-            clinicAvailabilityDTO =
-                ClinicAvailabilityDTO.fromException(date, clinicAvailabilityException.get(), appointments)
-        }
-
-        return clinicAvailabilityDTO
     }
 }

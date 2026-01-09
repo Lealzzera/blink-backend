@@ -1,0 +1,86 @@
+package com.blink.backend.controller.chat
+
+import com.blink.backend.domain.clinic.chat.model.WhatsAppConversation
+import com.blink.backend.domain.clinic.chat.model.WhatsAppConversationHistory
+import com.blink.backend.domain.clinic.chat.service.WhatsAppChatService
+import com.blink.backend.domain.model.auth.AuthenticatedUser
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
+import lombok.RequiredArgsConstructor
+import org.springframework.data.domain.Page
+import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("api/v2/whats-app/chat")
+@Tag(name = "Whats-App Chat Controller", description = "Novas apis de chat do whats-app")
+class WhatsAppChatController(
+    val whatsAppChatService: WhatsAppChatService
+) {
+
+    @GetMapping("conversations")
+    @Operation(summary = "Retorna a lista de conversas mais recentes do whats-app")
+    fun getConversations(
+        @AuthenticationPrincipal user: AuthenticatedUser,
+        @RequestParam(required = false, defaultValue = "0") page: Int,
+        @RequestParam(required = false, defaultValue = "20") pageSize: Int
+    ): ResponseEntity<Page<WhatsAppConversation>> {
+        return ResponseEntity.ok(
+            whatsAppChatService.getConversationsByClinic(
+                clinic = user.clinic.toDomain(),
+                page = page,
+                pageSize = pageSize
+            )
+        )
+    }
+
+    @GetMapping("{phoneNumber}")
+    fun getChatHistory(
+        @AuthenticationPrincipal user: AuthenticatedUser,
+        @PathVariable phoneNumber: String,
+        @RequestParam(required = false, defaultValue = "0") page: Int,
+        @RequestParam(required = false, defaultValue = "20") pageSize: Int
+    ): ResponseEntity<Page<WhatsAppConversationHistory>> {
+        return ResponseEntity.ok(
+            whatsAppChatService.getConversationHistoryByClinicAndNumber(
+                clinic = user.clinic.toDomain(),
+                phoneNumber = phoneNumber,
+                page = page,
+                pageSize = pageSize
+            )
+        )
+    }
+    /*
+
+    @PostMapping("send-message")
+    @Throws(WhatsAppNotConnectedException::class, InterruptedException::class)
+    fun sendMessage(
+        @AuthenticationPrincipal user: AuthenticatedUser,
+        @RequestBody sendMessageRequest: SendMessageRequest?
+    ): ResponseEntity<Void?> {
+        whatsAppService!!.sendMessage(user.getClinic(), sendMessageRequest)
+        return ResponseEntity.ok().build<Void?>()
+    }
+
+    @PutMapping("ai-answer/{phoneNumber}")
+    @Throws(NotFoundException::class)
+    fun toggleChatAiAnswer(
+        @AuthenticationPrincipal user: AuthenticatedUser,
+        @PathVariable phoneNumber: String?
+    ): ResponseEntity<Boolean?> {
+        return ResponseEntity.ok<Boolean?>(
+            chatConfigurationService!!.toggleAiAnswerMode(
+                user.getClinic().getId(),
+                phoneNumber
+            )
+        )
+    }
+
+   */
+}
