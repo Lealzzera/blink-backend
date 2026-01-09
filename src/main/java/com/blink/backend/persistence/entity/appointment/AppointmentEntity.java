@@ -81,6 +81,7 @@ public class AppointmentEntity {
 
     public Appointment toDomain() {
         return new Appointment(
+                id,
                 patient.toDomain(),
                 clinic.toDomain(),
                 scheduledTime,

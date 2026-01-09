@@ -30,7 +30,7 @@ class WhatsAppChatController(
         @AuthenticationPrincipal user: AuthenticatedUser,
         @RequestParam(required = false, defaultValue = "0") page: Int,
         @RequestParam(required = false, defaultValue = "20") pageSize: Int
-    ): ResponseEntity<Page<WhatsAppConversation>> {
+    ): ResponseEntity<List<WhatsAppConversation>> {
         return ResponseEntity.ok(
             whatsAppChatService.getConversationsByClinic(
                 clinic = user.clinic.toDomain(),
@@ -46,15 +46,16 @@ class WhatsAppChatController(
         @PathVariable phoneNumber: String,
         @RequestParam(required = false, defaultValue = "0") page: Int,
         @RequestParam(required = false, defaultValue = "20") pageSize: Int
-    ): ResponseEntity<Page<WhatsAppConversationHistory>> {
-        return ResponseEntity.ok(
+    ): ResponseEntity<List<WhatsAppConversationHistory>> {
+        TODO("NOT IMPLEMENTED")
+        /*return ResponseEntity.ok(
             whatsAppChatService.getConversationHistoryByClinicAndNumber(
                 clinic = user.clinic.toDomain(),
                 phoneNumber = phoneNumber,
                 page = page,
                 pageSize = pageSize
             )
-        )
+        )*/
     }
     /*
 

@@ -13,4 +13,6 @@ public interface PatientRepository extends JpaRepository<PatientEntity, Integer>
 
     Optional<PatientEntity> findByClinic_IdAndPhoneNumber(Integer clinicId, String patientNumber);
 
+    Optional<PatientEntity> findByClinic_CodeAndPhoneNumber(String code, String patientNumber);
+
 }

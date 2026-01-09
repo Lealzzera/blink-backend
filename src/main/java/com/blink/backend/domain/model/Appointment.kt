@@ -4,6 +4,7 @@ import com.blink.backend.persistence.entity.appointment.AppointmentStatus
 import java.time.LocalDateTime
 
 data class Appointment(
+    val id: Int?,
     val patient: Patient,
     val clinic: Clinic,
     val scheduledTime: LocalDateTime? = null,

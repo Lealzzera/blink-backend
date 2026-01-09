@@ -14,6 +14,6 @@ data class WhatsAppConversation(
     val lastMessageAck: AckStatus,
 ){
     enum class AckStatus{
-        PENDING, SENT, RECEIVED, READ
+        PENDING, SENT, RECEIVED, READ, OTHER
     }
 }

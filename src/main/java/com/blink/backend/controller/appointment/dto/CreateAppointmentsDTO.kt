@@ -13,7 +13,8 @@ data class CreateAppointmentsDTO(
 ) {
     fun toAppointment(clinic: Clinic): Appointment {
         return Appointment(
-            patient = Patient(phoneNumber = patientNumber, name = patientName),
+            id = null,
+            patient = Patient(phoneNumber = patientNumber, name = patientName, aiAnswer = true),//TODO resolver id e ai answer default
             scheduledTime = scheduledTime,
             notes = notes,
             clinic = clinic,

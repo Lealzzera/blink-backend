@@ -6,6 +6,7 @@ import com.blink.backend.domain.integration.waha.dto.SendWahaMessageRequest
 import com.blink.backend.domain.integration.waha.dto.SessionStatusWahaResponse
 import com.blink.backend.domain.integration.waha.dto.WahaChatHistory
 import com.blink.backend.domain.integration.waha.dto.WahaChatOverviewDto
+import com.blink.backend.domain.integration.waha.dto.WahaConversationsDto
 import com.blink.backend.domain.integration.waha.dto.WahaPresenceDto
 import com.blink.backend.domain.integration.waha.dto.WahaSessionStatus
 import com.blink.backend.domain.integration.waha.dto.WebhookEventTypeWaha
@@ -114,12 +115,12 @@ class WahaClientImpl(
         session: String,
         limit: Int,
         offset: Int
-    ): List<WahaChatOverviewDto> {
+    ): List<WahaConversationsDto> {
         return wahaRestClient.get()
             .uri("/api/{session}/chats/overview?limit={limit}&offset={offset}", session, limit, offset)
             .retrieve()
             .onStatus(HttpStatus.NOT_FOUND::equals) { _, _ -> throw NotFoundException("Conversas") }
-            .body(object : ParameterizedTypeReference<List<WahaChatOverviewDto>>() {})
+            .body(object : ParameterizedTypeReference<List<WahaConversationsDto>>() {})
             ?: emptyList()
     }
 

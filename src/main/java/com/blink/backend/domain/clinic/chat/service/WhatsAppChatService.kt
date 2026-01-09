@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page
 
 interface WhatsAppChatService {
     fun sendMessageByClinic(clinic: Clinic, sendMessageRequest: SendMessageRequest)
-    fun getConversationsByClinic(clinic: Clinic, page: Int, pageSize: Int): Page<WhatsAppConversation>
+    fun getConversationsByClinic(clinic: Clinic, page: Int, pageSize: Int): List<WhatsAppConversation>
     fun getConversationHistoryByClinicAndNumber(
         clinic: Clinic,
         phoneNumber: String,
