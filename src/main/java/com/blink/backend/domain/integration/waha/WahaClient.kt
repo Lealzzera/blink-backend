@@ -5,6 +5,7 @@ import com.blink.backend.domain.integration.waha.dto.SessionStatusWahaResponse
 import com.blink.backend.domain.integration.waha.dto.WahaChatHistory
 import com.blink.backend.domain.integration.waha.dto.WahaChatOverviewDto
 import com.blink.backend.domain.integration.waha.dto.WahaConversationsDto
+import com.blink.backend.domain.integration.waha.dto.WahaLid
 import com.blink.backend.domain.integration.waha.dto.WahaPresenceDto
 
 interface WahaClient {
@@ -22,4 +23,7 @@ interface WahaClient {
     fun sendSeen(wahaPresenceDto: WahaPresenceDto)
     fun startTyping(wahaPresenceDto: WahaPresenceDto)
     fun stopTyping(wahaPresenceDto: WahaPresenceDto)
+
+    //contacts endpoints
+    fun getPhoneNumberByLid(session: String, lid: String): WahaLid?
 }

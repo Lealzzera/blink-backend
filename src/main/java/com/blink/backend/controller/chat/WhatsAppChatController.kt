@@ -1,13 +1,12 @@
 package com.blink.backend.controller.chat
 
-import com.blink.backend.domain.clinic.chat.model.WhatsAppConversation
-import com.blink.backend.domain.clinic.chat.model.WhatsAppConversationHistory
-import com.blink.backend.domain.clinic.chat.service.WhatsAppChatService
+import com.blink.backend.domain.chat.model.WhatsAppConversation
+import com.blink.backend.domain.chat.model.WhatsAppConversationHistory
+import com.blink.backend.domain.chat.service.WhatsAppChatService
 import com.blink.backend.domain.model.auth.AuthenticatedUser
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import lombok.RequiredArgsConstructor
-import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
@@ -28,8 +27,8 @@ class WhatsAppChatController(
     @Operation(summary = "Retorna a lista de conversas mais recentes do whats-app")
     fun getConversations(
         @AuthenticationPrincipal user: AuthenticatedUser,
-        @RequestParam(required = false, defaultValue = "0") page: Int,
-        @RequestParam(required = false, defaultValue = "20") pageSize: Int
+        @RequestParam(required = false) page: Int = 0,
+        @RequestParam(required = false) pageSize: Int = 20
     ): ResponseEntity<List<WhatsAppConversation>> {
         return ResponseEntity.ok(
             whatsAppChatService.getConversationsByClinic(

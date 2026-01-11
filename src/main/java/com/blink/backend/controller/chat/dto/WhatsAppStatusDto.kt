@@ -1,6 +1,6 @@
 package com.blink.backend.controller.chat.dto
 
-import com.blink.backend.domain.clinic.chat.model.WhatsAppStatus
+import com.blink.backend.domain.chat.model.WhatsAppStatus
 
 data class WhatsAppStatusDto(val status: String, val connectedNumber: String?) {
     companion object {

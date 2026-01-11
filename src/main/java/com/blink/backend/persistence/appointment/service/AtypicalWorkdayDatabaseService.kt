@@ -1,4 +1,4 @@
-package com.blink.backend.persistence.service
+package com.blink.backend.persistence.appointment.service
 
 import com.blink.backend.persistence.entity.appointment.ClinicAvailabilityException
 import java.time.LocalDate

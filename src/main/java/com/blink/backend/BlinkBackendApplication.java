@@ -17,7 +17,7 @@ import java.util.TimeZone;
 @EnableAsync(proxyTargetClass = true)
 @EnableConfigurationProperties(WahaProperties.class)
 @EntityScan("com.blink.backend.persistence.entity.*")
-@EnableJpaRepositories(basePackages = "com.blink.backend.persistence.repository")
+@EnableJpaRepositories(basePackages = "com.blink.backend.persistence.*")
 public class BlinkBackendApplication {
 
     public static void main(String[] args) {

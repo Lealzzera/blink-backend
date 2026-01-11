@@ -1,4 +1,4 @@
-package com.blink.backend.domain.clinic.chat.model
+package com.blink.backend.domain.chat.model
 
 data class WhatsAppStatus(
     val whatsAppNumber: String? = null,

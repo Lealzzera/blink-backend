@@ -1,4 +1,4 @@
-package com.blink.backend.domain.service
+package com.blink.backend.domain.appointment.service
 
 import com.blink.backend.domain.exception.appointment.AppointmentConflictException
 import com.blink.backend.domain.exception.appointment.AppointmentConflictException.AppointmentConflictReason
@@ -9,7 +9,7 @@ import com.blink.backend.persistence.entity.appointment.AppointmentStatus
 import com.blink.backend.persistence.entity.appointment.WeekDay
 import com.blink.backend.persistence.repository.AppointmentsRepository
 import com.blink.backend.persistence.repository.ClinicAvailabilityRepository
-import com.blink.backend.persistence.service.AtypicalWorkdayDatabaseService
+import com.blink.backend.persistence.appointment.service.AtypicalWorkdayDatabaseService
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalDateTime

@@ -1,9 +1,9 @@
-package com.blink.backend.domain.clinic.chat.model
+package com.blink.backend.domain.chat.model
 
 import java.time.LocalDateTime
 
 data class WhatsAppConversation(
-    val whatsAppName: String,
+    val whatsAppName: String? = null,
     val patientName: String,
     val phoneNumber: String,
     val pictureUrl: String,
@@ -11,9 +11,5 @@ data class WhatsAppConversation(
     val sentAt: LocalDateTime,
     val fromMe: Boolean,
     val aiAnswer: Boolean,
-    val lastMessageAck: AckStatus,
-){
-    enum class AckStatus{
-        PENDING, SENT, RECEIVED, READ, OTHER
-    }
-}
+    val lastMessageAck: WhatsAppAckStatus,
+)

@@ -1,8 +1,8 @@
-package com.blink.backend.domain.clinic.chat.service
+package com.blink.backend.domain.chat.service
 
 import com.blink.backend.controller.message.dto.SendMessageRequest
-import com.blink.backend.domain.clinic.chat.model.WhatsAppConversation
-import com.blink.backend.domain.clinic.chat.model.WhatsAppConversationHistory
+import com.blink.backend.domain.chat.model.WhatsAppConversation
+import com.blink.backend.domain.chat.model.WhatsAppConversationHistory
 import com.blink.backend.domain.model.Clinic
 import org.springframework.data.domain.Page
 

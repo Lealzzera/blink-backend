@@ -2,7 +2,7 @@ package com.blink.backend.controller.chat
 
 import com.blink.backend.controller.chat.dto.WhatsAppStatusDto
 import com.blink.backend.domain.model.auth.AuthenticatedUser
-import com.blink.backend.domain.clinic.chat.service.WhatsAppAuthService
+import com.blink.backend.domain.chat.service.WhatsAppAuthService
 import io.swagger.v3.oas.annotations.tags.Tag
 import lombok.RequiredArgsConstructor
 import org.springframework.http.MediaType

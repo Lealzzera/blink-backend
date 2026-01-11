@@ -1,4 +1,4 @@
-package com.blink.backend.persistence.service
+package com.blink.backend.persistence.appointment.service
 
 import com.blink.backend.domain.model.Appointment
 import com.blink.backend.domain.model.Clinic

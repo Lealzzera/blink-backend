@@ -1,6 +1,6 @@
-package com.blink.backend.domain.clinic.chat.service
+package com.blink.backend.domain.chat.service
 
-import com.blink.backend.domain.clinic.chat.model.WhatsAppStatus
+import com.blink.backend.domain.chat.model.WhatsAppStatus
 import com.blink.backend.domain.model.Clinic
 
 interface WhatsAppAuthService {

@@ -1,4 +1,4 @@
-package com.blink.backend.domain.service
+package com.blink.backend.domain.appointment.service
 
 import com.blink.backend.domain.model.Clinic
 import com.blink.backend.domain.model.WorkdayAvailability

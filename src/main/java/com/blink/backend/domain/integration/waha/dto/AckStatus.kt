@@ -1,6 +1,6 @@
 package com.blink.backend.domain.integration.waha.dto
 
-import com.blink.backend.domain.clinic.chat.model.WhatsAppConversation
+import com.blink.backend.domain.chat.model.WhatsAppAckStatus
 
 enum class AckStatus {
     ERROR,
@@ -9,15 +9,16 @@ enum class AckStatus {
     DEVICE,
     READ,
     PLAYED,
+    UNKNOWN,
     ;
 
-    fun toDomain(): WhatsAppConversation.AckStatus {
+    fun toDomain(): WhatsAppAckStatus {
         return when (this) {
-            PENDING -> WhatsAppConversation.AckStatus.PENDING
-            SERVER -> WhatsAppConversation.AckStatus.SENT
-            DEVICE -> WhatsAppConversation.AckStatus.RECEIVED
-            READ -> WhatsAppConversation.AckStatus.READ
-            else -> WhatsAppConversation.AckStatus.OTHER
+            PENDING ->  WhatsAppAckStatus.PENDING
+            SERVER ->  WhatsAppAckStatus.SENT
+            DEVICE ->  WhatsAppAckStatus.RECEIVED
+            READ ->  WhatsAppAckStatus.READ
+            else ->  WhatsAppAckStatus.OTHER
         }
     }
 }

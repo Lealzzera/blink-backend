@@ -5,7 +5,7 @@ import com.blink.backend.controller.appointment.dto.AvailabilityDTO.Companion.fr
 import com.blink.backend.controller.appointment.dto.CreateAppointmentsDTO
 import com.blink.backend.controller.appointment.dto.UpdateAppointmentDTO
 import com.blink.backend.domain.model.auth.AuthenticatedUser
-import com.blink.backend.domain.service.AppointmentsService
+import com.blink.backend.domain.appointment.service.AppointmentsService
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*

@@ -1,4 +1,4 @@
-package com.blink.backend.persistence.repository
+package com.blink.backend.persistence.appointment.repository
 
 import com.blink.backend.persistence.entity.appointment.ClinicAvailabilityException
 import org.springframework.data.jpa.repository.JpaRepository

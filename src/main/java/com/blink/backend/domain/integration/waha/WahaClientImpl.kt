@@ -7,10 +7,12 @@ import com.blink.backend.domain.integration.waha.dto.SessionStatusWahaResponse
 import com.blink.backend.domain.integration.waha.dto.WahaChatHistory
 import com.blink.backend.domain.integration.waha.dto.WahaChatOverviewDto
 import com.blink.backend.domain.integration.waha.dto.WahaConversationsDto
+import com.blink.backend.domain.integration.waha.dto.WahaLid
 import com.blink.backend.domain.integration.waha.dto.WahaPresenceDto
 import com.blink.backend.domain.integration.waha.dto.WahaSessionStatus
 import com.blink.backend.domain.integration.waha.dto.WebhookEventTypeWaha
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -24,6 +26,7 @@ import kotlin.collections.List
 class WahaClientImpl(
     private val wahaRestClient: RestClient,
     private val wahaProperties: WahaProperties,
+    val objectMapper: ObjectMapper,
 ) : WahaClient {
 
     override fun getWahaQrCode(sessionName: String): ByteArray {
@@ -116,12 +119,18 @@ class WahaClientImpl(
         limit: Int,
         offset: Int
     ): List<WahaConversationsDto> {
-        return wahaRestClient.get()
+        val nodes = wahaRestClient.get()
             .uri("/api/{session}/chats/overview?limit={limit}&offset={offset}", session, limit, offset)
             .retrieve()
             .onStatus(HttpStatus.NOT_FOUND::equals) { _, _ -> throw NotFoundException("Conversas") }
-            .body(object : ParameterizedTypeReference<List<WahaConversationsDto>>() {})
+            .body(object : ParameterizedTypeReference<List<JsonNode>>() {})
             ?: emptyList()
+
+        return nodes.mapNotNull {
+            runCatching {
+                objectMapper.treeToValue(it, WahaConversationsDto::class.java)
+            }.getOrNull()
+        }
     }
 
     override fun sendSeen(wahaPresenceDto: WahaPresenceDto) {
@@ -147,6 +156,19 @@ class WahaClientImpl(
             .body(wahaPresenceDto)
             .retrieve()
             .toBodilessEntity()
+    }
+
+    // ============================================== CONTACTS METHODS ==============================================
+    override fun getPhoneNumberByLid(session: String, lid: String): WahaLid? {
+        return wahaRestClient.get()
+            .uri("/api/{session}/lids/{lid}", session, lid)
+            .exchange { _, response ->
+                when (response.statusCode) {
+                    HttpStatus.NOT_FOUND -> null
+                    HttpStatus.OK -> response.bodyTo(WahaLid::class.java)
+                    else -> null
+                }
+            }
     }
 
 }

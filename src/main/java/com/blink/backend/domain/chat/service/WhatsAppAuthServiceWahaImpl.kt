@@ -1,6 +1,6 @@
-package com.blink.backend.domain.clinic.chat.service
+package com.blink.backend.domain.chat.service
 
-import com.blink.backend.domain.clinic.chat.model.WhatsAppStatus
+import com.blink.backend.domain.chat.model.WhatsAppStatus
 import com.blink.backend.domain.exception.message.WhatsAppAlreadyConnectedException
 import com.blink.backend.domain.exception.message.WhatsAppNotConnectedException
 import com.blink.backend.domain.integration.waha.WahaClient
