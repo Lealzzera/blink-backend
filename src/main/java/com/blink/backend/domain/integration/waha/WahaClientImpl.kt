@@ -5,7 +5,6 @@ import com.blink.backend.domain.integration.waha.dto.CreateSessionWahaDto
 import com.blink.backend.domain.integration.waha.dto.SendWahaMessageRequest
 import com.blink.backend.domain.integration.waha.dto.SessionStatusWahaResponse
 import com.blink.backend.domain.integration.waha.dto.WahaChatHistory
-import com.blink.backend.domain.integration.waha.dto.WahaChatOverviewDto
 import com.blink.backend.domain.integration.waha.dto.WahaConversationsDto
 import com.blink.backend.domain.integration.waha.dto.WahaLid
 import com.blink.backend.domain.integration.waha.dto.WahaPresenceDto
@@ -13,13 +12,11 @@ import com.blink.backend.domain.integration.waha.dto.WahaSessionStatus
 import com.blink.backend.domain.integration.waha.dto.WebhookEventTypeWaha
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.slf4j.LoggerFactory
 import org.springframework.core.ParameterizedTypeReference
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
-import org.springframework.web.client.toEntity
 import kotlin.collections.List
 
 @Service
@@ -29,24 +26,33 @@ class WahaClientImpl(
     val objectMapper: ObjectMapper,
 ) : WahaClient {
 
+    private val logger = LoggerFactory.getLogger(WahaClientImpl::class.java)
+
     override fun getWahaQrCode(sessionName: String): ByteArray {
+        logger.info("Getting QR code, sessionName=$sessionName")
         return wahaRestClient.get()
             .uri("/api/{sessionName}/auth/qr", sessionName)
-            .retrieve()
-            .body(ByteArray::class.java)!!
+            .exchange { _, response ->
+                logger.info("Get QR code completed, sessionName=$sessionName, statusCode=${response.statusCode}")
+                response.bodyTo(ByteArray::class.java)!!
+            }
     }
 
     override fun logoutSession(session: String) {
+        logger.info("Logging out session, session=$session")
         wahaRestClient.post()
             .uri("/api/sessions/{session}/stop", session)
-            .retrieve()
-            .toBodilessEntity()
+            .exchange { _, response ->
+                logger.info("Logout session completed, session=$session, statusCode=${response.statusCode}")
+            }
     }
 
     override fun getWahaSessionStatus(session: String): SessionStatusWahaResponse {
+        logger.info("Getting session status, session=$session")
         return wahaRestClient.get()
             .uri("/api/sessions/{session}", session)
             .exchange { _, response ->
+                logger.info("Get session status completed, session=$session, statusCode=${response.statusCode}")
                 when (response.statusCode) {
                     HttpStatus.NOT_FOUND -> SessionStatusWahaResponse(WahaSessionStatus.FAILED)
                     HttpStatus.OK -> response.bodyTo(SessionStatusWahaResponse::class.java)
@@ -57,8 +63,9 @@ class WahaClientImpl(
     }
 
     override fun createWahaSession(sessionName: String): SessionStatusWahaResponse {
+        logger.info("Creating session, sessionName=$sessionName")
         val receiveMessageWebhook = CreateSessionWahaDto.WebhookEndpoint(
-            url = "${wahaProperties.webhookUrl}${wahaProperties.receiveMessageWebhook}",//TODO review baseurl and paths
+            url = "${wahaProperties.webhookUrl}${wahaProperties.receiveMessageWebhook}",
             event = WebhookEventTypeWaha.MESSAGE_ANY,
         )
         val sessionStatusWebhook = CreateSessionWahaDto.WebhookEndpoint(
@@ -74,25 +81,36 @@ class WahaClientImpl(
         return wahaRestClient.post()
             .uri("/api/sessions")
             .body(requestBody)
-            .retrieve()
-            .body(SessionStatusWahaResponse::class.java)
+            .exchange { _, response ->
+                logger.info("Create session completed, sessionName=$sessionName, statusCode=${response.statusCode}")
+                response.bodyTo(SessionStatusWahaResponse::class.java)
+            }
             ?: SessionStatusWahaResponse(WahaSessionStatus.FAILED)
     }
 
     override fun deleteWahaSession(sessionName: String) {
+        logger.info("Deleting session, sessionName=$sessionName")
         wahaRestClient.delete()
             .uri("/api/sessions/{sessionName}", sessionName)
-            .retrieve()
-            .toBodilessEntity()
+            .exchange { _, response ->
+                logger.info("Delete session completed, sessionName=$sessionName, statusCode=${response.statusCode}")
+            }
     }
 
     // ============================================== CHAT METHODS ==============================================
     override fun sendMessage(sendWahaMessageRequest: SendWahaMessageRequest) {
+        logger.info("Sending message, " +
+                "session=${sendWahaMessageRequest.session}, " +
+                "to=${sendWahaMessageRequest.phoneNumber}")
         wahaRestClient.post()
             .uri("/api/sendText")
             .body(sendWahaMessageRequest)
-            .retrieve()
-            .toBodilessEntity()
+            .exchange { _, response ->
+                logger.info("Send message completed, " +
+                        "session=${sendWahaMessageRequest.session}, " +
+                        "to=${sendWahaMessageRequest.phoneNumber}, " +
+                        "statusCode=${response.statusCode}")
+            }
     }
 
     override fun getMessages(
@@ -101,13 +119,16 @@ class WahaClientImpl(
         limit: Int,
         offset: Int
     ): List<WahaChatHistory> {
+        logger.info("Getting messages, session=$session, chatId=$chatId, limit=$limit, offset=$offset")
         return wahaRestClient.get()
             .uri(
                 "/api/{session}/chats/{chatId}/messages?limit={limit}&offset={offset}",
                 session, chatId, limit, offset
             )
-            .retrieve()
-            .body(object : ParameterizedTypeReference<List<WahaChatHistory>>() {})
+            .exchange { _, response ->
+                logger.info("Get messages completed, session=$session, chatId=$chatId, statusCode=${response.statusCode}")
+                response.bodyTo(object : ParameterizedTypeReference<List<WahaChatHistory>>() {})
+            }
             ?: emptyList()
     }
 
@@ -119,11 +140,16 @@ class WahaClientImpl(
         limit: Int,
         offset: Int
     ): List<WahaConversationsDto> {
+        logger.info("Getting overview, session=$session, limit=$limit, offset=$offset")
         val nodes = wahaRestClient.get()
             .uri("/api/{session}/chats/overview?limit={limit}&offset={offset}", session, limit, offset)
-            .retrieve()
-            .onStatus(HttpStatus.NOT_FOUND::equals) { _, _ -> throw NotFoundException("Conversas") }
-            .body(object : ParameterizedTypeReference<List<JsonNode>>() {})
+            .exchange { _, response ->
+                logger.info("Get overview completed, session=$session, statusCode=${response.statusCode}")
+                if (response.statusCode == HttpStatus.NOT_FOUND) {
+                    throw NotFoundException("Conversas")
+                }
+                response.bodyTo(object : ParameterizedTypeReference<List<JsonNode>>() {})
+            }
             ?: emptyList()
 
         return nodes.mapNotNull {
@@ -134,35 +160,42 @@ class WahaClientImpl(
     }
 
     override fun sendSeen(wahaPresenceDto: WahaPresenceDto) {
+        logger.info("Sending seen, session=${wahaPresenceDto.session}, chatId=${wahaPresenceDto.chatId}")
         wahaRestClient.post()
             .uri("/api/sendSeen")
             .body(wahaPresenceDto)
-            .retrieve()
-            .toBodilessEntity()
+            .exchange { _, response ->
+                logger.info("Send seen completed, session=${wahaPresenceDto.session}, chatId=${wahaPresenceDto.chatId}, statusCode=${response.statusCode}")
+            }
     }
 
-
     override fun startTyping(wahaPresenceDto: WahaPresenceDto) {
+        logger.info("Starting typing, session=${wahaPresenceDto.session}, chatId=${wahaPresenceDto.chatId}")
         wahaRestClient.post()
             .uri("/api/startTyping")
             .body(wahaPresenceDto)
-            .retrieve()
-            .toBodilessEntity()
+            .exchange { _, response ->
+                logger.info("Start typing completed, session=${wahaPresenceDto.session}, chatId=${wahaPresenceDto.chatId}, statusCode=${response.statusCode}")
+            }
     }
 
     override fun stopTyping(wahaPresenceDto: WahaPresenceDto) {
+        logger.info("Stopping typing, session=${wahaPresenceDto.session}, chatId=${wahaPresenceDto.chatId}")
         wahaRestClient.post()
             .uri("/api/stopTyping")
             .body(wahaPresenceDto)
-            .retrieve()
-            .toBodilessEntity()
+            .exchange { _, response ->
+                logger.info("Stop typing completed, session=${wahaPresenceDto.session}, chatId=${wahaPresenceDto.chatId}, statusCode=${response.statusCode}")
+            }
     }
 
     // ============================================== CONTACTS METHODS ==============================================
     override fun getPhoneNumberByLid(session: String, lid: String): WahaLid? {
+        logger.info("Getting phone number by LID, session=$session, lid=$lid")
         return wahaRestClient.get()
             .uri("/api/{session}/lids/{lid}", session, lid)
             .exchange { _, response ->
+                logger.info("Get phone number by LID completed, session=$session, lid=$lid, statusCode=${response.statusCode}")
                 when (response.statusCode) {
                     HttpStatus.NOT_FOUND -> null
                     HttpStatus.OK -> response.bodyTo(WahaLid::class.java)

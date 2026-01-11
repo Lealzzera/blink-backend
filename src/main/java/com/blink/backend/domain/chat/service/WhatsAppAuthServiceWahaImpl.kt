@@ -41,7 +41,7 @@ class WhatsAppAuthServiceWahaImpl(
         else
             WhatsAppStatus.Status.DISCONNECTED
 
-        return WhatsAppStatus(status = status, whatsAppNumber = response.me?.id)
+        return WhatsAppStatus(status = status, whatsAppNumber = response.me?.id?.substringBefore("@"))
     }
 
     private fun getWahaSessionStatus(clinic: Clinic): WahaSessionStatus {

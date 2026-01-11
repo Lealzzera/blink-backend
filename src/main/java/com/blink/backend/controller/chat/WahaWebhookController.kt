@@ -3,10 +3,11 @@ package com.blink.backend.controller.chat
 import com.blink.backend.controller.chat.dto.MessageReceivedWaha
 import com.blink.backend.controller.chat.dto.WahaSessionStatusUpdate
 import com.blink.backend.domain.chat.service.WahaWebhookService
-import com.blink.backend.domain.integration.waha.dto.WahaSessionStatus
 import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.tags.Tag
 import lombok.RequiredArgsConstructor
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -17,12 +18,16 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v2/whats-app/webhook")
-@Tag(name = "Whats-App Chat Controller", description = "Novas apis de chat do whats-app")
-class WahaWebhookController(val wahaWebhookService: WahaWebhookService) {
+@Tag(name = "WahaWebhook Controller", description = "APIs para webhook do WAHA")
+class WahaWebhookController(
+    val wahaWebhookService: WahaWebhookService,
+    private val logger: Logger = LoggerFactory.getLogger(WahaWebhookController::class.java)
+) {
     @PostMapping("receive-message")
     fun receiveMessage(
         @RequestBody messageRequest: MessageReceivedWaha
     ): ResponseEntity<Unit> {
+        logger.info("Received waha message, session=${messageRequest.session}")
         wahaWebhookService.receiveMessage(messageRequest.toDomain())
         return ResponseEntity.ok().build()
     }
@@ -31,6 +36,7 @@ class WahaWebhookController(val wahaWebhookService: WahaWebhookService) {
     fun sessionStatusUpdated(
         @RequestBody sessionUpdate: WahaSessionStatusUpdate
     ): ResponseEntity<Unit> {
+        logger.info("Waha session status updated, session=${sessionUpdate.session}")
         wahaWebhookService.sessionStatusUpdated(
             session = sessionUpdate.session,
             status = sessionUpdate.payload.status,

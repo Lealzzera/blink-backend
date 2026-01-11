@@ -1,6 +1,7 @@
 package com.blink.backend.domain.chat.service
 
 import com.blink.backend.domain.chat.model.WhatsAppMessage
+import com.blink.backend.domain.integration.waha.WahaPhoneResolverService
 import com.blink.backend.domain.integration.waha.dto.WahaSessionStatus
 import com.blink.backend.domain.model.Clinic
 import com.blink.backend.persistence.repository.clinic.ClinicRepositoryService
@@ -15,13 +16,26 @@ class WahaWebhookServiceImpl(
     val userRepository: UserRepository,
     val simpMessagingTemplate: SimpMessagingTemplate,
     val clinicRepositoryService: ClinicRepositoryService,
+    val wahaPhoneResolverService: WahaPhoneResolverService,
     val logger: Logger = LoggerFactory.getLogger(WahaWebhookService::class.java),
 ) : WahaWebhookService {
     override fun receiveMessage(whatsAppMessage: WhatsAppMessage) {
-
         val clinic: Clinic = clinicRepositoryService.findByWahaSession(whatsAppMessage.session).toDomain()
 
-        sendReceivedMessageToBlinkFe(whatsAppMessage, clinicCode = clinic.code)
+        val phoneNumber = wahaPhoneResolverService.resolvePhoneNumber(clinic.wahaSession, whatsAppMessage.sender)
+            ?: run {
+                logger.warn("Could not resolve phone number for sender {}", whatsAppMessage.sender)
+                return
+            }
+
+        if (!wahaPhoneResolverService.isIndividualChat(whatsAppMessage.sender)) {
+            logger.info("Ignoring non-individual chat message from {}", whatsAppMessage.sender)
+            return
+        }
+
+        val resolvedMessage = whatsAppMessage.copy(sender = phoneNumber)
+
+        sendReceivedMessageToBlinkFe(resolvedMessage, clinicCode = clinic.code)
         /* TODO
          *val optionalPatient: Optional<PatientEntity?> = patientRepository.findByPhoneNumber(sender)
          * if (!isAiResponseTurnedOn(optionalPatient)) {

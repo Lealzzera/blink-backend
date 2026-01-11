@@ -30,14 +30,14 @@ public class ClinicConfiguration {
     @JoinColumn(name = "clinic_id")
     private ClinicEntity clinic;
 
-    @Column(name = "whats_number")
-    private String whatsNumber;
-
     @Column(name = "appointment_duration")
     private Integer appointmentDuration;
 
     @Column(name = "allow_overbooking")
     private Boolean allowOverbooking;
+
+    @Column(name = "default_ai_answer")
+    private Boolean defaultAiAnswer;
 
     @OneToOne
     @JoinColumn(name = "updated_by_user_id")
@@ -49,7 +49,7 @@ public class ClinicConfiguration {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public int getMaximumOverbookingAppointments(){
+    public int getMaximumOverbookingAppointments() {
         return getAllowOverbooking() ? 2 : 1;
     }
 
