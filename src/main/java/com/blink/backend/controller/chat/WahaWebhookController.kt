@@ -27,11 +27,9 @@ class WahaWebhookController(
 ) {
     @PostMapping("receive-message")
     fun receiveMessage(
-        @RequestBody request: String
+        @RequestBody request: MessageReceivedWaha
     ): ResponseEntity<Unit> {
-        logger.info("Received waha message, session=${request}")
-        val messageRequest : MessageReceivedWaha = objectMapper.readValue(request, MessageReceivedWaha::class.java)
-        wahaWebhookService.receiveMessage(messageRequest.toDomain())
+        wahaWebhookService.receiveMessage(request.toDomain())
         return ResponseEntity.ok().build()
     }
 

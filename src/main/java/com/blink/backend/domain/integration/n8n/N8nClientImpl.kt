@@ -1,7 +1,9 @@
 package com.blink.backend.domain.integration.n8n
 
 import com.blink.backend.domain.integration.n8n.dto.MessageReceived
+import com.blink.backend.domain.integration.waha.dto.WahaLid
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
 
@@ -20,6 +22,11 @@ class N8nClientImpl(
             .body(message)
             .exchange { _, response ->
                 logger.info("Send message to n8n completed, sender=${message.sender}, statusCode=${response.statusCode}")
+                when (response.statusCode) {
+                    //HttpStatus.NOT_FOUND -> logger.error("Received message from n8n failed, statusCode=${response.statusCode}")
+                    HttpStatus.OK -> logger.info("Send message to n8n completed")
+                    else -> logger.error("Received message from n8n failed, statusCode=${response.statusCode}")
+                }
             }
     }
 }
