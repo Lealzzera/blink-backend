@@ -74,6 +74,7 @@ class WhatsAppChatServiceWahaImpl(
         val wahaConversations =
             wahaClient.getOverview(clinic.wahaSession, limit = pageSize, offset = page * pageSize)
 
+        logger.info("Fetched ${wahaConversations.size} conversations")
         return wahaConversations
             .filter { conversationsDto -> wahaPhoneResolverService.isIndividualChat(conversationsDto.chat.id) }
             .mapNotNull { wahaConversation ->
