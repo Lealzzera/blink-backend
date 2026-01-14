@@ -105,12 +105,11 @@ class WhatsAppChatServiceWahaImpl(
     ): List<WhatsAppConversationHistory> {
         return wahaClient.getMessages(
             session = clinic.wahaSession,
-            chatId = "$phoneNumber@c.us",
+            chatId = phoneNumber,
             limit = pageSize,
             offset = page * pageSize
         )
             .map { conversation ->
-                logger.info("Converting chat history, {}", conversation)
                 conversation.toDomain()
             }
     }

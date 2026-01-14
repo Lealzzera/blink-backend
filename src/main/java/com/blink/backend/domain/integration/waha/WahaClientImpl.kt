@@ -128,7 +128,6 @@ class WahaClientImpl(
                 session, chatId, limit, offset
             )
             .exchange { _, response ->
-                logger.info("Get messages completed, session=$session, chatId=$chatId, statusCode=${response.statusCode}, responseBody={}", response.bodyTo(String::class.java))
                 response.bodyTo(object : ParameterizedTypeReference<List<ChatHistory>>() {})
             }
             ?: emptyList()
