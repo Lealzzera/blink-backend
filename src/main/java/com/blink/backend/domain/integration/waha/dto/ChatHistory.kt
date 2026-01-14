@@ -19,7 +19,7 @@ data class ChatHistory(
             else -> body ?: ""
         }
         return WhatsAppConversationHistory(
-            message = message.trim(),
+            messageText = message.trim(),
             fromMe = fromMe,
             sentAt = Instant.ofEpochSecond(timestamp)
                 .atZone(ZoneId.systemDefault())
