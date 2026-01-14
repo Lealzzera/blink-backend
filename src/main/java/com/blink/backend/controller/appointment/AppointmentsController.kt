@@ -3,7 +3,7 @@ package com.blink.backend.controller.appointment
 import com.blink.backend.controller.appointment.dto.AvailabilityDTO
 import com.blink.backend.controller.appointment.dto.AvailabilityDTO.Companion.fromDomain
 import com.blink.backend.controller.appointment.dto.CreateAppointmentsDTO
-import com.blink.backend.controller.appointment.dto.UpdateAppointmentDTO
+import com.blink.backend.controller.appointment.dto.UpdateAppointmentDto
 import com.blink.backend.domain.model.auth.AuthenticatedUser
 import com.blink.backend.domain.appointment.service.AppointmentsService
 import org.springframework.http.ResponseEntity
@@ -59,12 +59,12 @@ class AppointmentsController(
     fun updateAppointment(
         @AuthenticationPrincipal user: AuthenticatedUser,
         @PathVariable appointmentId: Int,
-        @RequestBody updateAppointmentDTO: UpdateAppointmentDTO
+        @RequestBody updateAppointmentDto: UpdateAppointmentDto
     ): ResponseEntity<Unit> {
         appointmentsService.updateAppointment(
             clinic = user.clinic.toDomain(),
             appointmentId = appointmentId,
-            appointment = updateAppointmentDTO.toDomain()
+            appointment = updateAppointmentDto.toDomain()
         )
         return ResponseEntity.ok().build()
     }

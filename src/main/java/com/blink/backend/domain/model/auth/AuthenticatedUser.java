@@ -16,16 +16,11 @@ public class AuthenticatedUser implements UserDetails {
     private final String userId;
     private final List<Authorities> authorities;
     private final ClinicEntity clinic;
-    private static AuthenticatedUser n8nUser;
-
     public String getPassword() {
         return null;
     }
 
-    public static AuthenticatedUser getN8nAuthenticatedUser() {
-        if (n8nUser == null) {
-            n8nUser = new AuthenticatedUser("n8n", null, List.of(Authorities.N8N_AUTHENTICATED), null);
-        }
-        return n8nUser;
+    public static AuthenticatedUser getN8nAuthenticatedUser(ClinicEntity clinic) {
+        return new AuthenticatedUser("n8n", null, List.of(Authorities.N8N_AUTHENTICATED), clinic);
     }
 }

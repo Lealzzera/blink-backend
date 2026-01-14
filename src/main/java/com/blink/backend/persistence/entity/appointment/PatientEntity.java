@@ -49,7 +49,7 @@ public class PatientEntity {
     private Boolean aiAnswer = true;
 
     public Patient toDomain() {
-        return new Patient(phoneNumber, name, aiAnswer);
+        return new Patient(id, phoneNumber, name, aiAnswer);
     }
 }
 

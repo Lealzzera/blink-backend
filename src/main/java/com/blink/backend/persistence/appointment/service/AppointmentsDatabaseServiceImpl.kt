@@ -28,6 +28,7 @@ class AppointmentsDatabaseServiceImpl(
     override fun saveAppointment(appointment: Appointment): Int {
 
         val clinicEntity = clinicRepository.findByCode(appointment.clinic.code)
+        val clinicConfiguration = clinicConfigurationRepository.findByClinicId(clinicEntity.id)
 
         val patient = patientRepository
             .findByPhoneNumber(appointment.patient.phoneNumber.trim())
@@ -39,7 +40,7 @@ class AppointmentsDatabaseServiceImpl(
                         .name(appointment.patient.name.trim())
                         .createdAt(LocalDateTime.now())
                         .clinic(clinicEntity)
-                        .aiAnswer(true)
+                        .aiAnswer(clinicConfiguration.defaultAiAnswer)
                         .build()
                 )
             }

@@ -8,7 +8,7 @@ import com.blink.backend.controller.message.dto.WhatsAppStatusDto;
 import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.domain.exception.message.WhatsAppNotConnectedException;
 import com.blink.backend.domain.integration.blink.fe.dto.ReceivedMessageBlinkFeRequest;
-import com.blink.backend.domain.integration.n8n.N8nClient;
+import com.blink.backend.domain.integration.n8n.FeignN8nClient;
 import com.blink.backend.domain.integration.n8n.dto.AppointmentsData;
 import com.blink.backend.domain.integration.n8n.dto.N8nMessageReceived;
 import com.blink.backend.domain.integration.waha.FeignWahaClient;
@@ -48,7 +48,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static com.blink.backend.domain.integration.waha.dto.WahaWebhookEventTypes.MESSAGE;
 import static com.blink.backend.domain.model.message.WhatsAppStatus.SHUTDOWN;
@@ -63,7 +62,7 @@ public class WahaService implements WhatsAppService {
     private final UserEntityRepository userEntityRepository;
     @Value("${waha-webhook-url}")
     private final String wahaWebhookUrl;
-    private final N8nClient n8nClient;
+    private final FeignN8nClient n8nClient;
     private final PatientRepository patientRepository;
     private final AppointmentsRepository appointmentsRepository;
     @Value("${default-ai-answer}")

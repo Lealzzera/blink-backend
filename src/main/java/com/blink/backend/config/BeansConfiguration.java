@@ -1,6 +1,7 @@
 package com.blink.backend.config;
 
 import com.blink.backend.domain.integration.supabase.SupabaseAuthService;
+import com.blink.backend.domain.integration.n8n.N8nProperties;
 import com.blink.backend.domain.integration.waha.WahaProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -109,6 +110,16 @@ public class BeansConfiguration {
         return RestClient.builder()
                 .baseUrl(wahaProperties.getBaseUrl())
                 .defaultHeader("x-api-key", wahaProperties.getApiKey())
+                .requestFactory(new HttpComponentsClientHttpRequestFactory())
+                .build();
+    }
+
+    @Bean
+    public RestClient n8nRestClient(
+            N8nProperties n8nProperties
+    ) {
+        return RestClient.builder()
+                .baseUrl(n8nProperties.getBaseUrl())
                 .requestFactory(new HttpComponentsClientHttpRequestFactory())
                 .build();
     }

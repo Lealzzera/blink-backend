@@ -24,12 +24,12 @@ data class MessageReceivedWaha(
     fun toDomain(): WhatsAppMessage {
         return WhatsAppMessage(
             session = session,
-            sender = payload.from,
+            phoneNumber = payload.from,
             message = payload.message,
             fromMe = payload.fromMe,
             ackStatus = payload.ackName.toDomain(),
             timestamp = payload.timestamp,
-            hasMedia = payload.hasMedia,
+            hasMedia = payload.hasMedia
         )
     }
 }

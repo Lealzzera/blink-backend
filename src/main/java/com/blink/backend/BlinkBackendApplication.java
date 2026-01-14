@@ -1,5 +1,6 @@
 package com.blink.backend;
 
+import com.blink.backend.domain.integration.n8n.N8nProperties;
 import com.blink.backend.domain.integration.waha.WahaProperties;
 import jakarta.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;
@@ -15,7 +16,7 @@ import java.util.TimeZone;
 @EnableFeignClients
 @SpringBootApplication
 @EnableAsync(proxyTargetClass = true)
-@EnableConfigurationProperties(WahaProperties.class)
+@EnableConfigurationProperties({WahaProperties.class, N8nProperties.class})
 @EntityScan("com.blink.backend.persistence.entity.*")
 @EnableJpaRepositories(basePackages = "com.blink.backend.persistence.*")
 public class BlinkBackendApplication {

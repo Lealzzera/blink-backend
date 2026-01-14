@@ -4,7 +4,8 @@ import com.blink.backend.domain.exception.NotFoundException
 import com.blink.backend.domain.integration.waha.dto.CreateSessionWahaDto
 import com.blink.backend.domain.integration.waha.dto.SendWahaMessageRequest
 import com.blink.backend.domain.integration.waha.dto.SessionStatusWahaResponse
-import com.blink.backend.domain.integration.waha.dto.WahaChatHistory
+import com.blink.backend.domain.integration.waha.dto.ChatHistory
+import com.blink.backend.domain.integration.waha.dto.WahaContactDto
 import com.blink.backend.domain.integration.waha.dto.WahaConversationsDto
 import com.blink.backend.domain.integration.waha.dto.WahaLid
 import com.blink.backend.domain.integration.waha.dto.WahaPresenceDto
@@ -18,6 +19,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
 import kotlin.collections.List
+import kotlin.jvm.java
 
 @Service
 class WahaClientImpl(
@@ -34,8 +36,8 @@ class WahaClientImpl(
             .uri("/api/{sessionName}/auth/qr", sessionName)
             .exchange { _, response ->
                 logger.info("Get QR code completed, sessionName=$sessionName, statusCode=${response.statusCode}")
-                response.bodyTo(ByteArray::class.java)!!
-            }
+                response.bodyTo(ByteArray::class.java)
+            }!!
     }
 
     override fun logoutSession(session: String) {
@@ -118,7 +120,7 @@ class WahaClientImpl(
         chatId: String,
         limit: Int,
         offset: Int
-    ): List<WahaChatHistory> {
+    ): List<ChatHistory> {
         logger.info("Getting messages, session=$session, chatId=$chatId, limit=$limit, offset=$offset")
         return wahaRestClient.get()
             .uri(
@@ -127,7 +129,7 @@ class WahaClientImpl(
             )
             .exchange { _, response ->
                 logger.info("Get messages completed, session=$session, chatId=$chatId, statusCode=${response.statusCode}")
-                response.bodyTo(object : ParameterizedTypeReference<List<WahaChatHistory>>() {})
+                response.bodyTo(object : ParameterizedTypeReference<List<ChatHistory>>() {})
             }
             ?: emptyList()
     }
@@ -199,6 +201,20 @@ class WahaClientImpl(
                 when (response.statusCode) {
                     HttpStatus.NOT_FOUND -> null
                     HttpStatus.OK -> response.bodyTo(WahaLid::class.java)
+                    else -> null
+                }
+            }
+    }
+
+    override fun getContact(session: String, contactId: String): WahaContactDto? {
+        logger.info("Getting contact, session=$session, contactId=$contactId")
+        return wahaRestClient.get()
+            .uri("/api/contacts?contactId={contactId}&session={session}", contactId, session)
+            .exchange { _, response ->
+                logger.info("Get contact completed, session=$session, contactId=$contactId, statusCode=${response.statusCode}")
+                when (response.statusCode) {
+                    HttpStatus.NOT_FOUND -> null
+                    HttpStatus.OK -> response.bodyTo(WahaContactDto::class.java)
                     else -> null
                 }
             }

@@ -1,28 +1,69 @@
 package com.blink.backend.domain.chat.service
 
-import com.blink.backend.controller.message.dto.SendMessageRequest
+import com.blink.backend.controller.chat.dto.SendMessageRequest
 import com.blink.backend.domain.chat.model.WhatsAppConversation
 import com.blink.backend.domain.chat.model.WhatsAppConversationHistory
+import com.blink.backend.domain.chat.model.WhatsAppStatus
+import com.blink.backend.domain.exception.message.WhatsAppNotConnectedException
 import com.blink.backend.domain.integration.waha.WahaClient
 import com.blink.backend.domain.integration.waha.WahaPhoneResolverService
+import com.blink.backend.domain.integration.waha.dto.ChatHistory
+import com.blink.backend.domain.integration.waha.dto.SendWahaMessageRequest
+import com.blink.backend.domain.integration.waha.dto.WahaPresenceDto
 import com.blink.backend.domain.model.Clinic
 import com.blink.backend.domain.model.Patient
 import com.blink.backend.persistence.repository.PatientRepository
-import org.springframework.data.domain.Page
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.time.Duration
 
 @Service
 class WhatsAppChatServiceWahaImpl(
-    val wahaClientImpl: WahaClient,
+    val wahaClient: WahaClient,
     val patientRepository: PatientRepository,
     val wahaPhoneResolverService: WahaPhoneResolverService,
+    val wahaAuthService: WhatsAppAuthService,
+    val logger: Logger = LoggerFactory.getLogger(WhatsAppChatServiceWahaImpl::class.java)
 ) : WhatsAppChatService {
 
     override fun sendMessageByClinic(
         clinic: Clinic,
-        sendMessageRequest: SendMessageRequest
+        messageToSend: SendMessageRequest
     ) {
-        TODO("Not yet implemented")
+        val status = wahaAuthService.getStatusByClinic(clinic).status
+        require(status != WhatsAppStatus.Status.DISCONNECTED) {
+            throw WhatsAppNotConnectedException()
+        }
+
+        Thread.sleep(Duration.ofSeconds(messageToSend.wait.toLong()))
+
+        val chatId = "${messageToSend.phoneNumber}@c.us"
+        val typingTimeMs = 70L * messageToSend.message.length
+
+        val presence = WahaPresenceDto.builder()
+            .session(clinic.wahaSession)
+            .chatId(chatId)
+            .build()
+
+        runCatching {
+            wahaClient.sendSeen(presence)
+        }.onFailure {
+            logger.warn("Seen not sent, continuing flow: {}", it.message)
+        }
+
+        wahaClient.startTyping(presence)
+        Thread.sleep(typingTimeMs)
+
+        wahaClient.sendMessage(
+            SendWahaMessageRequest.builder()
+                .session(clinic.wahaSession)
+                .phoneNumber(chatId)
+                .text(messageToSend.message)
+                .build()
+        )
+
+        wahaClient.stopTyping(presence)
     }
 
     override fun getConversationsByClinic(
@@ -31,7 +72,7 @@ class WhatsAppChatServiceWahaImpl(
         pageSize: Int
     ): List<WhatsAppConversation> {
         val wahaConversations =
-            wahaClientImpl.getOverview(clinic.wahaSession, limit = pageSize, offset = page * pageSize)
+            wahaClient.getOverview(clinic.wahaSession, limit = pageSize, offset = page * pageSize)
 
         return wahaConversations
             .filter { conversationsDto -> wahaPhoneResolverService.isIndividualChat(conversationsDto.chat.id) }
@@ -42,8 +83,8 @@ class WhatsAppChatServiceWahaImpl(
                 val patient: Patient =
                     patientRepository.findByClinic_CodeAndPhoneNumber(clinic.code, phoneNumber)
                         .map { entity -> entity.toDomain() }
-                        .orElseGet { Patient(aiAnswer = true, name = "", phoneNumber = phoneNumber) }
-                wahaConversation.toDomain(patient.aiAnswer, patientName = patient.name, phoneNumber = phoneNumber)
+                        .orElseThrow()
+                wahaConversation.toDomain(patient.aiAnswer!!, patientName = patient.name, phoneNumber = phoneNumber)
             }
 
     }
@@ -53,7 +94,13 @@ class WhatsAppChatServiceWahaImpl(
         phoneNumber: String,
         page: Int,
         pageSize: Int
-    ): Page<WhatsAppConversationHistory> {
-        TODO("Not yet implemented")
+    ): List<WhatsAppConversationHistory> {
+        return wahaClient.getMessages(
+            session = clinic.wahaSession,
+            chatId = "$phoneNumber@c.us",
+            limit = pageSize,
+            offset = page * pageSize
+        )
+            .map(ChatHistory::toDomain)
     }
 }

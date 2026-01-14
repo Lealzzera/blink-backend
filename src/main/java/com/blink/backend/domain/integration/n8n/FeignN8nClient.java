@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @Component
 @FeignClient(name = "n8n-client", url = "${n8n-url}", dismiss404 = true)
-public interface N8nClient {
+public interface FeignN8nClient {
 
     @PostMapping("n8n/receive-message")
     ResponseEntity<String> receiveMessage(@RequestBody N8nMessageReceived message);

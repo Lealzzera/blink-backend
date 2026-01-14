@@ -1,8 +1,11 @@
 package com.blink.backend.config;
 
 import com.blink.backend.domain.exception.InvalidTokenException;
+import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.domain.integration.supabase.SupabaseAuthService;
 import com.blink.backend.domain.model.auth.AuthenticatedUser;
+import com.blink.backend.persistence.entity.clinic.ClinicEntity;
+import com.blink.backend.persistence.repository.clinic.ClinicRepositoryService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +30,7 @@ import java.io.IOException;
 public class AuthFilter extends OncePerRequestFilter {
 
     private final SupabaseAuthService supabaseAuthService;
+    private final ClinicRepositoryService clinicRepositoryService;
     @Value("${n8n-auth-api-key}")
     private final String n8nApiKeyValue;
     @Value("${n8n-username}")
@@ -71,7 +75,19 @@ public class AuthFilter extends OncePerRequestFilter {
         }
         log.debug("X-api-key header valid");
 
-        final AuthenticatedUser authenticatedUser = AuthenticatedUser.getN8nAuthenticatedUser();
+        final String clinicCode = request.getHeader("X-Clinic-Code");
+        ClinicEntity clinic = null;
+        if (clinicCode != null && !clinicCode.isBlank()) {
+            try {
+                clinic = clinicRepositoryService.findByCode(clinicCode);
+                log.debug("Clinic found for code: {}", clinicCode);
+            } catch (NotFoundException e) {
+                log.warn("Clinic not found for code: {}", clinicCode);
+                throw new BadCredentialsException("Invalid clinic code: " + clinicCode);
+            }
+        }
+
+        final AuthenticatedUser authenticatedUser = AuthenticatedUser.getN8nAuthenticatedUser(clinic);
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                 authenticatedUser,
                 null,

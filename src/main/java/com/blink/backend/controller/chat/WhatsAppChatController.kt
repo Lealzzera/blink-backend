@@ -1,5 +1,6 @@
 package com.blink.backend.controller.chat
 
+import com.blink.backend.controller.chat.dto.SendMessageRequest
 import com.blink.backend.domain.chat.model.WhatsAppConversation
 import com.blink.backend.domain.chat.model.WhatsAppConversationHistory
 import com.blink.backend.domain.chat.service.WhatsAppChatService
@@ -11,6 +12,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -46,27 +49,26 @@ class WhatsAppChatController(
         @RequestParam(required = false, defaultValue = "0") page: Int,
         @RequestParam(required = false, defaultValue = "20") pageSize: Int
     ): ResponseEntity<List<WhatsAppConversationHistory>> {
-        TODO("NOT IMPLEMENTED")
-        /*return ResponseEntity.ok(
+        return ResponseEntity.ok(
             whatsAppChatService.getConversationHistoryByClinicAndNumber(
                 clinic = user.clinic.toDomain(),
                 phoneNumber = phoneNumber,
                 page = page,
                 pageSize = pageSize
             )
-        )*/
+        )
     }
-    /*
+
 
     @PostMapping("send-message")
-    @Throws(WhatsAppNotConnectedException::class, InterruptedException::class)
     fun sendMessage(
         @AuthenticationPrincipal user: AuthenticatedUser,
-        @RequestBody sendMessageRequest: SendMessageRequest?
-    ): ResponseEntity<Void?> {
-        whatsAppService!!.sendMessage(user.getClinic(), sendMessageRequest)
-        return ResponseEntity.ok().build<Void?>()
+        @RequestBody messageToSend: SendMessageRequest
+    ): ResponseEntity<Unit> {
+        whatsAppChatService.sendMessageByClinic(user.clinic.toDomain(), messageToSend)
+        return ResponseEntity.ok().build()
     }
+    /*
 
     @PutMapping("ai-answer/{phoneNumber}")
     @Throws(NotFoundException::class)
