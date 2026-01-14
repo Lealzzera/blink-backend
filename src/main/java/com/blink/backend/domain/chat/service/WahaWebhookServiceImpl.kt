@@ -17,7 +17,9 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneId
 
 @Service
 class WahaWebhookServiceImpl(
@@ -33,6 +35,7 @@ class WahaWebhookServiceImpl(
 ) : WahaWebhookService {
     override fun receiveMessage(whatsAppMessage: WhatsAppMessage) {
         val clinicEntity = clinicRepositoryService.findByWahaSession(whatsAppMessage.session)
+        val clinicConfiguration = clinicConfigurationRepository.findByClinicId(clinicEntity.id)
         val clinic: Clinic = clinicEntity.toDomain()
 
         logger.info("Resolving received message phone number, session=${whatsAppMessage.session}")
@@ -58,7 +61,7 @@ class WahaWebhookServiceImpl(
         val patient: Patient = patientRepositoryService.findByClinicCodeAndPhoneNumber(clinic.code, phoneNumber)
             ?.toDomain()
             ?: run {
-                val clinicConfiguration = clinicConfigurationRepository.findByClinicId(clinicEntity.id)
+
                 logger.info("Creating new patient, clinicCode=${clinic.code}, phoneNumber=$phoneNumber")
                 val newPatient = PatientEntity.builder()
                     .phoneNumber(phoneNumber)
@@ -79,7 +82,7 @@ class WahaWebhookServiceImpl(
             return
         }
 
-        sendReceivedMessageToN8n(whatsAppMessage, patient, clinic)
+        sendReceivedMessageToN8n(whatsAppMessage, patient, clinic, clinicConfiguration.aiName)
     }
 
     override fun sessionStatusUpdated(
@@ -126,7 +129,8 @@ class WahaWebhookServiceImpl(
     private fun sendReceivedMessageToN8n(
         whatsAppMessage: WhatsAppMessage,
         patient: Patient,
-        clinic: Clinic
+        clinic: Clinic,
+        aiName: String
     ) {
         logger.info("Sending message to N8n, clinicId={}, phoneNumber={}", clinic.code, whatsAppMessage.phoneNumber)
 
@@ -143,8 +147,10 @@ class WahaWebhookServiceImpl(
                     appointmentsData = appointment.map { MessageReceived.AppointmentsData.fromAppointment(it) },
                     clinicName = clinic.name,
                     clinicCode = clinic.code,
-                    aiName = "",
-                    sentAt = LocalDateTime.now()
+                    aiName = aiName,
+                    sentAt = Instant.ofEpochSecond(whatsAppMessage.timestamp)
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDateTime()
                 )
             )
         } catch (e: Exception) {

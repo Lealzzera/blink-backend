@@ -49,6 +49,9 @@ public class ClinicConfiguration {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "ai_name")
+    private String aiName;
+
     public int getMaximumOverbookingAppointments() {
         return getAllowOverbooking() ? 2 : 1;
     }
