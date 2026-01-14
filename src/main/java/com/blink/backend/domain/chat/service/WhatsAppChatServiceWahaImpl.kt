@@ -109,6 +109,10 @@ class WhatsAppChatServiceWahaImpl(
             limit = pageSize,
             offset = page * pageSize
         )
-            .map(ChatHistory::toDomain)
+
+            .map { conversation ->
+                logger.info("Converting chat history, {}", conversation)
+                conversation.toDomain()
+            }
     }
 }
