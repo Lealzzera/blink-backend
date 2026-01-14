@@ -84,7 +84,14 @@ class WhatsAppChatServiceWahaImpl(
                 val patient: Patient =
                     patientRepository.findByClinic_CodeAndPhoneNumber(clinic.code, phoneNumber)
                         .map { entity -> entity.toDomain() }
-                        .orElseThrow()
+                        .orElseGet {
+                            Patient(
+                                null,
+                                aiAnswer = null,
+                                phoneNumber = phoneNumber,
+                                name = wahaConversation.name ?: ""
+                            )
+                        }
                 wahaConversation.toDomain(patient.aiAnswer!!, patientName = patient.name, phoneNumber = phoneNumber)
             }
 
