@@ -87,7 +87,7 @@ class WhatsAppChatServiceWahaImpl(
                         .orElseGet {
                             Patient(
                                 null,
-                                aiAnswer = null,
+                                aiAnswer = false,
                                 phoneNumber = phoneNumber,
                                 name = wahaConversation.name ?: ""
                             )
