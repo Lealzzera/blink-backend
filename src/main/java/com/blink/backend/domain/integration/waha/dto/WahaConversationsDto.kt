@@ -1,6 +1,7 @@
 package com.blink.backend.domain.integration.waha.dto
 
 import com.blink.backend.domain.chat.model.WhatsAppConversation
+import com.blink.backend.domain.util.LowerCamelCaseDto
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.annotation.JsonNaming
@@ -13,7 +14,7 @@ data class WahaConversationsDto(
     val name: String? = null,
     @JsonProperty("lastMessage") val lastMessage: LastMessageDto,
     @JsonProperty("_chat") val chat: WahaChatDto,
-) {
+)  {
     data class WahaChatDto(
         val id: String,
     )
@@ -25,9 +26,7 @@ data class WahaConversationsDto(
         val fromMe: Boolean,
         val ackName: AckStatus,
         @JsonProperty("_data") val data: WahaConversationData,
-    ) {
-
-    }
+    ) : LowerCamelCaseDto()
 
     @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy::class)
     data class WahaConversationData(

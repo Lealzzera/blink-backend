@@ -1,6 +1,7 @@
 package com.blink.backend.domain.integration.waha.dto
 
 import com.blink.backend.domain.chat.model.WhatsAppConversationHistory
+import com.blink.backend.domain.util.LowerCamelCaseDto
 import java.time.Instant
 import java.time.ZoneId
 
@@ -11,7 +12,7 @@ data class ChatHistory(
     val ackName: AckStatus,
     val hasMedia: Boolean,
     val media: Media? = null,
-) {
+) : LowerCamelCaseDto() {
     fun toDomain(): WhatsAppConversationHistory {
         val message = when {
             hasMedia && media?.mimetype != null -> "[${media.mimetype}] ${body ?: ""}"
