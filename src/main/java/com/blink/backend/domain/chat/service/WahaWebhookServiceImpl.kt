@@ -82,7 +82,7 @@ class WahaWebhookServiceImpl(
             return
         }
 
-        sendReceivedMessageToN8n(whatsAppMessage, patient, clinic, clinicConfiguration.aiName)
+        sendReceivedMessageToN8n(resolvedMessage, patient, clinic, clinicConfiguration.aiName)
     }
 
     override fun sessionStatusUpdated(
