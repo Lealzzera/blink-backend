@@ -1,7 +1,6 @@
 package com.blink.backend.domain.integration.n8n
 
 import com.blink.backend.domain.integration.n8n.dto.MessageReceived
-import com.blink.backend.domain.integration.waha.dto.WahaLid
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service

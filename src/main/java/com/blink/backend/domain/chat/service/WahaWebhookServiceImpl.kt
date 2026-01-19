@@ -54,7 +54,7 @@ class WahaWebhookServiceImpl(
             return
         }
 
-        val resolvedMessage = whatsAppMessage.copy(phoneNumber = phoneNumber)
+        val resolvedMessage = whatsAppMessage.copy(phoneNumber = phoneNumber.replace("@c.us", ""))
 
         sendReceivedMessageToBlinkFe(resolvedMessage, clinicCode = clinic.code)
 

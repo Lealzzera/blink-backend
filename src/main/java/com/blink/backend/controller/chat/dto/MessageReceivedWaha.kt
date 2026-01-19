@@ -14,7 +14,7 @@ data class MessageReceivedWaha(
     @JsonNaming(PropertyNamingStrategies.LowerCamelCaseStrategy::class)
     data class WahaPayload(
         val timestamp: Long,
-        @JsonProperty("body") val message: String,
+        @JsonProperty("body") val message: String?,
         val hasMedia: Boolean,
         val fromMe: Boolean,
         val ackName: AckStatus,
@@ -25,7 +25,7 @@ data class MessageReceivedWaha(
         return WhatsAppMessage(
             session = session,
             phoneNumber = payload.from,
-            message = payload.message,
+            message = payload.message ?:"",
             fromMe = payload.fromMe,
             ackStatus = payload.ackName.toDomain(),
             timestamp = payload.timestamp,

@@ -105,9 +105,10 @@ public class BeansConfiguration {
 
     @Bean
     public RestClient wahaRestClient(
+            RestClient.Builder builder,
             WahaProperties wahaProperties
     ) {
-        return RestClient.builder()
+        return builder
                 .baseUrl(wahaProperties.getBaseUrl())
                 .defaultHeader("x-api-key", wahaProperties.getApiKey())
                 .requestFactory(new HttpComponentsClientHttpRequestFactory())
@@ -116,9 +117,10 @@ public class BeansConfiguration {
 
     @Bean
     public RestClient n8nRestClient(
+            RestClient.Builder builder,
             N8nProperties n8nProperties
     ) {
-        return RestClient.builder()
+        return builder
                 .baseUrl(n8nProperties.getBaseUrl())
                 .requestFactory(new HttpComponentsClientHttpRequestFactory())
                 .build();
