@@ -15,7 +15,8 @@ class N8nClientImpl(
     private val logger = LoggerFactory.getLogger(N8nClientImpl::class.java)
 
     override fun receiveMessage(message: MessageReceived) {
-        logger.info("Sending message to n8n, sender=${message.sender}, clinicCode=${message.clinicCode}")
+        logger.info("Sending message to n8n, sender=${message.sender}, clinicCode=${message.clinicCode}, " +
+                "base-url=${n8nProperties.baseUrl}, endpoint=${n8nProperties.receiveMessageEndpoint}")
         n8nRestClient.post()
             .uri(n8nProperties.receiveMessageEndpoint)
             .body(message)
