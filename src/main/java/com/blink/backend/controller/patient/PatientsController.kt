@@ -2,6 +2,7 @@ package com.blink.backend.controller.patient
 
 import com.blink.backend.controller.patient.dto.CreatePatientRequest
 import com.blink.backend.controller.patient.dto.PatientDto
+import com.blink.backend.controller.patient.dto.UpdatePatientRequest
 import com.blink.backend.domain.exception.NotFoundException
 import com.blink.backend.domain.model.auth.AuthenticatedUser
 import com.blink.backend.domain.patient.service.PatientsService
@@ -14,7 +15,7 @@ import java.net.URI
 import java.util.UUID
 
 @RestController
-@RequestMapping("api/v1/patient")
+@RequestMapping("api/v2/patient")
 @Tag(name = "Patients", description = "APIs para gerenciamento de pacientes")
 class PatientsController(private val patientsService: PatientsService) {
 
@@ -46,14 +47,14 @@ class PatientsController(private val patientsService: PatientsService) {
         return ResponseEntity.ok(patientsService.getPatientByCode(code))
     }
 
-    @PatchMapping("{code}/name")
-    @Operation(summary = "Atualiza o nome do paciente")
+    @PutMapping("{code}")
+    @Operation(summary = "Atualiza os dados do paciente")
     @Throws(NotFoundException::class)
-    fun updatePatientName(
+    fun updatePatient(
         @PathVariable code: UUID,
-        @RequestBody name: String
+        @RequestBody request: UpdatePatientRequest
     ): ResponseEntity<Unit> {
-        patientsService.updatePatientName(code, name)
+        patientsService.updatePatient(code, request)
         return ResponseEntity.noContent().build()
     }
 }

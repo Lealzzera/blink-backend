@@ -2,6 +2,7 @@ package com.blink.backend.domain.patient.service
 
 import com.blink.backend.controller.patient.dto.CreatePatientRequest
 import com.blink.backend.controller.patient.dto.PatientDto
+import com.blink.backend.controller.patient.dto.UpdatePatientRequest
 import com.blink.backend.domain.exception.NotFoundException
 import com.blink.backend.persistence.entity.appointment.PatientEntity
 import com.blink.backend.persistence.entity.clinic.ClinicEntity
@@ -40,11 +41,12 @@ class PatientsServiceImpl(
         return PatientDto.fromEntity(patient)
     }
 
-    override fun updatePatientName(code: UUID, name: String) {
+    override fun updatePatient(code: UUID, request: UpdatePatientRequest) {
         val patient = patientRepository.findByCode(code)
             ?: throw NotFoundException("Paciente")
 
-        patient.name = name
+        request.name?.let { patient.name = it }
+
         patientRepository.save(patient)
     }
 }
