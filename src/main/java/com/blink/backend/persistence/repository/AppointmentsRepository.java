@@ -16,6 +16,6 @@ public interface AppointmentsRepository extends JpaRepository<AppointmentEntity,
 
     Integer countByClinicCodeAndScheduledTimeBetweenAndAppointmentStatusNot(String clinicCode, LocalDateTime scheduledTime, LocalDateTime scheduledEnd, AppointmentStatus appointmentStatus);
 
-    List<AppointmentEntity> findAllByPatientIdAndScheduledTimeAfter(Integer patientId, LocalDateTime localDateTime);
+    List<AppointmentEntity> findAllByPatientCodeAndScheduledTimeAfter(java.util.UUID patientCode, LocalDateTime localDateTime);
 
 }

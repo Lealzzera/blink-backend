@@ -23,6 +23,7 @@ repositories {
 
 dependencies {
     implementation libs.bundles.spring.starter
+    implementation libs.bundles.flyway
     implementation libs.postgresql
     compileOnly libs.lombok
     annotationProcessor libs.lombok

@@ -15,7 +15,7 @@ data class CreateAppointmentsDTO(
         return Appointment(
             id = null,
             patient = Patient(
-                id = null,
+                code = null,
                 phoneNumber = patientNumber,
                 name = patientName,
                 aiAnswer = null

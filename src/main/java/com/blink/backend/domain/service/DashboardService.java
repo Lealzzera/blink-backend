@@ -2,7 +2,6 @@ package com.blink.backend.domain.service;
 
 
 import com.blink.backend.controller.dashboard.DashboardDTO;
-import com.blink.backend.persistence.entity.appointment.AppointmentStatus;
 import com.blink.backend.persistence.repository.DashboardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

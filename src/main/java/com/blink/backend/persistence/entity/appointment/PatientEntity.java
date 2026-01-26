@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Setter
 @Getter
@@ -30,6 +31,9 @@ public class PatientEntity {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(name = "code", updatable = false, nullable = false, unique = true)
+    private UUID code;
 
     @Column(name = "name")
     private String name;
@@ -49,7 +53,7 @@ public class PatientEntity {
     private Boolean aiAnswer = true;
 
     public Patient toDomain() {
-        return new Patient(id, phoneNumber, name, aiAnswer);
+        return new Patient(code, phoneNumber, name, aiAnswer);
     }
 }
 

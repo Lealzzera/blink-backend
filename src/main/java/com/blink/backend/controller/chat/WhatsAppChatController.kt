@@ -10,18 +10,12 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import lombok.RequiredArgsConstructor
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v2/whats-app/chat")
-@Tag(name = "Whats-App Chat Controller", description = "Novas apis de chat do whats-app")
+@Tag(name = "WhatsApp Chat", description = "APIs para gerenciamento de conversas do WhatsApp")
 class WhatsAppChatController(
     val whatsAppChatService: WhatsAppChatService
 ) {
@@ -43,6 +37,7 @@ class WhatsAppChatController(
     }
 
     @GetMapping("{phoneNumber}")
+    @Operation(summary = "Retorna o histórico de mensagens de uma conversa")
     fun getChatHistory(
         @AuthenticationPrincipal user: AuthenticatedUser,
         @PathVariable phoneNumber: String,
@@ -61,6 +56,7 @@ class WhatsAppChatController(
 
 
     @PostMapping("send-message")
+    @Operation(summary = "Envia uma mensagem para um contato")
     fun sendMessage(
         @AuthenticationPrincipal user: AuthenticatedUser,
         @RequestBody messageToSend: SendMessageRequest
