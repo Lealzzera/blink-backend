@@ -1,7 +1,7 @@
 package com.blink.backend.config;
 
-import com.blink.backend.domain.integration.supabase.SupabaseAuthService;
 import com.blink.backend.domain.integration.n8n.N8nProperties;
+import com.blink.backend.domain.integration.supabase.SupabaseAuthService;
 import com.blink.backend.domain.integration.waha.WahaProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -13,7 +13,6 @@ import jakarta.servlet.ServletContext;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;

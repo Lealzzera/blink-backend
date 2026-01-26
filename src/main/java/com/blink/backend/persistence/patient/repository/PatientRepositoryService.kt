@@ -1,6 +1,7 @@
 package com.blink.backend.persistence.patient.repository
 
 import com.blink.backend.persistence.entity.appointment.PatientEntity
+import com.blink.backend.persistence.patient.PatientRepositoryKt
 import org.springframework.stereotype.Service
 
 @Service

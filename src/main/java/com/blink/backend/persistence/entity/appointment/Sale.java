@@ -56,8 +56,4 @@ public class Sale {
     @Column(name = "registered_at")
     private LocalDateTime registeredAt;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "service_type_id")
-    private ServiceType serviceType;
-
 }

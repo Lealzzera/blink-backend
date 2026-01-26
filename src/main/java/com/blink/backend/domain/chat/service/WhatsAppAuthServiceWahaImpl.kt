@@ -4,7 +4,7 @@ import com.blink.backend.domain.chat.model.WhatsAppStatus
 import com.blink.backend.domain.exception.message.WhatsAppAlreadyConnectedException
 import com.blink.backend.domain.exception.message.WhatsAppNotConnectedException
 import com.blink.backend.domain.integration.waha.WahaClient
-import com.blink.backend.domain.integration.waha.dto.*
+import com.blink.backend.domain.integration.waha.dto.WahaSessionStatus
 import com.blink.backend.domain.model.Clinic
 import org.springframework.stereotype.Service
 import java.util.logging.Logger

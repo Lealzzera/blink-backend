@@ -3,6 +3,7 @@ package com.blink.backend.config;
 import com.blink.backend.domain.exception.InvalidTokenException;
 import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.domain.integration.supabase.SupabaseAuthService;
+import com.blink.backend.domain.integration.waha.WahaProperties;
 import com.blink.backend.domain.model.auth.AuthenticatedUser;
 import com.blink.backend.persistence.entity.clinic.ClinicEntity;
 import com.blink.backend.persistence.repository.clinic.ClinicRepositoryService;
@@ -33,12 +34,7 @@ public class AuthFilter extends OncePerRequestFilter {
     private final ClinicRepositoryService clinicRepositoryService;
     @Value("${n8n-auth-api-key}")
     private final String n8nApiKeyValue;
-    @Value("${n8n-username}")
-    private final String n8nUsername;
-    @Value("${n8n-password}")
-    private final String n8nPassword;
-    @Value("${WAHA_API_KEY}")
-    private final String wahaApiKey;
+    private final WahaProperties wahaProperties;
     @Qualifier("handlerExceptionResolver")
     private final HandlerExceptionResolver resolver;
 
@@ -69,7 +65,7 @@ public class AuthFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         final String apiKeyHeader = request.getHeader("X-Api-Key");
-        if (apiKeyHeader == null || (!apiKeyHeader.equals(n8nApiKeyValue) && !apiKeyHeader.equals(wahaApiKey))) {
+        if (apiKeyHeader == null || (!apiKeyHeader.equals(n8nApiKeyValue) && !apiKeyHeader.equals(wahaProperties.getApiKey()))) {
             log.debug("X-api-key header invalid. Trying supabase authentication");
             return false;
         }

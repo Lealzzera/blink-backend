@@ -1,12 +1,6 @@
 package com.blink.backend.domain.integration.waha
 
-import com.blink.backend.domain.integration.waha.dto.ChatHistory
-import com.blink.backend.domain.integration.waha.dto.SendWahaMessageRequest
-import com.blink.backend.domain.integration.waha.dto.SessionStatusWahaResponse
-import com.blink.backend.domain.integration.waha.dto.WahaConversationsDto
-import com.blink.backend.domain.integration.waha.dto.WahaContactDto
-import com.blink.backend.domain.integration.waha.dto.WahaLid
-import com.blink.backend.domain.integration.waha.dto.WahaPresenceDto
+import com.blink.backend.domain.integration.waha.dto.*
 
 interface WahaClient {
     //auth endpoints
@@ -20,9 +14,9 @@ interface WahaClient {
     fun sendMessage(sendWahaMessageRequest: SendWahaMessageRequest)
     fun getMessages(session: String, chatId: String, limit: Int, offset: Int): List<ChatHistory>
     fun getOverview(session: String, limit: Int, offset: Int): List<WahaConversationsDto>
-    fun sendSeen(wahaPresenceDto: WahaPresenceDto)
-    fun startTyping(wahaPresenceDto: WahaPresenceDto)
-    fun stopTyping(wahaPresenceDto: WahaPresenceDto)
+    fun sendSeen(wahaSessionChatDto: WahaSessionChatDto)
+    fun startTyping(wahaSessionChatDto: WahaSessionChatDto)
+    fun stopTyping(wahaSessionChatDto: WahaSessionChatDto)
 
     //contacts endpoints
     fun getPhoneNumberByLid(session: String, lid: String): WahaLid?
