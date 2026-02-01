@@ -1,16 +1,7 @@
 package com.blink.backend.domain.integration.waha
 
 import com.blink.backend.domain.exception.NotFoundException
-import com.blink.backend.domain.integration.waha.dto.CreateSessionWahaDto
-import com.blink.backend.domain.integration.waha.dto.SendWahaMessageRequest
-import com.blink.backend.domain.integration.waha.dto.SessionStatusWahaResponse
-import com.blink.backend.domain.integration.waha.dto.ChatHistory
-import com.blink.backend.domain.integration.waha.dto.WahaContactDto
-import com.blink.backend.domain.integration.waha.dto.WahaConversationsDto
-import com.blink.backend.domain.integration.waha.dto.WahaLid
-import com.blink.backend.domain.integration.waha.dto.WahaPresenceDto
-import com.blink.backend.domain.integration.waha.dto.WahaSessionStatus
-import com.blink.backend.domain.integration.waha.dto.WebhookEventTypeWaha
+import com.blink.backend.domain.integration.waha.dto.*
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.LoggerFactory
@@ -18,8 +9,6 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
-import kotlin.collections.List
-import kotlin.jvm.java
 
 @Service
 class WahaClientImpl(
@@ -160,33 +149,33 @@ class WahaClientImpl(
         }
     }
 
-    override fun sendSeen(wahaPresenceDto: WahaPresenceDto) {
-        logger.info("Sending seen, session=${wahaPresenceDto.session}, chatId=${wahaPresenceDto.chatId}")
+    override fun sendSeen(wahaSessionChatDto: WahaSessionChatDto) {
+        logger.info("Sending seen, session=${wahaSessionChatDto.session}, chatId=${wahaSessionChatDto.chatId}")
         wahaRestClient.post()
             .uri("/api/sendSeen")
-            .body(wahaPresenceDto)
+            .body(wahaSessionChatDto)
             .exchange { _, response ->
-                logger.info("Send seen completed, session=${wahaPresenceDto.session}, chatId=${wahaPresenceDto.chatId}, statusCode=${response.statusCode}")
+                logger.info("Send seen completed, session=${wahaSessionChatDto.session}, chatId=${wahaSessionChatDto.chatId}, statusCode=${response.statusCode}")
             }
     }
 
-    override fun startTyping(wahaPresenceDto: WahaPresenceDto) {
-        logger.info("Starting typing, session=${wahaPresenceDto.session}, chatId=${wahaPresenceDto.chatId}")
+    override fun startTyping(wahaSessionChatDto: WahaSessionChatDto) {
+        logger.info("Starting typing, session=${wahaSessionChatDto.session}, chatId=${wahaSessionChatDto.chatId}")
         wahaRestClient.post()
             .uri("/api/startTyping")
-            .body(wahaPresenceDto)
+            .body(wahaSessionChatDto)
             .exchange { _, response ->
-                logger.info("Start typing completed, session=${wahaPresenceDto.session}, chatId=${wahaPresenceDto.chatId}, statusCode=${response.statusCode}")
+                logger.info("Start typing completed, session=${wahaSessionChatDto.session}, chatId=${wahaSessionChatDto.chatId}, statusCode=${response.statusCode}")
             }
     }
 
-    override fun stopTyping(wahaPresenceDto: WahaPresenceDto) {
-        logger.info("Stopping typing, session=${wahaPresenceDto.session}, chatId=${wahaPresenceDto.chatId}")
+    override fun stopTyping(wahaSessionChatDto: WahaSessionChatDto) {
+        logger.info("Stopping typing, session=${wahaSessionChatDto.session}, chatId=${wahaSessionChatDto.chatId}")
         wahaRestClient.post()
             .uri("/api/stopTyping")
-            .body(wahaPresenceDto)
+            .body(wahaSessionChatDto)
             .exchange { _, response ->
-                logger.info("Stop typing completed, session=${wahaPresenceDto.session}, chatId=${wahaPresenceDto.chatId}, statusCode=${response.statusCode}")
+                logger.info("Stop typing completed, session=${wahaSessionChatDto.session}, chatId=${wahaSessionChatDto.chatId}, statusCode=${response.statusCode}")
             }
     }
 

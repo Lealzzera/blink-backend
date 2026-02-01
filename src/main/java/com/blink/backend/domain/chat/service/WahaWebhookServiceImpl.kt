@@ -135,8 +135,9 @@ class WahaWebhookServiceImpl(
         logger.info("Sending message to N8n, clinicId={}, phoneNumber={}", clinic.code, whatsAppMessage.phoneNumber)
 
         val patientName = patient.name
-        val appointment = appointmentsRepository
-            .findAllByPatientIdAndScheduledTimeAfter(patient.id, LocalDateTime.now().minusDays(7))
+        val appointment = patient.code?.let {
+            appointmentsRepository.findAllByPatientCodeAndScheduledTimeAfter(it, LocalDateTime.now().minusDays(7))
+        } ?: emptyList()
 
         try {
             n8nClient.receiveMessage(

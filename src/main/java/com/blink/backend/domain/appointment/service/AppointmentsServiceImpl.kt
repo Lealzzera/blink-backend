@@ -6,9 +6,9 @@ import com.blink.backend.domain.model.Appointment
 import com.blink.backend.domain.model.AppointmentUpdate
 import com.blink.backend.domain.model.Clinic
 import com.blink.backend.domain.model.WorkdayAvailability
+import com.blink.backend.persistence.appointment.service.AppointmentsDatabaseService
 import com.blink.backend.persistence.entity.appointment.AppointmentEntity
 import com.blink.backend.persistence.repository.AppointmentsRepository
-import com.blink.backend.persistence.appointment.service.AppointmentsDatabaseService
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 

@@ -8,7 +8,7 @@ import com.blink.backend.domain.exception.message.WhatsAppNotConnectedException
 import com.blink.backend.domain.integration.waha.WahaClient
 import com.blink.backend.domain.integration.waha.WahaPhoneResolverService
 import com.blink.backend.domain.integration.waha.dto.SendWahaMessageRequest
-import com.blink.backend.domain.integration.waha.dto.WahaPresenceDto
+import com.blink.backend.domain.integration.waha.dto.WahaSessionChatDto
 import com.blink.backend.domain.model.Clinic
 import com.blink.backend.domain.model.Patient
 import com.blink.backend.persistence.repository.PatientRepository
@@ -38,10 +38,10 @@ class WhatsAppChatServiceWahaImpl(
 
         val chatId = "${messageToSend.phoneNumber}@c.us"
         val typingTimeMs = 70L * messageToSend.message.length
-        val presence = WahaPresenceDto.builder()
-            .session(clinic.wahaSession)
-            .chatId(chatId)
-            .build()
+        val presence = WahaSessionChatDto(
+            session = clinic.wahaSession,
+            chatId = chatId,
+        )
         val messageRequest = SendWahaMessageRequest.builder()
             .session(clinic.wahaSession)
             .phoneNumber(chatId)
@@ -84,7 +84,7 @@ class WhatsAppChatServiceWahaImpl(
                         .map { entity -> entity.toDomain() }
                         .orElseGet {
                             Patient(
-                                null,
+                                code = null,
                                 aiAnswer = false,
                                 phoneNumber = phoneNumber,
                                 name = wahaConversation.name ?: ""

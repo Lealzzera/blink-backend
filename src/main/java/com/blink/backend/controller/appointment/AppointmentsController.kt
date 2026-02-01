@@ -4,8 +4,10 @@ import com.blink.backend.controller.appointment.dto.AvailabilityDTO
 import com.blink.backend.controller.appointment.dto.AvailabilityDTO.Companion.fromDomain
 import com.blink.backend.controller.appointment.dto.CreateAppointmentsDTO
 import com.blink.backend.controller.appointment.dto.UpdateAppointmentDto
-import com.blink.backend.domain.model.auth.AuthenticatedUser
 import com.blink.backend.domain.appointment.service.AppointmentsService
+import com.blink.backend.domain.model.auth.AuthenticatedUser
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
@@ -15,12 +17,14 @@ import java.util.logging.Logger
 
 @RestController
 @RequestMapping("api/v2/appointments")
+@Tag(name = "Appointments", description = "API para gerenciamento de agendamentos")
 class AppointmentsController(
     private val appointmentsService: AppointmentsService,
     private val logger: Logger = Logger.getLogger(AppointmentsController::class.java.name)
 ) {
 
     @PostMapping
+    @Operation(summary = "Cria um novo agendamento")
     fun createAppointment(
         @AuthenticationPrincipal user: AuthenticatedUser,
         @RequestBody createAppointmentDTO: CreateAppointmentsDTO
@@ -31,6 +35,7 @@ class AppointmentsController(
     }
 
     @GetMapping("availability")
+    @Operation(summary = "Retorna a disponibilidade de agendamentos da clínica em um intervalo de datas")
     fun getClinicAvailabilityByClinicId(
         @AuthenticationPrincipal user: AuthenticatedUser,
         @RequestParam("start_date", required = false) startDate: LocalDate?,
@@ -56,6 +61,7 @@ class AppointmentsController(
     }
 
     @PatchMapping("{appointmentId}")
+    @Operation(summary = "Atualiza um agendamento existente")
     fun updateAppointment(
         @AuthenticationPrincipal user: AuthenticatedUser,
         @PathVariable appointmentId: Int,
