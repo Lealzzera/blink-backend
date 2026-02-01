@@ -13,6 +13,7 @@ import com.blink.backend.domain.service.WhatsAppService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @Deprecated(forRemoval = true)
+@Slf4j
 @Tag(name = "Whats app chat", description = "Novas apis de chat do whats-app")
 @RestController
 @RequiredArgsConstructor
@@ -39,16 +41,19 @@ public class MessageController {
 
     @GetMapping("qr-code")
     public ResponseEntity<byte[]> getWahaQrCode(@AuthenticationPrincipal AuthenticatedUser user) throws NotFoundException {
+        log.info("[V1] getWahaQrCode called - clinicId: {}", user.getClinic().getId());
         return ResponseEntity.ok(whatsAppService.getWhatsAppQrCodeByClinic(user.getClinic().getId()));
     }
 
     @GetMapping("status")
     public ResponseEntity<WhatsAppStatusDto> getWhatsAppStatus(@AuthenticationPrincipal AuthenticatedUser user) throws NotFoundException {
+        log.info("[V1] getWhatsAppStatus called - clinicId: {}", user.getClinic().getId());
         return ResponseEntity.ok(whatsAppService.getWhatsAppStatusByClinicId(user.getClinic().getId()));
     }
 
     @DeleteMapping("disconnect")
     public ResponseEntity<WhatsAppStatusDto> disconnect(@AuthenticationPrincipal AuthenticatedUser user) throws NotFoundException {
+        log.info("[V1] disconnect called - clinicId: {}", user.getClinic().getId());
         return ResponseEntity.ok(whatsAppService.disconnectWhatsAppNumber(user.getClinic().getId()));
     }
 
@@ -57,6 +62,7 @@ public class MessageController {
             @AuthenticationPrincipal AuthenticatedUser user,
             @RequestBody SendMessageRequest sendMessageRequest)
             throws WhatsAppNotConnectedException, InterruptedException {
+        log.info("[V1] sendMessage called - clinicId: {}, phoneNumber: {}", user.getClinic().getId(), sendMessageRequest.getPhoneNumber());
         whatsAppService.sendMessage(user.getClinic(), sendMessageRequest);
         return ResponseEntity.ok().build();
     }
@@ -65,6 +71,7 @@ public class MessageController {
     public ResponseEntity<Void> receiveMessage(
             @RequestBody MessageReceivedRequest message)
             throws NotFoundException {
+        log.info("[V1] receiveMessage called - session: {}", message.getSession());
         whatsAppService.receiveMessage(message);
         return ResponseEntity.ok().build();
     }
@@ -74,6 +81,7 @@ public class MessageController {
             @AuthenticationPrincipal AuthenticatedUser user,
             @PathVariable String phoneNumber)
             throws NotFoundException {
+        log.info("[V1] toggleChatAiAnswer called - clinicId: {}, phoneNumber: {}", user.getClinic().getId(), phoneNumber);
         return ResponseEntity.ok(chatConfigurationService.toggleAiAnswerMode(user.getClinic().getId(), phoneNumber));
     }
 
@@ -84,6 +92,7 @@ public class MessageController {
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "20") Integer pageSize)
             throws WhatsAppNotConnectedException {
+        log.info("[V1] getChatsOverview called - clinicId: {}, page: {}, pageSize: {}", user.getClinic().getId(), page, pageSize);
         return ResponseEntity.ok(chatConfigurationService.getChatOverView(user.getClinic(), page, pageSize));
     }
 
@@ -94,6 +103,7 @@ public class MessageController {
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "20") Integer pageSize)
             throws WhatsAppNotConnectedException {
+        log.info("[V1] getChatHistory called - clinicId: {}, phoneNumber: {}, page: {}, pageSize: {}", user.getClinic().getId(), phoneNumber, page, pageSize);
         return ResponseEntity.ok(chatConfigurationService.getChatHistory(user.getClinic(), phoneNumber, page, pageSize));
     }
 }

@@ -27,4 +27,8 @@ public class ClinicRepositoryService {
     public ClinicEntity findByWahaSession(String session) throws NotFoundException {
         return clinicRepository.findByWahaSession(session).orElseThrow(() -> new NotFoundException("Clinica"));
     }
+
+    public ClinicEntity save(ClinicEntity clinic) {
+        return clinicRepository.save(clinic);
+    }
 }

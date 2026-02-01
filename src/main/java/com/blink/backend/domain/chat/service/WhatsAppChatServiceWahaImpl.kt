@@ -7,7 +7,6 @@ import com.blink.backend.domain.chat.model.WhatsAppStatus
 import com.blink.backend.domain.exception.message.WhatsAppNotConnectedException
 import com.blink.backend.domain.integration.waha.WahaClient
 import com.blink.backend.domain.integration.waha.WahaPhoneResolverService
-import com.blink.backend.domain.integration.waha.dto.ChatHistory
 import com.blink.backend.domain.integration.waha.dto.SendWahaMessageRequest
 import com.blink.backend.domain.integration.waha.dto.WahaPresenceDto
 import com.blink.backend.domain.model.Clinic
@@ -16,7 +15,6 @@ import com.blink.backend.persistence.repository.PatientRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import java.time.Duration
 
 @Service
 class WhatsAppChatServiceWahaImpl(
@@ -24,8 +22,10 @@ class WhatsAppChatServiceWahaImpl(
     val patientRepository: PatientRepository,
     val wahaPhoneResolverService: WahaPhoneResolverService,
     val wahaAuthService: WhatsAppAuthService,
-    val logger: Logger = LoggerFactory.getLogger(WhatsAppChatServiceWahaImpl::class.java)
+    val messageQueueService: MessageQueueService,
 ) : WhatsAppChatService {
+
+    private val logger: Logger = LoggerFactory.getLogger(this::class.java)
 
     override fun sendMessageByClinic(
         clinic: Clinic,
@@ -36,34 +36,32 @@ class WhatsAppChatServiceWahaImpl(
             throw WhatsAppNotConnectedException()
         }
 
-        Thread.sleep(Duration.ofSeconds(messageToSend.wait.toLong()))
-
         val chatId = "${messageToSend.phoneNumber}@c.us"
         val typingTimeMs = 70L * messageToSend.message.length
-
         val presence = WahaPresenceDto.builder()
             .session(clinic.wahaSession)
             .chatId(chatId)
             .build()
+        val messageRequest = SendWahaMessageRequest.builder()
+            .session(clinic.wahaSession)
+            .phoneNumber(chatId)
+            .text(messageToSend.message)
+            .build()
 
-        runCatching {
-            wahaClient.sendSeen(presence)
-        }.onFailure {
-            logger.warn("Seen not sent, continuing flow: {}", it.message)
+        messageQueueService.submitMessage(clinic.code, messageToSend.phoneNumber) {
+            runCatching {
+                wahaClient.sendSeen(presence)
+            }.onFailure {
+                logger.warn("Seen not sent, continuing flow: {}", it.message)
+            }
+
+            wahaClient.startTyping(presence)
+            Thread.sleep(typingTimeMs)
+
+            wahaClient.sendMessage(messageRequest)
+
+            wahaClient.stopTyping(presence)
         }
-
-        wahaClient.startTyping(presence)
-        Thread.sleep(typingTimeMs)
-
-        wahaClient.sendMessage(
-            SendWahaMessageRequest.builder()
-                .session(clinic.wahaSession)
-                .phoneNumber(chatId)
-                .text(messageToSend.message)
-                .build()
-        )
-
-        wahaClient.stopTyping(presence)
     }
 
     override fun getConversationsByClinic(

@@ -5,10 +5,12 @@ import com.blink.backend.domain.exception.NotFoundException;
 import com.blink.backend.domain.exception.message.WhatsAppNotConnectedException;
 import com.blink.backend.domain.service.WhatsAppService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class ChatSocketController {
@@ -17,6 +19,7 @@ public class ChatSocketController {
     @MessageMapping("/send-message")
     public void sendMessage(@Payload SendMessageRequest sendMessageRequest)
             throws NotFoundException, WhatsAppNotConnectedException, InterruptedException {
+        log.info("[V1] sendMessage called - phoneNumber: {}", sendMessageRequest.getPhoneNumber());
         whatsAppService.sendMessage(sendMessageRequest);
     }
 }

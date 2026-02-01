@@ -8,6 +8,7 @@ import com.blink.backend.domain.service.ChatConfigurationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @Deprecated(forRemoval = true)
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/chat")
@@ -31,6 +33,7 @@ public class ChatController {
             @PathVariable Integer clinicId,
             @PathVariable String phoneNumber)
             throws NotFoundException {
+        log.info("[V1] toggleChatAiAnswer called - clinicId: {}, phoneNumber: {}", clinicId, phoneNumber);
         return ResponseEntity.ok(chatConfigurationService.toggleAiAnswerMode(clinicId, phoneNumber));
     }
 
@@ -41,6 +44,7 @@ public class ChatController {
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "20") Integer pageSize)
             throws NotFoundException, WhatsAppNotConnectedException {
+        log.info("[V1] getChatsOverview called - clinicId: {}, page: {}, pageSize: {}", clinicId, page, pageSize);
         return ResponseEntity.ok(chatConfigurationService.getChatOverView(clinicId, page, pageSize));
     }
 
@@ -51,6 +55,7 @@ public class ChatController {
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "20") Integer pageSize)
             throws NotFoundException, WhatsAppNotConnectedException {
+        log.info("[V1] getChatHistory called - clinicId: {}, phoneNumber: {}, page: {}, pageSize: {}", clinicId, phoneNumber, page, pageSize);
         return ResponseEntity.ok(chatConfigurationService.getChatHistory(clinicId, phoneNumber, page, pageSize));
     }
 
