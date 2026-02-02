@@ -1,25 +1,28 @@
 package com.blink.backend.controller.configuration.dto
 
 import com.blink.backend.persistence.entity.appointment.ClinicAvailability
-import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalTime
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class AvailabilityConfigurationDto(
     val weekDay: String?,
-    @JsonFormat(pattern = "HH:mm")
     val open: LocalTime?,
-    @JsonFormat(pattern = "HH:mm")
     val close: LocalTime?,
-    @JsonFormat(pattern = "HH:mm")
     val breakStart: LocalTime?,
-    @JsonFormat(pattern = "HH:mm")
     val breakEnd: LocalTime?,
-    @JsonProperty("is_work_day")
-    val workDay: Boolean?
+    val workDay: Boolean
 ) {
+    init {
+        if (workDay) {
+            require(open != null) { "open is required when isWorkingDay is true" }
+            require(close != null) { "close is required when isWorkingDay is true" }
+        }
+        require((breakStart == null) == (breakEnd == null)) {
+            "breakStart and breakEnd must both be provided or both be null"
+        }
+    }
+
     companion object {
         fun fromEntity(clinicAvailability: ClinicAvailability): AvailabilityConfigurationDto {
             return AvailabilityConfigurationDto(

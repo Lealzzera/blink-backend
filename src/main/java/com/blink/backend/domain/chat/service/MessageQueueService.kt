@@ -9,7 +9,7 @@ import jakarta.annotation.PreDestroy
 
 @Service
 class MessageQueueService {
-    private val logger = LoggerFactory.getLogger(MessageQueueService::class.java)
+    private val logger = LoggerFactory.getLogger(this::class.java)
     private val queues = ConcurrentHashMap<String, ExecutorService>()
 
     fun submitMessage(clinicCode: String, phoneNumber: String, task: Runnable) {

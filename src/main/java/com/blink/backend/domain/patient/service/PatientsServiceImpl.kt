@@ -49,4 +49,13 @@ class PatientsServiceImpl(
 
         patientRepository.save(patient)
     }
+
+    override fun updatePatientByPhoneNumber(clinicCode: String, phoneNumber: String, request: UpdatePatientRequest) {
+        val patient = patientRepository.findByClinicCodeAndPhoneNumber(clinicCode, phoneNumber)
+            ?: throw NotFoundException("Paciente")
+
+        request.name?.let { patient.name = it }
+
+        patientRepository.save(patient)
+    }
 }

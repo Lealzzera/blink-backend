@@ -11,4 +11,5 @@ interface PatientsService {
     fun findByClinicCodeAndPhoneNumber(clinicCode: String, phoneNumber: String): PatientDto
     fun getPatientByCode(code: UUID): PatientDto
     fun updatePatient(code: UUID, request: UpdatePatientRequest)
+    fun updatePatientByPhoneNumber(clinicCode: String, phoneNumber: String, request: UpdatePatientRequest)
 }

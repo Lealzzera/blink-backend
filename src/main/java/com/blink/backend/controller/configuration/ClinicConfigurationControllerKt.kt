@@ -1,6 +1,5 @@
 package com.blink.backend.controller.configuration
 
-import com.blink.backend.controller.configuration.dto.AppointmentConfigurationDto
 import com.blink.backend.controller.configuration.dto.AvailabilityConfigurationDto
 import com.blink.backend.controller.configuration.dto.ClinicConfigurationDto
 import com.blink.backend.domain.configuration.ClinicConfigurationService
@@ -24,32 +23,9 @@ class ClinicConfigurationControllerKt(
         @AuthenticationPrincipal user: AuthenticatedUser,
         @RequestBody updateAvailabilityConfiguration: List<AvailabilityConfigurationDto>
     ) {
-        clinicConfigurationService.updateAvailabilityConfiguration(user.clinic.toDomain(), updateAvailabilityConfiguration)
-    }
-
-    @PutMapping("appointments")
-    fun updateAppointmentsConfiguration(
-        @AuthenticationPrincipal user: AuthenticatedUser,
-        @RequestBody appointmentConfiguration: AppointmentConfigurationDto
-    ) {
-        clinicConfigurationService.updateAppointmentConfiguration(user.clinic.toDomain(), appointmentConfiguration)
-    }
-
-    @GetMapping("availability")
-    fun getAvailabilityConfiguration(
-@AuthenticationPrincipal user: AuthenticatedUser
-    ): ResponseEntity<List<AvailabilityConfigurationDto>> {
-        return ResponseEntity.ok(
-            clinicConfigurationService.getAvailabilityConfiguration(user.clinic.toDomain())
-        )
-    }
-
-    @GetMapping("appointments")
-    fun getAppointmentsConfiguration(
-        @AuthenticationPrincipal user: AuthenticatedUser
-    ): ResponseEntity<AppointmentConfigurationDto> {
-        return ResponseEntity.ok(
-            clinicConfigurationService.getAppointmentConfiguration(user.clinic.toDomain())
+        clinicConfigurationService.updateAvailabilityConfiguration(
+            user.clinic.toDomain(),
+            updateAvailabilityConfiguration
         )
     }
 
@@ -60,5 +36,23 @@ class ClinicConfigurationControllerKt(
     ): ResponseEntity<Unit> {
         clinicConfigurationService.updateClinicConfiguration(user.clinic.toDomain(), clinicConfiguration)
         return ResponseEntity.noContent().build()
+    }
+
+    @GetMapping("availability")
+    fun getAvailabilityConfiguration(
+        @AuthenticationPrincipal user: AuthenticatedUser
+    ): ResponseEntity<List<AvailabilityConfigurationDto>> {
+        return ResponseEntity.ok(
+            clinicConfigurationService.getAvailabilityConfiguration(user.clinic.toDomain())
+        )
+    }
+
+    @GetMapping("clinic")
+    fun getClinicConfiguration(
+        @AuthenticationPrincipal user: AuthenticatedUser
+    ): ResponseEntity<ClinicConfigurationDto> {
+        return ResponseEntity.ok(
+            clinicConfigurationService.getClinicConfiguration(user.clinic.toDomain())
+        )
     }
 }

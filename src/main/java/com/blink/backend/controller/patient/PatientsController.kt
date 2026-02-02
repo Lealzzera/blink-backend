@@ -57,4 +57,16 @@ class PatientsController(private val patientsService: PatientsService) {
         patientsService.updatePatient(code, request)
         return ResponseEntity.noContent().build()
     }
+
+    @PutMapping("phone-number/{phone}")
+    @Operation(summary = "Atualiza os dados do paciente pelo número de telefone")
+    @Throws(NotFoundException::class)
+    fun updatePatientByPhoneNumber(
+        @AuthenticationPrincipal user: AuthenticatedUser,
+        @PathVariable phone: String,
+        @RequestBody request: UpdatePatientRequest
+    ): ResponseEntity<Unit> {
+        patientsService.updatePatientByPhoneNumber(user.clinic.code, phone, request)
+        return ResponseEntity.noContent().build()
+    }
 }

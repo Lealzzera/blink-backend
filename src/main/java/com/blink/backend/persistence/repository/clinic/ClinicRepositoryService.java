@@ -11,21 +11,18 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ClinicRepositoryService {
     private final ClinicRepository clinicRepository;
+    private static final String NOT_FOUND_MESSAGE = "Clinica";
 
     public ClinicEntity findById(Integer id) throws NotFoundException {
-        return clinicRepository.findById(id).orElseThrow(() -> new NotFoundException("Clinica"));
+        return clinicRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND_MESSAGE));
     }
 
     public ClinicEntity findByCode(String code) throws NotFoundException {
-        return clinicRepository.findByCode(code).orElseThrow(() -> new NotFoundException("Clinica"));
-    }
-
-    public Optional<ClinicEntity> findOptionalById(Integer id) {
-        return clinicRepository.findById(id);
+        return clinicRepository.findByCode(code).orElseThrow(() -> new NotFoundException(NOT_FOUND_MESSAGE));
     }
 
     public ClinicEntity findByWahaSession(String session) throws NotFoundException {
-        return clinicRepository.findByWahaSession(session).orElseThrow(() -> new NotFoundException("Clinica"));
+        return clinicRepository.findByWahaSession(session).orElseThrow(() -> new NotFoundException(NOT_FOUND_MESSAGE));
     }
 
     public ClinicEntity save(ClinicEntity clinic) {

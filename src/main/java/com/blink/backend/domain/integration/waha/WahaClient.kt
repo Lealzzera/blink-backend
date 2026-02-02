@@ -11,7 +11,7 @@ interface WahaClient {
     fun deleteWahaSession(sessionName: String)
 
     //chat endpoints
-    fun sendMessage(sendWahaMessageRequest: SendWahaMessageRequest)
+    fun sendMessage(wahaMessageRequest: SendMessageDto)
     fun getMessages(session: String, chatId: String, limit: Int, offset: Int): List<ChatHistory>
     fun getOverview(session: String, limit: Int, offset: Int): List<WahaConversationsDto>
     fun sendSeen(wahaSessionChatDto: WahaSessionChatDto)

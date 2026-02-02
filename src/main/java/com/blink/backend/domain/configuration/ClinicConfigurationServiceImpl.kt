@@ -1,6 +1,5 @@
 package com.blink.backend.domain.configuration
 
-import com.blink.backend.controller.configuration.dto.AppointmentConfigurationDto
 import com.blink.backend.controller.configuration.dto.AvailabilityConfigurationDto
 import com.blink.backend.controller.configuration.dto.ClinicConfigurationDto
 import com.blink.backend.domain.model.Clinic
@@ -33,38 +32,25 @@ class ClinicConfigurationServiceImpl(
                     WeekDay.valueOf(configuration.weekDay!!)
                 )
 
-            clinicAvailability.openTime = configuration.open
-            clinicAvailability.closeTime = configuration.close
-            clinicAvailability.lunchStartTime = configuration.breakStart
-            clinicAvailability.lunchEndTime = configuration.breakEnd
-            clinicAvailability.isWorkingDay = configuration.workDay
+            configuration.open?.let { clinicAvailability.openTime = it }
+            configuration.close?.let { clinicAvailability.closeTime = it }
+            configuration.breakStart?.let { clinicAvailability.lunchStartTime = it }
+            configuration.breakEnd?.let { clinicAvailability.lunchEndTime = it }
+            configuration.workDay.let { clinicAvailability.isWorkingDay = it }
 
             clinicAvailabilityRepository.save(clinicAvailability)
         }
     }
 
-    override fun updateAppointmentConfiguration(clinic: Clinic, appointmentConfiguration: AppointmentConfigurationDto) {
+    override fun getClinicConfiguration(clinic: Clinic): ClinicConfigurationDto {
         val clinicEntity = clinicRepositoryService.findByCode(clinic.code)
         val clinicConfiguration = clinicConfigurationRepository.findByClinicId(clinicEntity.id)
 
-        appointmentConfiguration.duration?.let {
-            clinicConfiguration.appointmentDuration = it
-        }
-
-        appointmentConfiguration.overbooking?.let {
-            clinicConfiguration.allowOverbooking = it
-        }
-
-        clinicConfigurationRepository.save(clinicConfiguration)
-    }
-
-    override fun getAppointmentConfiguration(clinic: Clinic): AppointmentConfigurationDto {
-        val clinicEntity = clinicRepositoryService.findByCode(clinic.code)
-        val clinicConfiguration = clinicConfigurationRepository.findByClinicId(clinicEntity.id)
-
-        return AppointmentConfigurationDto(
-            duration = clinicConfiguration.appointmentDuration,
-            overbooking = clinicConfiguration.allowOverbooking
+        return ClinicConfigurationDto(
+            clinicName = clinicEntity.clinicName,
+            aiName = clinicConfiguration.aiName,
+            appointmentDuration = clinicConfiguration.appointmentDuration,
+            allowOverbooking = clinicConfiguration.allowOverbooking
         )
     }
 
@@ -79,7 +65,16 @@ class ClinicConfigurationServiceImpl(
 
         clinicConfiguration.aiName?.let {
             configuration.aiName = it
-            clinicConfigurationRepository.save(configuration)
         }
+
+        clinicConfiguration.appointmentDuration?.let {
+            configuration.appointmentDuration = it
+        }
+
+        clinicConfiguration.allowOverbooking?.let {
+            configuration.allowOverbooking = it
+        }
+
+        clinicConfigurationRepository.save(configuration)
     }
 }

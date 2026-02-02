@@ -7,7 +7,7 @@ import com.blink.backend.domain.chat.model.WhatsAppStatus
 import com.blink.backend.domain.exception.message.WhatsAppNotConnectedException
 import com.blink.backend.domain.integration.waha.WahaClient
 import com.blink.backend.domain.integration.waha.WahaPhoneResolverService
-import com.blink.backend.domain.integration.waha.dto.SendWahaMessageRequest
+import com.blink.backend.domain.integration.waha.dto.SendMessageDto
 import com.blink.backend.domain.integration.waha.dto.WahaSessionChatDto
 import com.blink.backend.domain.model.Clinic
 import com.blink.backend.domain.model.Patient
@@ -42,11 +42,11 @@ class WhatsAppChatServiceWahaImpl(
             session = clinic.wahaSession,
             chatId = chatId,
         )
-        val messageRequest = SendWahaMessageRequest.builder()
-            .session(clinic.wahaSession)
-            .phoneNumber(chatId)
-            .text(messageToSend.message)
-            .build()
+        val messageRequest = SendMessageDto(
+            session = clinic.wahaSession,
+            phoneNumber = chatId,
+            messageToSend.message,
+        )
 
         messageQueueService.submitMessage(clinic.code, messageToSend.phoneNumber) {
             runCatching {

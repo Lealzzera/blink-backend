@@ -89,18 +89,22 @@ class WahaClientImpl(
     }
 
     // ============================================== CHAT METHODS ==============================================
-    override fun sendMessage(sendWahaMessageRequest: SendWahaMessageRequest) {
-        logger.info("Sending message, " +
-                "session=${sendWahaMessageRequest.session}, " +
-                "to=${sendWahaMessageRequest.phoneNumber}")
+    override fun sendMessage(wahaMessageRequest: SendMessageDto) {
+        logger.info(
+            "Sending message, " +
+                    "session=${wahaMessageRequest.session}, " +
+                    "to=${wahaMessageRequest.phoneNumber}"
+        )
         wahaRestClient.post()
             .uri("/api/sendText")
-            .body(sendWahaMessageRequest)
+            .body(wahaMessageRequest)
             .exchange { _, response ->
-                logger.info("Send message completed, " +
-                        "session=${sendWahaMessageRequest.session}, " +
-                        "to=${sendWahaMessageRequest.phoneNumber}, " +
-                        "statusCode=${response.statusCode}")
+                logger.info(
+                    "Send message completed, " +
+                            "session=${wahaMessageRequest.session}, " +
+                            "to=${wahaMessageRequest.phoneNumber}, " +
+                            "statusCode=${response.statusCode}"
+                )
             }
     }
 
