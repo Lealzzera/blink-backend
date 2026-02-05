@@ -93,7 +93,7 @@ public class BeansConfiguration {
                 "https://fe.blinkdentalmarketing.com.br",
                 "http://fe.blinkdentalmarketing.com.br"
         ));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 

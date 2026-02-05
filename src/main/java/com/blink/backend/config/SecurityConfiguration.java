@@ -24,6 +24,7 @@ import static com.blink.backend.domain.model.auth.Authorities.AUTHENTICATED;
 import static com.blink.backend.domain.model.auth.Authorities.N8N_AUTHENTICATED;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.security.config.http.SessionCreationPolicy.IF_REQUIRED;
@@ -74,6 +75,7 @@ public class SecurityConfiguration {
                         .requestMatchers(GET, "/**").hasAnyAuthority(AUTHENTICATED.getAuthority(), N8N_AUTHENTICATED.getAuthority())
                         .requestMatchers(POST, "/**").hasAnyAuthority(AUTHENTICATED.getAuthority(), N8N_AUTHENTICATED.getAuthority())
                         .requestMatchers(PUT, "/**").hasAnyAuthority(AUTHENTICATED.getAuthority(), N8N_AUTHENTICATED.getAuthority())
+                        .requestMatchers(PATCH, "/**").hasAnyAuthority(AUTHENTICATED.getAuthority(), N8N_AUTHENTICATED.getAuthority())
                         .requestMatchers(DELETE, "/**").hasAnyAuthority(AUTHENTICATED.getAuthority(), N8N_AUTHENTICATED.getAuthority())
                         .anyRequest().authenticated()
                 )
