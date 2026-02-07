@@ -121,6 +121,7 @@ class WahaClientImpl(
                 session, chatId, limit, offset
             )
             .exchange { _, response ->
+                logger.info("Get messages completed, session=$session, chatId=$chatId, statusCode=${response.statusCode}")
                 response.bodyTo(object : ParameterizedTypeReference<List<JsonNode>>() {})
             }
             ?: emptyList()
