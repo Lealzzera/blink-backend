@@ -6,7 +6,7 @@ data class WhatsAppConversation(
     val whatsAppName: String? = null,
     val patientName: String,
     val phoneNumber: String,
-    val pictureUrl: String,
+    val pictureUrl: String?,
     val lastMessage: String,
     val sentAt: LocalDateTime,
     val fromMe: Boolean,

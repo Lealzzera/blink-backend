@@ -10,14 +10,15 @@ import java.time.ZoneId
 
 @JsonNaming(PropertyNamingStrategies.LowerCamelCaseStrategy::class)
 data class WahaConversationsDto(
-    val picture: String,
+    val picture: String? = null,
     val name: String? = null,
     @JsonProperty("lastMessage") val lastMessage: LastMessageDto,
     @JsonProperty("_chat") val chat: WahaChatDto,
-)  {
+) {
     data class WahaChatDto(
         val id: String,
     )
+
     @JsonNaming(PropertyNamingStrategies.LowerCamelCaseStrategy::class)
     data class LastMessageDto(
         val timestamp: Long,
