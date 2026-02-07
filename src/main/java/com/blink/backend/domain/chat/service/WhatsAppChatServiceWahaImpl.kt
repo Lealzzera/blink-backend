@@ -74,15 +74,25 @@ class WhatsAppChatServiceWahaImpl(
 
         logger.info("Fetched ${wahaConversations.size} conversations")
         return wahaConversations
-            .filter { conversationsDto -> wahaPhoneResolverService.isIndividualChat(conversationsDto.chat.id) }
+            .filter { conversationsDto ->
+                val isIndividual = wahaPhoneResolverService.isIndividualChat(conversationsDto.chat.id)
+                if (!isIndividual) {
+                    logger.info("Filtered out non-individual chat: ${conversationsDto.chat.id}")
+                }
+                isIndividual
+            }
             .mapNotNull { wahaConversation ->
                 val phoneNumber =
                     wahaPhoneResolverService.resolvePhoneNumber(clinic.wahaSession, wahaConversation.getChatId())
-                        ?: return@mapNotNull null
+                if (phoneNumber == null) {
+                    logger.info("Could not resolve phone number for chat: ${wahaConversation.getChatId()}")
+                    return@mapNotNull null
+                }
                 val patient: Patient =
                     patientRepository.findByClinic_CodeAndPhoneNumber(clinic.code, phoneNumber)
                         .map { entity -> entity.toDomain() }
                         .orElseGet {
+                            logger.info("Patient not found for clinic: ${clinic.code}, phone: $phoneNumber")
                             Patient(
                                 code = null,
                                 aiAnswer = false,
