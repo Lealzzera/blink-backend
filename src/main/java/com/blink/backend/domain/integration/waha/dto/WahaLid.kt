@@ -1,3 +1,3 @@
 package com.blink.backend.domain.integration.waha.dto
 
-data class WahaLid(val pn: String)
+data class WahaLid(val lid: String, val pn: String)

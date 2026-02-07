@@ -20,5 +20,6 @@ interface WahaClient {
 
     //contacts endpoints
     fun getPhoneNumberByLid(session: String, lid: String): WahaLid?
+    fun getLidByPhoneNumber(session: String, phoneNumber: String): WahaLid?
     fun getContact(session: String, contactId: String): WahaContactDto?
 }

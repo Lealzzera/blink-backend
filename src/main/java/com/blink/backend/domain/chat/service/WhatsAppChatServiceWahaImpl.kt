@@ -111,9 +111,13 @@ class WhatsAppChatServiceWahaImpl(
         page: Int,
         pageSize: Int
     ): List<WhatsAppConversationHistory> {
+        val chatId = wahaClient.getLidByPhoneNumber(clinic.wahaSession, phoneNumber)?.lid
+            ?: "${phoneNumber}@c.us"
+        logger.info("Resolved chatId for phoneNumber=$phoneNumber: $chatId")
+
         return wahaClient.getMessages(
             session = clinic.wahaSession,
-            chatId = phoneNumber,
+            chatId = chatId,
             limit = pageSize,
             offset = page * pageSize
         )

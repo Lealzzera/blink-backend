@@ -209,6 +209,20 @@ class WahaClientImpl(
             }
     }
 
+    override fun getLidByPhoneNumber(session: String, phoneNumber: String): WahaLid? {
+        logger.info("Getting LID by phone number, session=$session, phoneNumber=$phoneNumber")
+        return wahaRestClient.get()
+            .uri("/api/{session}/lids/pn/{phoneNumber}", session, phoneNumber)
+            .exchange { _, response ->
+                logger.info("Get LID by phone number completed, session=$session, phoneNumber=$phoneNumber, statusCode=${response.statusCode}")
+                when (response.statusCode) {
+                    HttpStatus.NOT_FOUND -> null
+                    HttpStatus.OK -> response.bodyTo(WahaLid::class.java)
+                    else -> null
+                }
+            }
+    }
+
     override fun getContact(session: String, contactId: String): WahaContactDto? {
         logger.info("Getting contact, session=$session, contactId=$contactId")
         return wahaRestClient.get()
