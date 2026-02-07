@@ -111,18 +111,29 @@ class WhatsAppChatServiceWahaImpl(
         page: Int,
         pageSize: Int
     ): List<WhatsAppConversationHistory> {
-        val chatId = wahaClient.getLidByPhoneNumber(clinic.wahaSession, phoneNumber)?.lid
-            ?: "${phoneNumber}@c.us"
-        logger.info("Resolved chatId for phoneNumber=$phoneNumber: $chatId")
+        val phoneChatId = "${phoneNumber}@c.us"
+        val lidChatId = wahaClient.getLidByPhoneNumber(clinic.wahaSession, phoneNumber)?.lid
+        logger.info("Fetching messages for phoneNumber=$phoneNumber, phoneChatId=$phoneChatId, lidChatId=$lidChatId")
 
-        return wahaClient.getMessages(
+        val phoneMessages = wahaClient.getMessages(
             session = clinic.wahaSession,
-            chatId = chatId,
+            chatId = phoneChatId,
             limit = pageSize,
             offset = page * pageSize
         )
-            .map { conversation ->
-                conversation.toDomain()
-            }
+
+        val lidMessages = lidChatId?.let {
+            wahaClient.getMessages(
+                session = clinic.wahaSession,
+                chatId = it,
+                limit = pageSize,
+                offset = page * pageSize
+            )
+        } ?: emptyList()
+
+        return (phoneMessages + lidMessages)
+            .distinctBy { it.id }
+            .sortedByDescending { it.timestamp }
+            .map { it.toDomain() }
     }
 }

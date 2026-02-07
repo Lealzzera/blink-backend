@@ -6,6 +6,7 @@ import java.time.Instant
 import java.time.ZoneId
 
 data class ChatHistory(
+    val id: String,
     val timestamp: Long,
     val fromMe: Boolean,
     val body: String?,
