@@ -149,6 +149,8 @@ class WahaClientImpl(
         return nodes.mapNotNull {
             runCatching {
                 objectMapper.treeToValue(it, WahaConversationsDto::class.java)
+            }.onFailure { e ->
+                logger.warn("Failed to deserialize conversation node: {}, error: {}", it, e.message)
             }.getOrNull()
         }
     }

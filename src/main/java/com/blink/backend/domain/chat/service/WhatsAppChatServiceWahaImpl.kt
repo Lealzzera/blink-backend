@@ -79,7 +79,6 @@ class WhatsAppChatServiceWahaImpl(
                 if (!isIndividual) {
                     logger.info("Filtered out non-individual chat: ${conversationsDto.chat.id}")
                 }
-                logger.info("Individual chat: ${conversationsDto.chat.id}")
                 isIndividual
             }
             .mapNotNull { wahaConversation ->
@@ -91,9 +90,7 @@ class WhatsAppChatServiceWahaImpl(
                 }
                 val patient: Patient =
                     patientRepository.findByClinic_CodeAndPhoneNumber(clinic.code, phoneNumber)
-                        .map { entity ->
-                            logger.info("Mapping patient, chat id: ${entity.phoneNumber}")
-                            entity.toDomain() }
+                        .map { entity -> entity.toDomain() }
                         .orElseGet {
                             logger.info("Patient not found for clinic: ${clinic.code}, phone: $phoneNumber")
                             Patient(
