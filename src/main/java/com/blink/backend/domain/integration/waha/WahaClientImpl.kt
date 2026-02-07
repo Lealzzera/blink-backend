@@ -115,15 +115,23 @@ class WahaClientImpl(
         offset: Int
     ): List<ChatHistory> {
         logger.info("Getting messages, session=$session, chatId=$chatId, limit=$limit, offset=$offset")
-        return wahaRestClient.get()
+        val nodes = wahaRestClient.get()
             .uri(
                 "/api/{session}/chats/{chatId}/messages?limit={limit}&offset={offset}",
                 session, chatId, limit, offset
             )
             .exchange { _, response ->
-                response.bodyTo(object : ParameterizedTypeReference<List<ChatHistory>>() {})
+                response.bodyTo(object : ParameterizedTypeReference<List<JsonNode>>() {})
             }
             ?: emptyList()
+
+        return nodes.mapNotNull {
+            runCatching {
+                objectMapper.treeToValue(it, ChatHistory::class.java)
+            }.onFailure { e ->
+                logger.warn("Failed to deserialize conversation node: {}, error: {}", it, e.message)
+            }.getOrNull()
+        }
     }
 
     /**
