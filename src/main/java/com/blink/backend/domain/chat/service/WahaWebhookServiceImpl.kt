@@ -145,7 +145,8 @@ class WahaWebhookServiceImpl(
                     sender = whatsAppMessage.phoneNumber,
                     message = whatsAppMessage.message,
                     patientName = patientName,
-                    appointmentsData = appointment.map { MessageReceived.AppointmentsData.fromAppointment(it) },
+                    appointmentsData = appointment.filter { appointment1 -> appointment1.isNotCancelled }
+                        .map { MessageReceived.AppointmentsData.fromAppointment(it) },
                     clinicName = clinic.name,
                     clinicCode = clinic.code,
                     aiName = aiName,
