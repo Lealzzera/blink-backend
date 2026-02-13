@@ -16,7 +16,7 @@ public class ChatConfigurationService {
     public Boolean toggleAiAnswerMode(Integer clinicId, String phoneNumber) throws NotFoundException {
         PatientEntity patient = patientRepository.findByClinic_IdAndPhoneNumber(clinicId, phoneNumber)
                 .orElseThrow(() -> new NotFoundException("Paciente"));
-        patient.setAiAnswer(patient.getAiAnswer());
+        patient.setAiAnswer(!patient.getAiAnswer());
         patientRepository.save(patient);
         return patient.getAiAnswer();
     }

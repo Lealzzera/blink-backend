@@ -4,7 +4,9 @@ import com.blink.backend.controller.chat.dto.SendMessageRequest
 import com.blink.backend.domain.chat.model.WhatsAppConversation
 import com.blink.backend.domain.chat.model.WhatsAppConversationHistory
 import com.blink.backend.domain.chat.service.WhatsAppChatService
+import com.blink.backend.domain.exception.NotFoundException
 import com.blink.backend.domain.model.auth.AuthenticatedUser
+import com.blink.backend.domain.service.ChatConfigurationService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import lombok.RequiredArgsConstructor
@@ -17,7 +19,8 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("api/v2/whats-app/chat")
 @Tag(name = "WhatsApp Chat", description = "APIs para gerenciamento de conversas do WhatsApp")
 class WhatsAppChatController(
-    val whatsAppChatService: WhatsAppChatService
+    val whatsAppChatService: WhatsAppChatService,
+    val chatConfigurationService: ChatConfigurationService
 ) {
 
     @GetMapping("conversations")
@@ -64,21 +67,18 @@ class WhatsAppChatController(
         whatsAppChatService.sendMessageByClinic(user.clinic.toDomain(), messageToSend)
         return ResponseEntity.ok().build()
     }
-    /*
-
     @PutMapping("ai-answer/{phoneNumber}")
+    @Operation(summary = "Liga/desliga a resposta automática da IA para um paciente")
     @Throws(NotFoundException::class)
     fun toggleChatAiAnswer(
         @AuthenticationPrincipal user: AuthenticatedUser,
-        @PathVariable phoneNumber: String?
-    ): ResponseEntity<Boolean?> {
-        return ResponseEntity.ok<Boolean?>(
-            chatConfigurationService!!.toggleAiAnswerMode(
-                user.getClinic().getId(),
+        @PathVariable phoneNumber: String
+    ): ResponseEntity<Boolean> {
+        return ResponseEntity.ok(
+            chatConfigurationService.toggleAiAnswerMode(
+                user.clinic.id,
                 phoneNumber
             )
         )
     }
-
-   */
 }
