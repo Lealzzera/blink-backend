@@ -56,6 +56,9 @@ public class ClinicConfigurationService {
         if (appointmentConfiguration.getOverbooking() != null)
             clinicConfiguration.setAllowOverbooking(appointmentConfiguration.getOverbooking());
 
+        if (appointmentConfiguration.getCustomPrompt() != null)
+            clinicConfiguration.setCustomPrompt(appointmentConfiguration.getCustomPrompt());
+
         clinicConfigurationRepository.save(clinicConfiguration);
 
     }
@@ -70,6 +73,7 @@ public class ClinicConfigurationService {
                 .clinicId(clinicId)
                 .duration(clinicConfiguration.getAppointmentDuration())
                 .overbooking(clinicConfiguration.getAllowOverbooking())
+                .customPrompt(clinicConfiguration.getCustomPrompt())
                 .build();
     }
 

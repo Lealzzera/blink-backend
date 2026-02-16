@@ -46,6 +46,9 @@ public class ClinicConfiguration {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "custom_prompt", columnDefinition = "TEXT")
+    private String customPrompt;
+
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
