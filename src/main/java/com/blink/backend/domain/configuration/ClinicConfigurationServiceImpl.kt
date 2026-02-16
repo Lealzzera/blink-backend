@@ -50,8 +50,7 @@ class ClinicConfigurationServiceImpl(
             clinicName = clinicEntity.clinicName,
             aiName = clinicConfiguration.aiName,
             appointmentDuration = clinicConfiguration.appointmentDuration,
-            allowOverbooking = clinicConfiguration.allowOverbooking,
-            customPrompt = clinicConfiguration.customPrompt
+            allowOverbooking = clinicConfiguration.allowOverbooking
         )
     }
 
@@ -74,10 +73,6 @@ class ClinicConfigurationServiceImpl(
 
         clinicConfiguration.allowOverbooking?.let {
             configuration.allowOverbooking = it
-        }
-
-        clinicConfiguration.customPrompt?.let {
-            configuration.customPrompt = it
         }
 
         clinicConfigurationRepository.save(configuration)

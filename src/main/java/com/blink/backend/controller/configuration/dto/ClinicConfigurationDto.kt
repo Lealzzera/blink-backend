@@ -4,6 +4,5 @@ data class ClinicConfigurationDto(
     val clinicName: String?,
     val aiName: String?,
     val appointmentDuration: Int?,
-    val allowOverbooking: Boolean?,
-    val customPrompt: String? = null
+    val allowOverbooking: Boolean?
 )
