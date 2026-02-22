@@ -1,8 +1,8 @@
 package com.blink.backend.persistence.entity.appointment;
 
 
-import com.blink.backend.persistence.entity.auth.Users;
-import com.blink.backend.persistence.entity.clinic.Clinic;
+import com.blink.backend.persistence.entity.auth.UserEntity;
+import com.blink.backend.persistence.entity.clinic.ClinicEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -32,7 +32,7 @@ public class ClinicAvailability {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "clinic_id")
-    private Clinic clinic;
+    private ClinicEntity clinic;
 
     @Column(name = "week_day")
     @Enumerated(EnumType.STRING)
@@ -52,7 +52,7 @@ public class ClinicAvailability {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "updated_by_user_id")
-    private Users updatedByUserId;
+    private UserEntity updatedByUserId;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

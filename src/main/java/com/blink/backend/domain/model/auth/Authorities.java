@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 @AllArgsConstructor
 public enum Authorities implements GrantedAuthority {
     AUTHENTICATED("authenticated"),
+    N8N_AUTHENTICATED("n8nAuthenticated"),
     ;
     private String authority;
 }

@@ -1,6 +1,6 @@
 package com.blink.backend.persistence.entity.appointment;
 
-import com.blink.backend.persistence.entity.auth.Users;
+import com.blink.backend.persistence.entity.auth.UserEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -36,11 +36,11 @@ public class Sale {
 
     @ManyToOne
     @JoinColumn(name = "patient_id")
-    private Patient patient;
+    private PatientEntity patient;
 
     @ManyToOne
     @JoinColumn(name = "appointment_id")
-    private Appointment appointment;
+    private AppointmentEntity appointment;
 
     @Column(name = "value", precision = 10, scale = 2)
     private BigDecimal value;
@@ -51,13 +51,9 @@ public class Sale {
 
     @ManyToOne
     @JoinColumn(name = "registered_by_user_id")
-    private Users registeredByUser;
+    private UserEntity registeredByUser;
 
     @Column(name = "registered_at")
     private LocalDateTime registeredAt;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "service_type_id")
-    private ServiceType serviceType;
 
 }

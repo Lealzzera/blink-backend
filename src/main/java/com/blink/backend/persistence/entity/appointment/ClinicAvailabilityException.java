@@ -1,6 +1,6 @@
 package com.blink.backend.persistence.entity.appointment;
 
-import com.blink.backend.persistence.entity.clinic.Clinic;
+import com.blink.backend.persistence.entity.clinic.ClinicEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -34,7 +34,7 @@ public class ClinicAvailabilityException {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "clinic_id")
-    private Clinic clinic;
+    private ClinicEntity clinic;
 
     @Column(name = "exception_day")
     private LocalDate exceptionDay;

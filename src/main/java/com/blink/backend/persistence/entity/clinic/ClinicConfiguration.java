@@ -1,7 +1,7 @@
 package com.blink.backend.persistence.entity.clinic;
 
 
-import com.blink.backend.persistence.entity.auth.Users;
+import com.blink.backend.persistence.entity.auth.UserEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,10 +28,7 @@ public class ClinicConfiguration {
 
     @OneToOne
     @JoinColumn(name = "clinic_id")
-    private Clinic clinic;
-
-    @Column(name = "whats_number")
-    private String whatsNumber;
+    private ClinicEntity clinic;
 
     @Column(name = "appointment_duration")
     private Integer appointmentDuration;
@@ -39,9 +36,12 @@ public class ClinicConfiguration {
     @Column(name = "allow_overbooking")
     private Boolean allowOverbooking;
 
+    @Column(name = "default_ai_answer")
+    private Boolean defaultAiAnswer;
+
     @OneToOne
     @JoinColumn(name = "updated_by_user_id")
-    private Users updatedByUserId;
+    private UserEntity updatedByUserId;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -49,7 +49,10 @@ public class ClinicConfiguration {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public int getMaximumOverbookingAppointments(){
+    @Column(name = "ai_name")
+    private String aiName;
+
+    public int getMaximumOverbookingAppointments() {
         return getAllowOverbooking() ? 2 : 1;
     }
 

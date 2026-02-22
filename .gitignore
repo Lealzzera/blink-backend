@@ -38,3 +38,5 @@ out/
 
 ### ENV VARS ###
 .env
+.local/
+.kotlin

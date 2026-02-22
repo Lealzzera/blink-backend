@@ -15,7 +15,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ClinicConfigurationService {
-
     private final ClinicAvailabilityRepository clinicAvailabilityRepository;
     private final ClinicConfigurationRepository clinicConfigurationRepository;
 

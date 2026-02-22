@@ -1,0 +1,26 @@
+package com.blink.backend.domain.model.auth;
+
+import com.blink.backend.persistence.entity.clinic.ClinicEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.List;
+
+@Getter
+@Builder
+@AllArgsConstructor
+public class AuthenticatedUser implements UserDetails {
+    private final String username;
+    private final String userId;
+    private final List<Authorities> authorities;
+    private final ClinicEntity clinic;
+    public String getPassword() {
+        return null;
+    }
+
+    public static AuthenticatedUser getN8nAuthenticatedUser(ClinicEntity clinic) {
+        return new AuthenticatedUser("n8n", null, List.of(Authorities.N8N_AUTHENTICATED), clinic);
+    }
+}

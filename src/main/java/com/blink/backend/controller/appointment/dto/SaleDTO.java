@@ -25,7 +25,6 @@ public class SaleDTO {
     private Integer appointmentId;
     private BigDecimal value;
     private String status;
-    private Integer serviceType;
     private Integer registeredByUser;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime registeredAt;
@@ -34,7 +33,6 @@ public class SaleDTO {
 
         return SaleDTO.builder()
                 .appointmentId(sale.getAppointment().getId())
-                .serviceType(sale.getServiceType().getId())
                 .value(sale.getValue())
                 .status(sale.getStatus().name())
                 .registeredByUser(sale.getRegisteredByUser().getId())

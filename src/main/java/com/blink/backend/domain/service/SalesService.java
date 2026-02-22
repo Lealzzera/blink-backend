@@ -3,15 +3,13 @@ package com.blink.backend.domain.service;
 import com.blink.backend.controller.appointment.dto.SaleDTO;
 import com.blink.backend.controller.appointment.dto.UpdateSaleStatusDTO;
 import com.blink.backend.domain.exception.NotFoundException;
-import com.blink.backend.persistence.entity.appointment.Appointment;
+import com.blink.backend.persistence.entity.appointment.AppointmentEntity;
 import com.blink.backend.persistence.entity.appointment.Sale;
 import com.blink.backend.persistence.entity.appointment.SaleStatus;
-import com.blink.backend.persistence.entity.appointment.ServiceType;
-import com.blink.backend.persistence.entity.auth.Users;
+import com.blink.backend.persistence.entity.auth.UserEntity;
 import com.blink.backend.persistence.repository.AppointmentsRepository;
 import com.blink.backend.persistence.repository.SaleRepository;
-import com.blink.backend.persistence.repository.ServiceTypeRepository;
-import com.blink.backend.persistence.repository.UsersRepository;
+import com.blink.backend.persistence.repository.UserEntityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,9 +20,8 @@ import java.time.LocalDateTime;
 public class SalesService {
 
     private final SaleRepository saleRepository;
-    private final UsersRepository usersRepository;
+    private final UserEntityRepository userEntityRepository;
     private final AppointmentsRepository appointmentsRepository;
-    private final ServiceTypeRepository serviceTypeRepository;
 
     public SaleDTO getSaleDetailsById(Integer id) throws NotFoundException {
         return saleRepository.findById(id)
@@ -34,19 +31,15 @@ public class SalesService {
 
     public SaleDTO createSale(SaleDTO saleDTO) throws NotFoundException {
 
-        Appointment appointment = appointmentsRepository.findById(saleDTO.getAppointmentId())
+        AppointmentEntity appointment = appointmentsRepository.findById(saleDTO.getAppointmentId())
                 .orElseThrow(() -> new NotFoundException("Agendamento " + saleDTO.getAppointmentId()));
 
-        ServiceType serviceType = serviceTypeRepository.findById(saleDTO.getServiceType())
-                .orElseThrow(()-> new NotFoundException("Tipo de serviço"));
-
-        Users user = usersRepository.findById(saleDTO.getRegisteredByUser())
+        UserEntity user = userEntityRepository.findById(saleDTO.getRegisteredByUser())
                 .orElseThrow(() -> new NotFoundException("Usuário"));
 
         Sale sale = Sale.builder()
                 .appointment(appointment)
                 .patient(appointment.getPatient())
-                .serviceType(serviceType)
                 .value(saleDTO.getValue())
                 .status(SaleStatus.NAO_PAGO)
                 .registeredByUser(user)

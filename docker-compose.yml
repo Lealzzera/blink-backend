@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: blink-postgres
+    environment:
+      POSTGRES_USER: blink
+      POSTGRES_PASSWORD: blink123
+      POSTGRES_DB: blink-be
+    ports:
+      - "5433:5432"
+    volumes:
+      - blink-pg-data:/var/lib/postgresql/data
+      - ./docker/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+
+  waha:
+    image: devlikeapro/waha:latest
+    container_name: blink-waha
+    environment:
+      WHATSAPP_API_KEY: supersecretkey
+      WHATSAPP_DEFAULT_ENGINE: WEBJS
+    ports:
+      - "51233:3000"
+    volumes:
+      - waha-data:/app/.wwebjs_auth
+
+volumes:
+  blink-pg-data:
+  waha-data:
